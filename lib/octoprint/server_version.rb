@@ -13,15 +13,15 @@ module Octoprint
   #           version = Octoprint::ServerVersion.get
   #           version.api #=> "0.1"
   #           version.server= #=> "1.7.3"
-  #           version.text #=> "text"
+  #           version.text #=> "OctoPrint 1.7.3"
   class ServerVersion < BaseResource
     resource_path("/api/version")
     attr_reader :api, :server, :text
 
-    def initialize(args = {})
-      @api    = args["api"]
-      @server = args["server"]
-      @text   = args["text"]
+    def initialize(api:, server:, text:)
+      @api = api
+      @server = server
+      @text = text
       super()
     end
 
@@ -34,6 +34,9 @@ module Octoprint
     #           version = Octoprint::ServerVersion.get
     #           version.api #=> "0.1"
     #           version.server= #=> "1.7.3"
-    #           version.text #=> "text"
+    #           version.text #=> "OctoPrint 1.7.3"
+    def get(options = {})
+      super(options: options)
+    end
   end
 end
