@@ -2,6 +2,8 @@
 
 require "octoprint"
 require "vcr"
+require "rspec/its"
+require "pry"
 
 wip_count = 0
 RSpec.configure do |config|
