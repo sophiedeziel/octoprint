@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require "faraday"
-require "pry"
 
 module Octoprint
-  # The API client object
+  # The API client object.
   #
-  # @attr [String] uri
+  # @attr [String] host
   # @attr [String] api_key
+  # @attr [Client] client
   class Client
     attr_reader :host, :api_key, :client
 
@@ -21,8 +21,14 @@ module Octoprint
       end
     end
 
-    def request(path, http_method: :get, params: {})
-      response = client.public_send(http_method, path, **params)
+    # Instanciates an object from a hash. Can be overriden by child classes
+    #
+    # @param [String] path                the path of the request
+    # @param [Symbol|String] http_method  the http method of the request
+    # @param [Hash] body                  the body of the request
+    # @return [Hash]
+    def request(path, http_method: :get, body: {})
+      response = client.public_send(http_method, path, **body)
 
       raise AuthenticationError if response.status == 403
 
