@@ -32,7 +32,7 @@ module Octoprint
 
       raise Exceptions::AuthenticationError if response.status == 403
 
-      JSON.parse(response.body)
+      JSON.parse(response.body, symbolize_names: true)
     end
   end
 end

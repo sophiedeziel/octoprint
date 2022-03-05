@@ -2,6 +2,8 @@
 
 require_relative "octoprint/version"
 require "octoprint/client"
+require "octoprint/base_resource"
+require "octoprint/server_version"
 require "octoprint/errors"
 
 # Welcome to the Octoprint Gem!
