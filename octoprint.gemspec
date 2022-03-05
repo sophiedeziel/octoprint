@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Wrapper around Octoprint's API."
   spec.homepage      = "https://github.com/sophiedeziel/octoprint"
   spec.license       = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
@@ -33,8 +33,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "faraday", "~> 2.2.0"
 
+  spec.add_development_dependency "pry"
+  spec.add_development_dependency "vcr"
+  spec.add_development_dependency "webmock"
   spec.add_development_dependency "yard"
 
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end
