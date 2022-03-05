@@ -47,7 +47,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 This project uses VCR to record the HTTP interactions with an Octoprint's API. When you add tests, you can use existing cassettes or record your own. To set this up, first run 
 `cp .env.example .env` and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. It will make your setup available as environment variables. VCR is configured to filter that data out of cassettes. 
 
-Remember, you should never commit your credentials to git. You should never have to with the current configuration.
+Remember, you should never commit your credentials to git. With the current configuration, you should never have to.
 
 If you need all request to pass through while developing, you can add the `:wip` flag to your tests. It will prevent cassettes from recording until you remove the flag. Remember to remove it and record all missing cassettes before you commit your changes. More information here: https://link.medium.com/QU7ZgM8P9nb
 
