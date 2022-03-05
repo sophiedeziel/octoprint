@@ -5,7 +5,7 @@ RSpec.describe Octoprint do
     expect(Octoprint::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  it "has a configure method" do
+    expect(Octoprint).to respond_to :configure
   end
 end
