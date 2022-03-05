@@ -2,16 +2,13 @@
 
 require_relative "octoprint/version"
 require "octoprint/client"
+require "octoprint/errors"
 
 # Welcome to the Octoprint Gem!
 #
 # This gem is still under development.
 # @attr [Octoprint::Client] client      The configured API client
 module Octoprint
-  class Error < StandardError; end
-  class AuthenticationError < Error; end
-  class MissingCredentials < Error; end
-
   class << self
     attr_reader :client
 
