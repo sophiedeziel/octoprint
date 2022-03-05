@@ -12,7 +12,7 @@ module Octoprint
     attr_reader :host, :api_key, :client
 
     def initialize(host:, api_key:)
-      raise MissingCredentials if host.nil? || api_key.nil?
+      raise Exceptions::MissingCredentials if host.nil? || api_key.nil?
 
       @host    = host
       @api_key = api_key
@@ -30,7 +30,7 @@ module Octoprint
     def request(path, http_method: :get, body: {})
       response = client.public_send(http_method, path, **body)
 
-      raise AuthenticationError if response.status == 403
+      raise Exceptions::AuthenticationError if response.status == 403
 
       JSON.parse(response.body)
     end
