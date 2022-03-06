@@ -3,6 +3,8 @@
 module Octoprint
   # Version informations about the server
   #
+  # Octoprint's API doc: https://docs.octoprint.org/en/master/api/version.html
+  #
   # @attr [String] api      Server's API version
   # @attr [String] server   Server's version
   # @attr [String] text     server version including the prefix `Octoprint`
