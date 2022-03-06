@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
+require "active_support/all"
+
 require_relative "octoprint/version"
 require "octoprint/client"
 require "octoprint/base_resource"
-require "octoprint/server_version"
-require "octoprint/server_information"
+require "octoprint/connection"
+require "octoprint/connection/settings"
+require "octoprint/connection/options"
 require "octoprint/errors"
+require "octoprint/server_information"
+require "octoprint/server_version"
 
 # Welcome to the Octoprint Gem!
 #
