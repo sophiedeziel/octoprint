@@ -10,7 +10,7 @@ RSpec.describe Octoprint::ServerInformation do
     its(:safemode) { is_expected.to eq "settings" }
   end
 
-  describe ".get", vcr: { cassette_name: "server" } do
+  describe ".get", vcr: { cassette_name: "server_information/get" } do
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
