@@ -6,7 +6,7 @@ This gem is a Ruby wrapper around Octoprint's REST API.
 
 Add this line to your application's Gemfile:
 
-```ruby
+```Ruby
 gem 'octoprint'
 ```
 
@@ -22,7 +22,7 @@ Or install it yourself as:
 
 This gem is still under development. The code below is how I plan to make this gem work. It does not work yet.
 
-```
+```Ruby
 require 'octoprint'
 
 Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
@@ -35,6 +35,41 @@ Octoprint::Job.current
 ```
 
 To generate an app key on your Octoprint's instance, log in to it, click on the Settings button in the top menu and then go to the "Application Keys".
+
+### Flexibility
+
+This gem is built to offer multiple options to interact with Octoprint's apis. Depending on your use case, you can configure the gem for only one Octoprint server, or you can generate an API client to use for each server.
+
+#### Example 1: Use in a Rails app, with a single Octoprint server
+
+```Ruby
+# config/initializers/octoprint.rb
+Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
+
+# app/controllers/printers_controller.rb
+class PrintersController < ApplicationController
+  def connect
+    Octoprint::Connection.connect
+  end
+end
+```
+
+#### Example 2: Manage multiplie printers in a ruby script
+
+```Ruby
+ender3 = Octoprint.client.new(host: 'http://192.168.0.145', api_key: 'asdf')
+cr10   = Octoprint.client.new(host: 'http://192.168.0.167', api_key: 'ghjk')
+
+files = []
+
+ender3.use do
+  files << Octoprint::Files.list
+end
+
+cr10.use do
+  files << Octoprint::Files.list
+end
+```
 
 ## Development
 
@@ -53,7 +88,7 @@ Remember, you should never commit your credentials to git. With the current conf
 If you need all request to pass through while developing, you can add the `:wip` flag to your tests. It will prevent cassettes from recording until you remove the flag. Remember to remove it and record all missing cassettes before you commit your changes. More information here: https://link.medium.com/QU7ZgM8P9nb
 
 example:
-```
+```Ruby
     it "calls the API", :wip, vcr: {cassette_name: '/currentuser'} do
         result = Octoprint.User.current
 

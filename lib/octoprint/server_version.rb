@@ -29,7 +29,6 @@ module Octoprint
 
     # Retrieve information regarding server and API version.
     #
-    # @option options [Octoprint::Client] :client the API client to use
     # @return [ServerVersion]
     #
     # @example
@@ -37,8 +36,8 @@ module Octoprint
     #           version.api #=> "0.1"
     #           version.server= #=> "1.7.3"
     #           version.text #=> "OctoPrint 1.7.3"
-    def get(options = {})
-      super(options: options)
+    def self.get
+      fetch_resource
     end
   end
 end

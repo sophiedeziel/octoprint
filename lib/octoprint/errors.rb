@@ -7,6 +7,8 @@ module Octoprint
     class Error < StandardError; end
     # The client can't access the requested resources because of bad authentication
     class AuthenticationError < Error; end
+    # The can't be processed because of invalid inputs
+    class BadRequest < Error; end
     # Credentials are missing from the configuration. Set them using `Octoprint.configure()`
     class MissingCredentials < Error; end
   end
