@@ -18,6 +18,7 @@ module Octoprint
       @api_key = api_key
       @client = Faraday.new(host) do |client|
         client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
+        client.headers["Content-Type"] = "application/json"
       end
     end
 
@@ -28,13 +29,26 @@ module Octoprint
     # @param [Hash] body                  the body of the request
     # @return [Hash]
     def request(path, http_method: :get, body: {})
-      response = client.public_send(http_method, path, **body)
+      response = client.public_send(http_method, path, body)
 
-      raise Exceptions::AuthenticationError if response.status == 403
+      return true if response.status == 204 # No content
+
+      process_error(response.status) if response.status >= 400
 
       JSON
         .parse(response.body)
         .deep_transform_keys { |key| key.underscore.to_sym }
+    end
+
+    private
+
+    def process_error(code)
+      errors = {
+        400 => Exceptions::BadRequest,
+        403 => Exceptions::AuthenticationError
+      }
+
+      raise errors[code]
     end
   end
 end

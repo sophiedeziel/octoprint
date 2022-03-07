@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/all"
+require "pry"
 
 require_relative "octoprint/version"
 require "octoprint/client"
@@ -18,7 +19,7 @@ require "octoprint/server_version"
 # @attr [Octoprint::Client] client      The configured API client
 module Octoprint
   class << self
-    attr_reader :client
+    attr_accessor :client
 
     # Configure the API client with the server's address and key
     #

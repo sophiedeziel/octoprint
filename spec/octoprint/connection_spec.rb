@@ -2,6 +2,7 @@
 
 RSpec.describe Octoprint::Connection do
   include_context "Octoprint config"
+
   let(:connection_params) do
     {
       current: {
@@ -39,5 +40,32 @@ RSpec.describe Octoprint::Connection do
     it { is_expected.to be_a Octoprint::Connection }
     its(:current) { is_expected.to be_a Octoprint::Connection::Settings }
     its(:options) { is_expected.to be_a Octoprint::Connection::Options }
+  end
+
+  describe "#disconnect", :skip, vcr: { cassette_name: "disconnect" } do
+    before do
+      Octoprint.configure(host: host, api_key: api_key)
+    end
+
+    subject { Octoprint::Connection.disconnect }
+    it { is_expected.to eq true }
+  end
+
+  describe "#connect", :skip, vcr: { cassette_name: "connect" } do
+    before do
+      Octoprint.configure(host: host, api_key: api_key)
+    end
+
+    subject { Octoprint::Connection.connect }
+    it { is_expected.to eq true }
+  end
+
+  describe "#fake_ack", :skip, vcr: { cassette_name: "fake_ack" } do
+    before do
+      Octoprint.configure(host: host, api_key: api_key)
+    end
+
+    subject { Octoprint::Connection.fake_ack }
+    it { is_expected.to eq true }
   end
 end

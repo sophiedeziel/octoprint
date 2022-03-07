@@ -13,11 +13,23 @@ module Octoprint
 
       # Gets a single resource and instanciates the object.
       #
-      # @param [Octoprint::Client] client      the API client to use
       # @return [BaseResource]
-      def get(client: Octoprint.client)
-        response = client.request(@path, http_method: :get)
+      def fetch_resource
+        response = Octoprint.client.request(@path, http_method: :get)
         deserialize(response)
+      end
+
+      # Sends a POST request to the resource's endpoint.
+      #
+      # @param [String] path      the path of the post request
+      # @param [Hash] params      parameters to the request
+      # @return [BaseResource]
+      def post(path: @path, params: {})
+        Octoprint.client.request(
+          path,
+          http_method: :post,
+          body: params.to_json
+        )
       end
 
       # Instanciates an object from a hash. Can be overriden by child classes

@@ -26,7 +26,6 @@ module Octoprint
 
     # Retrieve information regarding server status.
     #
-    # @option options [Octoprint::Client] :client the API client to use
     # @return [ServerInformation]
     #
     # @example
@@ -35,8 +34,8 @@ module Octoprint
     #           server = Octoprint::ServerInformation.get(client: client)
     #           server.version= #=> "1.7.3"
     #           server.safemode #=> "incomplete_startup"
-    def get(options = {})
-      super(options: options)
+    def self.get
+      fetch_resource
     end
   end
 end
