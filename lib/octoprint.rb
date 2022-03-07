@@ -30,10 +30,14 @@ module Octoprint
       true
     end
 
+    # The API client used for the requests
+    # @returns [Client]
     def client
       Thread.current[:client]
     end
 
+    # Sets the API client used for the requests
+    # @param [Client] client
     def client=(client)
       Thread.current[:client] = client
     end
