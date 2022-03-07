@@ -46,6 +46,7 @@ module Octoprint
       config_client = Octoprint.client
       Octoprint.client = self
       yield
+    ensure
       Octoprint.client = config_client
       self
     end

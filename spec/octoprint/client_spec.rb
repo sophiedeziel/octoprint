@@ -47,11 +47,25 @@ RSpec.describe Octoprint::Client do
     end
 
     it "sets back the configured client after the block" do
-      expect(Octoprint.client.host).to eq "http://192.168.0.1"
       client.use do
         # Do some operations
       end
       expect(Octoprint.client.host).to eq "http://192.168.0.1"
+    end
+
+    it "sets back the configured client after the block after exceptions" do
+      expect do
+        client.use { raise StandardError }
+      end.to raise_error StandardError
+      expect(Octoprint.client.host).to eq "http://192.168.0.1"
+    end
+
+    it "has config that is not shared with threads" do
+      client_in_thread = nil
+      Thread.new do
+        client_in_thread = Octoprint.client
+      end.join
+      expect(client_in_thread).to be_nil
     end
   end
 end
