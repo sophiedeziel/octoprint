@@ -11,7 +11,7 @@ RSpec.describe Octoprint::ServerVersion do
     its(:text)   { is_expected.to eq "OctoPrint 1.7.3" }
   end
 
-  describe ".get", vcr: { cassette_name: "version" } do
+  describe ".get", vcr: { cassette_name: "server_version/get" } do
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
