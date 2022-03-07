@@ -40,6 +40,16 @@ module Octoprint
         .deep_transform_keys { |key| key.underscore.to_sym }
     end
 
+    # Every request inside the block will be executed as this client without affecting the gem's initial configuration
+    # @return [Client]
+    def use
+      config_client = Octoprint.client
+      Octoprint.client = self
+      yield
+      Octoprint.client = config_client
+      self
+    end
+
     private
 
     def process_error(code)
