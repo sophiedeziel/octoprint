@@ -57,8 +57,8 @@ end
 #### Example 2: Manage multiplie printers in a ruby script
 
 ```Ruby
-ender3 = Octoprint.client.new(host: 'http://192.168.0.145', api_key: 'asdf')
-cr10   = Octoprint.client.new(host: 'http://192.168.0.167', api_key: 'ghjk')
+ender3 = Octoprint::Client.new(host: 'http://192.168.0.145', api_key: 'asdf')
+cr10   = Octoprint::Client.new(host: 'http://192.168.0.167', api_key: 'ghjk')
 
 files = []
 
