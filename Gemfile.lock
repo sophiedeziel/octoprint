@@ -81,9 +81,11 @@ GEM
     webrick (1.7.0)
     yard (0.9.27)
       webrick (~> 1.7.0)
+    zeitwerk (2.5.4)
 
 PLATFORMS
   x86_64-darwin-20
+  x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
@@ -96,6 +98,7 @@ DEPENDENCIES
   vcr
   webmock
   yard
+  zeitwerk (~> 2.5)
 
 BUNDLED WITH
    2.2.29
