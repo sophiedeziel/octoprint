@@ -14,8 +14,9 @@ module Octoprint
       # Gets a single resource and instanciates the object.
       #
       # @return [BaseResource]
-      def fetch_resource
-        response = Octoprint.client.request(@path, http_method: :get)
+      def fetch_resource(path = nil)
+        path = [@path, path].compact.join("/")
+        response = Octoprint.client.request(path, http_method: :get)
         deserialize(response)
       end
 
