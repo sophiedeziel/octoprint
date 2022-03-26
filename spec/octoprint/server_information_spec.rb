@@ -11,9 +11,7 @@ RSpec.describe Octoprint::ServerInformation do
   end
 
   describe ".get", vcr: { cassette_name: "server_information/get" } do
-    before do
-      Octoprint.configure(host: host, api_key: api_key)
-    end
+    use_octoprint_server
 
     subject { Octoprint::ServerInformation.get }
 
