@@ -31,7 +31,7 @@ RSpec.describe Octoprint::Connection do
   end
 
   describe "The connection object" do
-    subject { Octoprint::Job.new(**connection_params) }
+    subject { Octoprint::Job.new(**job_params) }
 
     its(:information) { is_expected.to be_a Octoprint::Job::Information }
     its(:progress)    { is_expected.to be_a Octoprint::Job::Progress }
