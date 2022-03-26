@@ -57,7 +57,7 @@ module Octoprint
     #
     # @return [True]
     def self.connect(params = {})
-      params.merge({ command: "connect" })
+      params[:command] = "connect"
       post(params: params)
     end
 
