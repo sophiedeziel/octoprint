@@ -56,7 +56,8 @@ RSpec.describe Octoprint::Connection do
       subject { Octoprint::Job.get.information }
       its(:file) do
         is_expected.to eq({ date: 1_648_233_209, display: "fidget_star_standing_15_48 (1).gcode",
-                            name: "fidget_star_standing_15_48 (1).gcode", origin: "local", path: "fidget_star_standing_15_48 (1).gcode", size: 33_624_386 })
+                            name: "fidget_star_standing_15_48 (1).gcode", origin: "local",
+                            path: "fidget_star_standing_15_48 (1).gcode", size: 33_624_386 })
       end
       its(:estimated_print_time) { is_expected.to eq 20_450.349227480252 }
       its(:last_print_time)      { is_expected.to eq 31_100.379534339067 }
