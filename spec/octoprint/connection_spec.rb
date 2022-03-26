@@ -42,7 +42,7 @@ RSpec.describe Octoprint::Connection do
     its(:options) { is_expected.to be_a Octoprint::Connection::Options }
   end
 
-  describe "#disconnect", :skip, vcr: { cassette_name: "connection/disconnect" } do
+  describe "#disconnect", vcr: { cassette_name: "connection/disconnect" } do
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
@@ -51,7 +51,7 @@ RSpec.describe Octoprint::Connection do
     it { is_expected.to eq true }
   end
 
-  describe "#connect", :skip, vcr: { cassette_name: "connection/connect" } do
+  describe "#connect", vcr: { cassette_name: "connection/connect" } do
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
@@ -60,7 +60,7 @@ RSpec.describe Octoprint::Connection do
     it { is_expected.to eq true }
   end
 
-  describe "#fake_ack", :skip, vcr: { cassette_name: "connection/fake_ack" } do
+  describe "#fake_ack", vcr: { cassette_name: "connection/fake_ack" } do
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
