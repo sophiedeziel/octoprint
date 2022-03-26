@@ -1,0 +1,47 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/job"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.2.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: '{"job":{"averagePrintTime":31100.379534339067,"estimatedPrintTime":20450.349227480252,"filament":{"tool0":{"length":7970.985739999992,"volume":0.0}},"file":{"date":1648233209,"display":"fidget_star_standing_15_48
+        (1).gcode","name":"fidget_star_standing_15_48 (1).gcode","origin":"local","path":"fidget_star_standing_15_48
+        (1).gcode","size":33624386},"lastPrintTime":31100.379534339067,"user":"sophie"},"progress":{"completion":0.0006334688163525127,"filepos":213,"printTime":1,"printTimeLeft":31099,"printTimeLeftOrigin":"average"},"state":"Printing"}
+
+        '
+  recorded_at: Sat, 26 Mar 2022 03:58:25 GMT
+recorded_with: VCR 6.0.0
