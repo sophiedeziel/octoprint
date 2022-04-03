@@ -4,6 +4,7 @@ require "octoprint"
 require "vcr"
 require "rspec/its"
 require "pry"
+require "dotenv/load"
 
 wip_count = 0
 RSpec.configure do |config|
@@ -44,4 +45,10 @@ VCR.configure do |config|
 
   config.filter_sensitive_data("<HOST>")    { octoprint_host }
   config.filter_sensitive_data("<API_KEY>") { octoprint_api_key }
+end
+
+def use_octoprint_server
+  before do
+    Octoprint.configure(host: host, api_key: api_key)
+  end
 end

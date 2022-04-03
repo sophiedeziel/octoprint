@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.2.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '934'
+      Etag:
+      - '"1ac6ae383f32604d51c99b073bd1a5c1e4b81663"'
+      Last-Modified:
+      - Sat, 26 Mar 2022 20:37:09 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: '{"files":[{"children":[],"display":"big","name":"big","origin":"local","path":"big","refs":{"resource":"<HOST>/api/files/local/big"},"size":7348168,"type":"folder","typePath":["folder"]},{"date":1648299064,"display":"CE3PRO_3DBenchy.gcode","gcodeAnalysis":{"dimensions":{"depth":180.0,"height":48.0,"width":139.699},"estimatedPrintTime":5062.410134640446,"filament":{"tool0":{"length":3808.8672099999953,"volume":0.0}},"printingArea":{"maxX":139.799,"maxY":200.0,"maxZ":48.0,"minX":0.1,"minY":20.0,"minZ":0.0}},"hash":"f4235f5c196719daa58904a88c63366b34f6a3b9","name":"CE3PRO_3DBenchy.gcode","origin":"local","path":"CE3PRO_3DBenchy.gcode","refs":{"download":"<HOST>/downloads/files/local/CE3PRO_3DBenchy.gcode","resource":"<HOST>/api/files/local/CE3PRO_3DBenchy.gcode"},"size":3666915,"type":"machinecode","typePath":["machinecode","gcode"]}],"free":198065270784,"total":250685575168}
+
+        '
+  recorded_at: Sat, 26 Mar 2022 20:49:39 GMT
+recorded_with: VCR 6.0.0
