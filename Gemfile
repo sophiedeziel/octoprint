@@ -8,3 +8,5 @@ gemspec
 gem "rake", "~> 13.0"
 
 gem "zeitwerk", "~> 2.5"
+
+gem "dotenv", "~> 2.7"
