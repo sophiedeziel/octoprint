@@ -33,8 +33,11 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport"
   spec.add_dependency "faraday", "~> 2.2.0"
+  spec.add_dependency "zeitwerk", "~> 2.5"
 
+  spec.add_development_dependency "dotenv", "~> 2.7"
   spec.add_development_dependency "pry"
+  spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec-its"
   spec.add_development_dependency "rubocop", "~> 1.21"
