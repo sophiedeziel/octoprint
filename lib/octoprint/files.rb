@@ -35,5 +35,7 @@ module Octoprint
 
       post(path: [@path, location].compact.join("/"), params: params, headers: headers)
     end
+
+    def self.create_folder(foldername:); end
   end
 end
