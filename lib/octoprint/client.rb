@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "faraday"
+require "faraday/multipart"
 
 module Octoprint
   # The API client object.
@@ -28,8 +29,8 @@ module Octoprint
     # @param [Symbol|String] http_method  the http method of the request
     # @param [Hash] body                  the body of the request
     # @return [Hash]
-    def request(path, http_method: :get, body: {})
-      response = client.public_send(http_method, path, body)
+    def request(path, http_method: :get, body: nil, headers: {})
+      response = request_with_client(http_method, path, body, headers)
 
       return true if response.status == 204 # No content
 
@@ -60,6 +61,18 @@ module Octoprint
       }
 
       raise errors[code]
+    end
+
+    def request_with_client(http_method, path, body, headers)
+      if body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
+        file_client = Faraday.new(host) do |client|
+          client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
+          client.request :multipart
+        end
+        file_client.public_send(http_method, path, body, headers)
+      else
+        client.public_send(http_method, path, body&.to_json, headers)
+      end
     end
   end
 end

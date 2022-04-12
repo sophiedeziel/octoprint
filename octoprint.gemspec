@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport"
   spec.add_dependency "faraday", "~> 2.2.0"
+  spec.add_dependency "faraday-multipart", "~> 1.0.3"
   spec.add_dependency "zeitwerk", "~> 2.5"
 
   spec.add_development_dependency "dotenv", "~> 2.7"
