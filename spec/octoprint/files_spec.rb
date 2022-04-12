@@ -32,4 +32,14 @@ RSpec.describe Octoprint::Files do
     its(:free) { is_expected.to be_nil }
     its(:total) { is_expected.to be_nil }
   end
+
+  describe "Upload a file", vcr: { cassette_name: "files/upload" } do
+    use_octoprint_server
+
+    subject { Octoprint::Files.upload("spec/files/test_file.gcode", location: :local) }
+
+    it { is_expected.to be_a Hash }
+    its(:keys) { are_expected.to eq %i[done files] }
+    its([:done]) { is_expected.to eq true }
+  end
 end
