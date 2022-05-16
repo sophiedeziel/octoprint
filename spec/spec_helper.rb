@@ -29,8 +29,8 @@ RSpec.configure do |config|
   end
 end
 
-octoprint_host    = ENV["OCTOPRINT_HOST"]    || "http://octoprint.local"
-octoprint_api_key = ENV["OCTOPRINT_API_KEY"] || "fake_api_key"
+octoprint_host    = ENV.fetch("OCTOPRINT_HOST", "http://octoprint.local")
+octoprint_api_key = ENV.fetch("OCTOPRINT_API_KEY", "fake_api_key")
 
 RSpec.shared_context "Octoprint config" do
   let(:host)    { octoprint_host }
