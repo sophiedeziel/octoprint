@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 3.0.0
+  TargetRubyVersion: 3.0
   NewCops: enable
 
 Style/StringLiterals:
@@ -13,5 +13,4 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
-Metrics/BlockLength:
-  IgnoredMethods: ['describe', 'context']
+require: rubocop-rspec
