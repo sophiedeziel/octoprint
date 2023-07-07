@@ -11,13 +11,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+
+##
+# Ruby 3.3
+# status: preview
+# release date:
+# normal maintenance until: TBD
+# EOL: TBD
+
+# Ruby 3.2
+# status: normal maintenance
+# release date: 2022-12-25
+# normal maintenance until: TBD
+# EOL: 2026-03-31 (expected)
+
+# Ruby 3.1
+# status: normal maintenance
+# release date: 2021-12-25
+# normal maintenance until: TBD
+# EOL: 2025-03-31 (expected)
+
+# Ruby 3.0
+# status: security maintenance
+# release date: 2020-12-25
+# normal maintenance until: 2023-04-01
+# EOL: 2024-03-31 (expected)
+
+
     strategy:
       matrix:
         ruby:
+          - 3.0.4
           - 3.0.5
           - 3.1.4
           - 3.2.2
-          # - 3.3.0-preview1
+          - 3.3.0-preview1
 
     steps:
     - uses: actions/checkout@v3
