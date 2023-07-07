@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Octoprint::Connection do
-  include_context "Octoprint config"
+  include_context "with default Octoprint config"
 
   let(:connection_params) do
     {
@@ -24,48 +24,51 @@ RSpec.describe Octoprint::Connection do
   end
 
   describe "The connection object" do
-    subject { Octoprint::Connection.new(**connection_params) }
+    subject { described_class.new(**connection_params) }
 
     its(:current) { is_expected.to be_a Octoprint::Connection::Settings }
     its(:options) { is_expected.to be_a Octoprint::Connection::Options }
   end
 
   describe ".get", vcr: { cassette_name: "connection/get" } do
+    subject { described_class.get }
+
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
 
-    subject { Octoprint::Connection.get }
-
-    it { is_expected.to be_a Octoprint::Connection }
+    it { is_expected.to be_a described_class }
     its(:current) { is_expected.to be_a Octoprint::Connection::Settings }
     its(:options) { is_expected.to be_a Octoprint::Connection::Options }
   end
 
   describe "#disconnect", vcr: { cassette_name: "connection/disconnect" } do
+    subject { described_class.disconnect }
+
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
 
-    subject { Octoprint::Connection.disconnect }
-    it { is_expected.to eq true }
+    it { is_expected.to be true }
   end
 
   describe "#connect", vcr: { cassette_name: "connection/connect" } do
+    subject { described_class.connect }
+
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
 
-    subject { Octoprint::Connection.connect }
-    it { is_expected.to eq true }
+    it { is_expected.to be true }
   end
 
   describe "#fake_ack", vcr: { cassette_name: "connection/fake_ack" } do
+    subject { described_class.fake_ack }
+
     before do
       Octoprint.configure(host: host, api_key: api_key)
     end
 
-    subject { Octoprint::Connection.fake_ack }
-    it { is_expected.to eq true }
+    it { is_expected.to be true }
   end
 end

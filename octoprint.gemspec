@@ -36,16 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "faraday-multipart", "~> 1.0.3"
   spec.add_dependency "zeitwerk", "~> 2.5"
 
-  spec.add_development_dependency "dotenv", "~> 2.7"
-  spec.add_development_dependency "pry"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "rspec-its"
-  spec.add_development_dependency "rubocop", "~> 1.21"
-  spec.add_development_dependency "vcr"
-  spec.add_development_dependency "webmock"
-  spec.add_development_dependency "yard"
-
   # For more information and examples about making a new gem, checkout our
   # guide at: https://bundler.io/guides/creating_gem.html
   spec.metadata["rubygems_mfa_required"] = "true"
