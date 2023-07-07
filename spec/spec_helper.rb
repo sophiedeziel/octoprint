@@ -32,7 +32,7 @@ end
 octoprint_host    = ENV.fetch("OCTOPRINT_HOST", "http://octoprint.local")
 octoprint_api_key = ENV.fetch("OCTOPRINT_API_KEY", "fake_api_key")
 
-RSpec.shared_context "Octoprint config" do
+RSpec.shared_context "with default Octoprint config" do
   let(:host)    { octoprint_host }
   let(:api_key) { octoprint_api_key }
 end
