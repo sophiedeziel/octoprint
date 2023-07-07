@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require "octoprint"
@@ -5,6 +6,7 @@ require "vcr"
 require "rspec/its"
 require "pry"
 require "dotenv/load"
+require "rspec/sorbet"
 
 wip_count = 0
 RSpec.configure do |config|

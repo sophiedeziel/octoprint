@@ -1,0 +1,5 @@
+--dir
+.
+--enable-experimental-requires-ancestor
+--ignore=/tmp/
+--ignore=/vendor/bundle
