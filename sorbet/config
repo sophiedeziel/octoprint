@@ -3,3 +3,4 @@
 --enable-experimental-requires-ancestor
 --ignore=/tmp/
 --ignore=/vendor/bundle
+--ignore=/spec/

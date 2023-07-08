@@ -39,8 +39,8 @@ module Octoprint
       #
       # @param [Hash] attrs      the object's attributes
       # @return [BaseResource]
-      def deserialize(attrs)
-        new(**attrs)
+      def deserialize(_attrs)
+        new
       end
     end
   end
