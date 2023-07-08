@@ -19,6 +19,9 @@ jobs:
         with:
           bundler-cache: true
 
+    - name: Run Sorbet
+      run: bundle exec srb tc
+
   rubocop:
     runs-on: ubuntu-latest
 
