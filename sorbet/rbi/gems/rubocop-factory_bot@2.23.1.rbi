@@ -13,6 +13,38 @@ module RuboCop::Cop; end
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/mixin/configurable_explicit_only.rb#5
 module RuboCop::Cop::FactoryBot; end
 
+# Use a consistent style to define associations.
+#
+# @example EnforcedStyle: implicit (default)
+#   # bad
+#   factory :post do
+#   association :user
+#   end
+#
+#   # good
+#   factory :post do
+#   user
+#   end
+# @example EnforcedStyle: explicit
+#   # bad
+#   factory :post do
+#   user
+#   end
+#
+#   # good
+#   factory :post do
+#   association :user
+#   end
+#
+#   # good (NonImplicitAssociationMethodNames: ['email'])
+#   sequence :email do |n|
+#   "person#{n}@example.com"
+#   end
+#
+#   factory :user do
+#   email
+#   end
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#43
 class RuboCop::Cop::FactoryBot::AssociationStyle < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -44,6 +76,8 @@ class RuboCop::Cop::FactoryBot::AssociationStyle < ::RuboCop::Cop::Base
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#122
   def autocorrect_to_implicit_style(corrector, node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#132
   def bad?(node); end
 
@@ -56,6 +90,8 @@ class RuboCop::Cop::FactoryBot::AssociationStyle < ::RuboCop::Cop::Base
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#158
   def factory_names_from_explicit(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#168
   def non_implicit_association_method_name?(method_name); end
 
@@ -75,6 +111,27 @@ RuboCop::Cop::FactoryBot::AssociationStyle::DEFAULT_NON_IMPLICIT_ASSOCIATION_MET
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/association_style.rb#55
 RuboCop::Cop::FactoryBot::AssociationStyle::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+# Always declare attribute values as blocks.
+#
+# @example
+#   # bad
+#   kind [:active, :rejected].sample
+#
+#   # good
+#   kind { [:active, :rejected].sample }
+#
+#   # bad
+#   closed_at 1.day.from_now
+#
+#   # good
+#   closed_at { 1.day.from_now }
+#
+#   # bad
+#   count 1
+#
+#   # good
+#   count { 1 }
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#27
 class RuboCop::Cop::FactoryBot::AttributeDefinedStatically < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -93,6 +150,8 @@ class RuboCop::Cop::FactoryBot::AttributeDefinedStatically < ::RuboCop::Cop::Bas
 
   private
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#119
   def attribute_defining_method?(method_name); end
 
@@ -108,18 +167,28 @@ class RuboCop::Cop::FactoryBot::AttributeDefinedStatically < ::RuboCop::Cop::Bas
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#103
   def braces(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#66
   def offensive_receiver?(receiver, node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#80
   def proc?(attribute); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#72
   def receiver_matches_first_block_argument?(receiver, node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#115
   def reserved_method?(method_name); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#111
   def value_hash_without_braces?(node); end
 end
@@ -127,17 +196,74 @@ end
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/attribute_defined_statically.rb#30
 RuboCop::Cop::FactoryBot::AttributeDefinedStatically::MSG = T.let(T.unsafe(nil), String)
 
+# Handles `ExplicitOnly` configuration parameters.
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/mixin/configurable_explicit_only.rb#7
 module RuboCop::Cop::FactoryBot::ConfigurableExplicitOnly
   include ::RuboCop::FactoryBot::Language
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/mixin/configurable_explicit_only.rb#16
   def explicit_only?; end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/mixin/configurable_explicit_only.rb#10
   def factory_call?(node); end
 end
 
+# Use a consistent style for parentheses in factory_bot calls.
+#
+# @example `EnforcedStyle: require_parentheses` (default)
+#
+#   # bad
+#   create :user
+#   build :login
+#
+#   # good
+#   create(:user)
+#   build(:login)
+# @example `EnforcedStyle: omit_parentheses`
+#
+#   # bad
+#   create(:user)
+#   build(:login)
+#
+#   # good
+#   create :user
+#   build :login
+#
+#   # also good
+#   # when method name and first argument are not on same line
+#   create(
+#   :user
+#   )
+#   build(
+#   :user,
+#   name: 'foo'
+#   )
+# @example `ExplicitOnly: false` (default)
+#
+#   # bad - with `EnforcedStyle: require_parentheses`
+#   FactoryBot.create :user
+#   build :user
+#
+#   # good - with `EnforcedStyle: require_parentheses`
+#   FactoryBot.create(:user)
+#   build(:user)
+# @example `ExplicitOnly: true`
+#
+#   # bad - with `EnforcedStyle: require_parentheses`
+#   FactoryBot.create :user
+#   FactoryBot.build :user
+#
+#   # good - with `EnforcedStyle: require_parentheses`
+#   FactoryBot.create(:user)
+#   FactoryBot.build(:user)
+#   create :user
+#   build :user
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/consistent_parentheses_style.rb#60
 class RuboCop::Cop::FactoryBot::ConsistentParenthesesStyle < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -153,6 +279,8 @@ class RuboCop::Cop::FactoryBot::ConsistentParenthesesStyle < ::RuboCop::Cop::Bas
 
   private
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/consistent_parentheses_style.rb#118
   def ambiguous_without_parentheses?(node); end
 
@@ -189,6 +317,54 @@ RuboCop::Cop::FactoryBot::ConsistentParenthesesStyle::MSG_REQUIRE_PARENS = T.let
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/consistent_parentheses_style.rb#68
 RuboCop::Cop::FactoryBot::ConsistentParenthesesStyle::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
+# Checks for create_list usage.
+#
+# This cop can be configured using the `EnforcedStyle` option
+#
+# @example `EnforcedStyle: create_list` (default)
+#   # bad
+#   3.times { create :user }
+#   3.times.map { create :user }
+#   [create(:user), create(:user), create(:user)]
+#   Array.new(3) { create :user }
+#
+#   # good
+#   create_list :user, 3
+#
+#   # bad
+#   3.times { create :user, age: 18 }
+#
+#   # good - index is used to alter the created models attributes
+#   3.times { |n| create :user, age: n }
+#
+#   # good - contains a method call, may return different values
+#   3.times { create :user, age: rand }
+# @example `EnforcedStyle: n_times`
+#   # bad
+#   create_list :user, 3
+#   [create(:user), create(:user), create(:user)]
+#
+#   # good
+#   3.times.map { create :user }
+# @example `ExplicitOnly: false` (default)
+#
+#   # bad - with `EnforcedStyle: create_list`
+#   3.times { FactoryBot.create :user }
+#   3.times { create :user }
+#
+#   # good - with `EnforcedStyle: create_list`
+#   FactoryBot.create_list :user, 3
+#   create_list :user, 3
+# @example `ExplicitOnly: true`
+#
+#   # bad - with `EnforcedStyle: create_list`
+#   3.times { FactoryBot.create :user }
+#
+#   # good - with `EnforcedStyle: create_list`
+#   FactoryBot.create_list :user, 3
+#   create_list :user, 3
+#   3.times { create :user }
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#61
 class RuboCop::Cop::FactoryBot::CreateList < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -234,19 +410,29 @@ class RuboCop::Cop::FactoryBot::CreateList < ::RuboCop::Cop::Base
 
   private
 
+  # For ease of modification, it is replaced with the `n_times` style,
+  # but if it is not appropriate for the configured style,
+  # it will be replaced in the subsequent autocorrection.
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#161
   def autocorrect_same_factory_calls_in_array(corrector, node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#172
   def contains_only_factory?(node); end
 
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#180
   def preferred_message_for_array(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#189
   def same_factory_calls_in_array?(node); end
 end
 
+# :nodoc
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#195
 module RuboCop::Cop::FactoryBot::CreateList::Corrector
   private
@@ -265,6 +451,8 @@ end
 class RuboCop::Cop::FactoryBot::CreateList::CreateListCorrector
   include ::RuboCop::Cop::FactoryBot::CreateList::Corrector
 
+  # @return [CreateListCorrector] a new instance of CreateListCorrector
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#258
   def initialize(node); end
 
@@ -294,6 +482,8 @@ class RuboCop::Cop::FactoryBot::CreateList::CreateListCorrector
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#336
   def format_singleline_block(node); end
 
+  # Returns the value of attribute node.
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#274
   def node; end
 end
@@ -307,10 +497,14 @@ RuboCop::Cop::FactoryBot::CreateList::MSG_N_TIMES = T.let(T.unsafe(nil), String)
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#69
 RuboCop::Cop::FactoryBot::CreateList::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+# :nodoc
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#218
 class RuboCop::Cop::FactoryBot::CreateList::TimesCorrector
   include ::RuboCop::Cop::FactoryBot::CreateList::Corrector
 
+  # @return [TimesCorrector] a new instance of TimesCorrector
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#221
   def initialize(node); end
 
@@ -325,10 +519,35 @@ class RuboCop::Cop::FactoryBot::CreateList::TimesCorrector
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#234
   def generate_n_times_block(node); end
 
+  # Returns the value of attribute node.
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/create_list.rb#232
   def node; end
 end
 
+# Use definition in factory association instead of hard coding a strategy.
+#
+# @example
+#   # bad - only works for one strategy
+#   factory :foo do
+#   profile { create(:profile) }
+#   end
+#
+#   # good - implicit
+#   factory :foo do
+#   profile
+#   end
+#
+#   # good - explicit
+#   factory :foo do
+#   association :profile
+#   end
+#
+#   # good - inline
+#   factory :foo do
+#   profile { association :profile }
+#   end
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_association_with_strategy.rb#29
 class RuboCop::Cop::FactoryBot::FactoryAssociationWithStrategy < ::RuboCop::Cop::Base
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_association_with_strategy.rb#36
@@ -347,6 +566,22 @@ RuboCop::Cop::FactoryBot::FactoryAssociationWithStrategy::HARDCODED = T.let(T.un
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_association_with_strategy.rb#30
 RuboCop::Cop::FactoryBot::FactoryAssociationWithStrategy::MSG = T.let(T.unsafe(nil), String)
 
+# Use string value when setting the class attribute explicitly.
+#
+# This cop would promote faster tests by lazy-loading of
+# application files. Also, this could help you suppress potential bugs
+# in combination with external libraries by avoiding a preload of
+# application files from the factory files.
+#
+# @example
+#   # bad
+#   factory :foo, class: Foo do
+#   end
+#
+#   # good
+#   factory :foo, class: 'Foo' do
+#   end
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_class_name.rb#22
 class RuboCop::Cop::FactoryBot::FactoryClassName < ::RuboCop::Cop::Base
   extend ::RuboCop::Cop::AutoCorrector
@@ -359,6 +594,8 @@ class RuboCop::Cop::FactoryBot::FactoryClassName < ::RuboCop::Cop::Base
 
   private
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_class_name.rb#48
   def allowed?(const_name); end
 end
@@ -372,6 +609,45 @@ RuboCop::Cop::FactoryBot::FactoryClassName::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_class_name.rb#28
 RuboCop::Cop::FactoryBot::FactoryClassName::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+# Checks for name style for argument of FactoryBot::Syntax::Methods.
+#
+# @example EnforcedStyle: symbol (default)
+#   # bad
+#   create('user')
+#   build "user", username: "NAME"
+#
+#   # good
+#   create(:user)
+#   build :user, username: "NAME"
+# @example EnforcedStyle: string
+#   # bad
+#   create(:user)
+#   build :user, username: "NAME"
+#
+#   # good
+#   create('user')
+#   build "user", username: "NAME"
+# @example `ExplicitOnly: false` (default)
+#
+#   # bad - with `EnforcedStyle: symbol`
+#   FactoryBot.create('user')
+#   create('user')
+#
+#   # good - with `EnforcedStyle: symbol`
+#   FactoryBot.create(:user)
+#   create(:user)
+# @example `ExplicitOnly: true`
+#
+#   # bad - with `EnforcedStyle: symbol`
+#   FactoryBot.create(:user)
+#   FactoryBot.build "user", username: "NAME"
+#
+#   # good - with `EnforcedStyle: symbol`
+#   FactoryBot.create('user')
+#   FactoryBot.build "user", username: "NAME"
+#   FactoryBot.create(:user)
+#   create(:user)
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_name_style.rb#48
 class RuboCop::Cop::FactoryBot::FactoryNameStyle < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::ConfigurableEnforcedStyle
@@ -387,9 +663,13 @@ class RuboCop::Cop::FactoryBot::FactoryNameStyle < ::RuboCop::Cop::Base
 
   private
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_name_style.rb#82
   def offense_for_string_style?(name); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_name_style.rb#78
   def offense_for_symbol_style?(name); end
 
@@ -406,6 +686,15 @@ RuboCop::Cop::FactoryBot::FactoryNameStyle::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/factory_name_style.rb#56
 RuboCop::Cop::FactoryBot::FactoryNameStyle::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
+# Checks for redundant `factory` option.
+#
+# @example
+#   # bad
+#   association :user, factory: :user
+#
+#   # good
+#   association :user
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/redundant_factory_option.rb#14
 class RuboCop::Cop::FactoryBot::RedundantFactoryOption < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -429,6 +718,19 @@ RuboCop::Cop::FactoryBot::RedundantFactoryOption::MSG = T.let(T.unsafe(nil), Str
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/redundant_factory_option.rb#21
 RuboCop::Cop::FactoryBot::RedundantFactoryOption::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
+# Use shorthands from `FactoryBot::Syntax::Methods` in your specs.
+#
+# @example
+#   # bad
+#   FactoryBot.create(:bar)
+#   FactoryBot.build(:bar)
+#   FactoryBot.attributes_for(:bar)
+#
+#   # good
+#   create(:bar)
+#   build(:bar)
+#   attributes_for(:bar)
+#
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#48
 class RuboCop::Cop::FactoryBot::SyntaxMethods < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
@@ -446,12 +748,18 @@ class RuboCop::Cop::FactoryBot::SyntaxMethods < ::RuboCop::Cop::Base
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#87
   def crime_scene(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#109
   def example_group_root?(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#113
   def example_group_root_with_siblings?(node); end
 
+  # @return [Boolean]
+  #
   # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#101
   def inside_example_group?(node); end
 
@@ -465,6 +773,8 @@ RuboCop::Cop::FactoryBot::SyntaxMethods::MSG = T.let(T.unsafe(nil), String)
 # source://rubocop-factory_bot//lib/rubocop/cop/factory_bot/syntax_methods.rb#55
 RuboCop::Cop::FactoryBot::SyntaxMethods::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Set)
 
+# RuboCop factory_bot project namespace
+#
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/factory_bot.rb#5
 module RuboCop::FactoryBot
   class << self
@@ -482,6 +792,8 @@ RuboCop::FactoryBot::ATTRIBUTE_DEFINING_METHODS = T.let(T.unsafe(nil), Array)
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/factory_bot.rb#29
 RuboCop::FactoryBot::DEFINITION_PROXY_METHODS = T.let(T.unsafe(nil), Array)
 
+# Contains node matchers for common factory_bot DSL.
+#
 # source://rubocop-factory_bot//lib/rubocop/factory_bot/language.rb#6
 module RuboCop::FactoryBot::Language
   extend ::RuboCop::AST::NodePattern::Macros

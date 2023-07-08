@@ -87,6 +87,8 @@ end
 
 # source://faraday-net_http//lib/faraday/adapter/net_http.rb#14
 class Faraday::Adapter::NetHttp < ::Faraday::Adapter
+  # @return [NetHttp] a new instance of NetHttp
+  #
   # source://faraday-net_http//lib/faraday/adapter/net_http.rb#38
   def initialize(app = T.unsafe(nil), opts = T.unsafe(nil), &block); end
 
@@ -128,6 +130,8 @@ class Faraday::Adapter::NetHttp < ::Faraday::Adapter
   # source://faraday-net_http//lib/faraday/adapter/net_http.rb#181
   def ssl_verify_mode(ssl); end
 
+  # @return [Boolean]
+  #
   # source://faraday-net_http//lib/faraday/adapter/net_http.rb#203
   def verify_hostname_enabled?(http, ssl); end
 end
