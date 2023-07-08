@@ -1,16 +1,14 @@
-name: Ruby
+name: Tests
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [ 'main' ]
   pull_request:
+    branches: [ 'main' ]
 
 jobs:
-  build:
+  RSpec:
     runs-on: ubuntu-latest
-
 
 ##
 # Ruby 3.3
@@ -59,13 +57,20 @@ jobs:
           - 3.3.0-preview1
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Ruby and gems
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
+
     - name: Run the default task
       run: bundle exec rake
+
     - name: Run Sorbet
       run: bundle exec srb tc
+
+    - name: Run Rubocop
+      run: bundle exec rubocop

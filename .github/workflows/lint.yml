@@ -1,0 +1,35 @@
+name: Linter and Type Checker
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+
+jobs:
+  sorbet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+        uses: actions/checkout@v3
+
+    - name: Install Ruby and gems
+        uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+        with:
+          bundler-cache: true
+
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+        uses: actions/checkout@v3
+
+    - name: Install Ruby and gems
+        uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+        with:
+          bundler-cache: true
+
+    - name: Run Rubocop
+      run: bundle exec rubocop
