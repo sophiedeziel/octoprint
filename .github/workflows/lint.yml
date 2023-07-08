@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - name: Checkout code
-        uses: actions/checkout@v3
+      uses: actions/checkout@v3
 
     - name: Install Ruby and gems
-        uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
-        with:
-          bundler-cache: true
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+      with:
+        bundler-cache: true
 
     - name: Run Sorbet
       run: bundle exec srb tc
@@ -27,12 +27,12 @@ jobs:
 
     steps:
     - name: Checkout code
-        uses: actions/checkout@v3
+      uses: actions/checkout@v3
 
     - name: Install Ruby and gems
-        uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
-        with:
-          bundler-cache: true
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+      with:
+        bundler-cache: true
 
     - name: Run Rubocop
       run: bundle exec rubocop
