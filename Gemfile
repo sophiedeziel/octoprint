@@ -15,7 +15,7 @@ group :test do
 end
 
 group :development do
-  gem 'sorbet', '0.5.10908'
+  gem "sorbet", "0.5.10908"
 end
 
 group :development, :test do
