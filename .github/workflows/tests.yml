@@ -52,7 +52,12 @@ jobs:
       uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
       with:
         ruby-version: ${{ matrix.ruby }}
+
     - name: Install dependencies
-      run: bundle install --jobs 4 --retry 3 --only test
+      run: |
+        bundle config path vendor/bundle
+        bundle config --local without 'development'
+        bundle install --jobs 4 --retry 3
+
     - name: Run the default task
       run: bundle exec rspec
