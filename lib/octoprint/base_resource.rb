@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 module Octoprint
@@ -42,5 +43,7 @@ module Octoprint
         new(**attrs)
       end
     end
+
+    def initialize(**attrs); end
   end
 end
