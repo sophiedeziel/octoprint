@@ -14,6 +14,10 @@ group :test do
   gem "webmock"
 end
 
+group :development do
+  gem 'sorbet', '0.5.10908'
+end
+
 group :development, :test do
   gem "dotenv", "~> 2.7"
   gem "pry"
@@ -21,7 +25,6 @@ group :development, :test do
   gem "rspec-sorbet"
   gem "rubocop", "~> 1.33"
   gem "rubocop-rspec", "~> 2.22"
-  gem "sorbet"
-  gem "tapioca", require: false
+  gem "tapioca", "~> 0.11.7", require: false
   gem "yard"
 end
