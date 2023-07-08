@@ -17,6 +17,7 @@ jobs:
     - name: Install Ruby and gems
       uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
       with:
+        ruby-version: 3.2.2
         bundler-cache: true
 
     - name: Run Sorbet
@@ -32,6 +33,7 @@ jobs:
     - name: Install Ruby and gems
       uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
       with:
+        ruby-version: 3.2.2
         bundler-cache: true
 
     - name: Run Rubocop
