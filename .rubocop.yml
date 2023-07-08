@@ -1,6 +1,10 @@
 AllCops:
   TargetRubyVersion: 3.0
   NewCops: enable
+  Exclude:
+    - 'sorbet/rbi/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
 
 Style/StringLiterals:
   Enabled: true

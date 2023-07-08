@@ -1,9 +1,10 @@
+# typed: true
 # frozen_string_literal: true
 
 require "active_support/all"
 require "pry"
-
 require "zeitwerk"
+
 loader = Zeitwerk::Loader.for_gem
 loader.setup
 
