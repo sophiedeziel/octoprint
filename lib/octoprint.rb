@@ -14,9 +14,8 @@ loader.setup
 # This gem is still under development.
 # @attr [Octoprint::Client] client      The configured API client
 module Octoprint
-  extend T::Sig
-
   class << self
+    extend T::Sig
     # Configure the API client with the server's address and key
     #
     # @param [String] host      Server's API version
@@ -30,6 +29,7 @@ module Octoprint
 
     # The API client used for the requests
     # @returns [Client]
+    sig { returns(T.nilable(Client)) }
     def client
       Thread.current[:client]
     end
