@@ -40,9 +40,9 @@ module Octoprint
     end
 
     sig do
-      params(foldername: String, location: T.nilable(Symbol), kargs: T.untyped).returns(T::Hash[String, T.untyped])
+      params(foldername: String, location: T.nilable(Location), kargs: T.untyped).returns(T::Hash[String, T.untyped])
     end
-    def self.create_folder(foldername:, location: :local, **kargs)
+    def self.create_folder(foldername:, location: Location::Local, **kargs)
       params = {
         path: kargs[:path],
         file: nil,
@@ -50,7 +50,7 @@ module Octoprint
       }.compact
 
       headers = { "Content-Type" => "multipart/form-data" }
-      post(path: [@path, location].compact.join("/"), params: params, headers: headers,
+      post(path: [@path, location.serialize].compact.join("/"), params: params, headers: headers,
            options: { force_multipart: true })
     end
   end
