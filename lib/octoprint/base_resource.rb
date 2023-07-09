@@ -25,13 +25,15 @@ module Octoprint
       #
       # @param [String] path      the path of the post request
       # @param [Hash] params      parameters to the request
+      # @param [Hash] options     options
       # @return [BaseResource]
-      def post(path: @path, params: {}, headers: {})
+      def post(path: @path, params: {}, headers: {}, options: {})
         Octoprint.client.request(
           path,
           http_method: :post,
           body: params,
-          headers: headers
+          headers: headers,
+          options: options
         )
       end
 

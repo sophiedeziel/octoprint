@@ -43,4 +43,24 @@ RSpec.describe Octoprint::Files do
     its(:keys) { are_expected.to eq %i[done files] }
     its([:done]) { is_expected.to be true }
   end
+
+  describe "Create a folder", vcr: { cassette_name: "files/create_folder" } do
+    use_octoprint_server
+
+    subject { described_class.create_folder(foldername: "test") }
+
+    it { is_expected.to be_a Hash }
+    its(:keys) { are_expected.to eq %i[done folder] }
+    its([:done]) { is_expected.to be true }
+
+    describe "folder" do
+      subject { described_class.create_folder(foldername: "test").fetch(:folder) }
+
+      its(:keys) { are_expected.to eq %i[name origin path refs] }
+      its([:name]) { is_expected.to eq "test" }
+      its([:origin]) { is_expected.to eq "local" }
+      its([:path]) { is_expected.to eq "test" }
+      its([:refs]) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
+    end
+  end
 end

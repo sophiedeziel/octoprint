@@ -9,6 +9,8 @@ module Octoprint
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/master/api/files.html
   class Files < BaseResource
+    extend T::Sig
+
     resource_path("/api/files")
     attr_reader :files, :free, :total
 
@@ -37,6 +39,19 @@ module Octoprint
       post(path: [@path, location].compact.join("/"), params: params, headers: headers)
     end
 
-    def self.create_folder(foldername:); end
+    sig do
+      params(foldername: String, location: T.nilable(Symbol), kargs: T.untyped).returns(T::Hash[String, T.untyped])
+    end
+    def self.create_folder(foldername:, location: :local, **kargs)
+      params = {
+        path: kargs[:path],
+        file: nil,
+        foldername: foldername
+      }.compact
+
+      headers = { "Content-Type" => "multipart/form-data" }
+      post(path: [@path, location].compact.join("/"), params: params, headers: headers,
+           options: { force_multipart: true })
+    end
   end
 end

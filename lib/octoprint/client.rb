@@ -29,9 +29,11 @@ module Octoprint
     # @param [String] path                the path of the request
     # @param [Symbol|String] http_method  the http method of the request
     # @param [Hash] body                  the body of the request
+    # @param [Hash] options               options
     # @return [Hash]
-    def request(path, http_method: :get, body: nil, headers: {})
-      response = request_with_client(http_method, path, body, headers)
+    def request(path, http_method: :get, body: nil, headers: {}, options: {})
+      response = request_with_client(http_method, path, body, headers,
+                                     force_multipart: options.fetch(:force_multipart, false))
 
       return true if response.status == 204 # No content
 
@@ -64,8 +66,8 @@ module Octoprint
       raise errors[code]
     end
 
-    def request_with_client(http_method, path, body, headers)
-      if body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
+    def request_with_client(http_method, path, body, headers, force_multipart: false)
+      if force_multipart || body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
         file_client = Faraday.new(host) do |client|
           client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
           client.request :multipart
