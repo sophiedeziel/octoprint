@@ -57,7 +57,8 @@ module Octoprint
     def process_error(code)
       errors = {
         400 => Exceptions::BadRequest,
-        403 => Exceptions::AuthenticationError
+        403 => Exceptions::AuthenticationError,
+        500 => Exceptions::InternalServerError
       }
 
       raise errors[code]
