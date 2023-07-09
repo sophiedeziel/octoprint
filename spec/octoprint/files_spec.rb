@@ -43,4 +43,45 @@ RSpec.describe Octoprint::Files do
     its(:keys) { are_expected.to eq %i[done files] }
     its([:done]) { is_expected.to be true }
   end
+
+  describe "Create a folder", vcr: { cassette_name: "files/create_folder" } do
+    use_octoprint_server
+    subject { described_class.create_folder(**params) }
+
+    let(:params) { { foldername: "test" } }
+
+    it { is_expected.to be_a Octoprint::Files::OperationResult }
+    its(:done) { is_expected.to be true }
+
+    describe "folder" do
+      subject { described_class.create_folder(**params).folder }
+
+      its(:name) { is_expected.to eq "test" }
+      its(:origin) { is_expected.to eq "local" }
+      its(:path) { is_expected.to eq "test" }
+      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
+    end
+
+    context "with a path", vcr: { cassette_name: "files/create_folder_with_path" } do
+      subject { described_class.create_folder(**params).folder }
+
+      before { described_class.create_folder(foldername: "test") }
+
+      let(:params) { { foldername: "new_folder", path: "/test" } }
+
+      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test/new_folder" }) }
+    end
+
+    context "with an ivalid path", vcr: { cassette_name: "files/create_folder_with_invalid_path" } do
+      subject(:invalid_path) { described_class.create_folder(**params) }
+
+      let(:params) { { foldername: "new_folder", path: "/does_not_exist" } }
+
+      it {
+        expect do
+          invalid_path
+        end.to raise_error(Octoprint::Exceptions::InternalServerError, /No such file or directory/)
+      }
+    end
+  end
 end

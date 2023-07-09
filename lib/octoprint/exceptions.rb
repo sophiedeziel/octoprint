@@ -12,5 +12,7 @@ module Octoprint
     class BadRequest < Error; end
     # Credentials are missing from the configuration. Set them using `Octoprint.configure()`
     class MissingCredentials < Error; end
+    # The server encountered an unexpected condition which prevented it from fulfilling the request
+    class InternalServerError < Error; end
   end
 end

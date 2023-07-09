@@ -1,0 +1,56 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/does_not_exist\r\n-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-753adafc7549268a5e7787911a685fb3
+      User-Agent:
+      - Faraday v2.7.10
+      Content-Length:
+      - '326'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 500
+      message: INTERNAL SERVER ERROR
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '53'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=24
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "[Errno 2] No such file or directory"
+        }
+  recorded_at: Sun, 09 Jul 2023 18:22:13 GMT
+recorded_with: VCR 6.2.0

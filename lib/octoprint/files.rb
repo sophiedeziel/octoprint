@@ -9,6 +9,8 @@ module Octoprint
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/master/api/files.html
   class Files < BaseResource
+    extend T::Sig
+
     resource_path("/api/files")
     attr_reader :files, :free, :total
 
@@ -32,11 +34,41 @@ module Octoprint
         file: Faraday::UploadIO.new(file_path, "application/octet-stream")
       }.compact
 
-      headers = { "Content-Type" => "multipart/form-data" }
-
-      post(path: [@path, location].compact.join("/"), params: params, headers: headers)
+      post(path: [@path, location].compact.join("/"), params: params)
     end
 
-    def self.create_folder(foldername:); end
+    # Creates a folder
+    #
+    # @param [String] foldername      The name of the folder to create
+    # @param [Location] location      The target location to which to upload the file.
+    # @param [String] path            The path to create the folder in, relative to the location.
+    # @param [Hash] kargs             Additional parameters
+    # @return [Files::Folder]
+    #
+    # @example
+    #           folder = Octoprint::Files.create_folder(foldername: "test")
+    #           folder.name #=> "test"
+    #           folder.origin #=> "local"
+    #           folder.path #=> "test"
+    #           folder.refs #=> {resource: "http://localhost:5000/api/files/local/test"}
+    sig do
+      params(
+        foldername: String,
+        location: Location,
+        path: T.nilable(String),
+        _kargs: T::Hash[Symbol, T.untyped]
+      )
+        .returns(OperationResult)
+    end
+    def self.create_folder(foldername:, location: Location::Local, path: nil, **_kargs)
+      params = {
+        path: path,
+        foldername: foldername
+      }.compact
+
+      result = post(path: [@path, location.serialize].compact.join("/"), params: params,
+                    options: { force_multipart: true })
+      OperationResult.new(done: result[:done], folder: Folder.new(**result[:folder]))
+    end
   end
 end
