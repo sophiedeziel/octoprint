@@ -18,10 +18,7 @@ module Octoprint
 
       @host    = host
       @api_key = api_key
-      @client = Faraday.new(host) do |client|
-        client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
-        client.headers["Content-Type"] = "application/json"
-      end
+      @client = new_client
     end
 
     # Instanciates an object from a hash. Can be overriden by child classes
@@ -68,13 +65,18 @@ module Octoprint
 
     def request_with_client(http_method, path, body, headers, force_multipart: false)
       if force_multipart || body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
-        file_client = Faraday.new(host) do |client|
-          client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
-          client.request :multipart
-        end
+        file_client = new_client(multipart: true)
         file_client.public_send(http_method, path, body, headers)
       else
         client.public_send(http_method, path, body&.to_json, headers)
+      end
+    end
+
+    def new_client(multipart: false)
+      Faraday.new(host) do |client|
+        client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
+        client.headers["Content-Type"] = multipart ? "multipart/form-data" : "application/json"
+        client.request :multipart if multipart
       end
     end
   end
