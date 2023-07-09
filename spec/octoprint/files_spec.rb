@@ -77,7 +77,11 @@ RSpec.describe Octoprint::Files do
 
       let(:params) { { foldername: "new_folder", path: "/does_not_exist" } }
 
-      it { expect { invalid_path }.to raise_error Octoprint::Exceptions::InternalServerError }
+      it {
+        expect do
+          invalid_path
+        end.to raise_error(Octoprint::Exceptions::InternalServerError, /No such file or directory/)
+      }
     end
   end
 end
