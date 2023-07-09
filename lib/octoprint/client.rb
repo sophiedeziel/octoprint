@@ -18,10 +18,7 @@ module Octoprint
 
       @host    = host
       @api_key = api_key
-      @client = Faraday.new(host) do |client|
-        client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
-        client.headers["Content-Type"] = "application/json"
-      end
+      @client = new_client
     end
 
     # Instanciates an object from a hash. Can be overriden by child classes
@@ -29,17 +26,17 @@ module Octoprint
     # @param [String] path                the path of the request
     # @param [Symbol|String] http_method  the http method of the request
     # @param [Hash] body                  the body of the request
+    # @param [Hash] options               options
     # @return [Hash]
-    def request(path, http_method: :get, body: nil, headers: {})
-      response = request_with_client(http_method, path, body, headers)
+    def request(path, http_method: :get, body: nil, headers: {}, options: {})
+      response = request_with_client(http_method, path, body, headers,
+                                     force_multipart: options.fetch(:force_multipart, false))
 
       return true if response.status == 204 # No content
 
-      process_error(response.status) if response.status >= 400
+      process_error(response) if response.status >= 400
 
-      JSON
-        .parse(response.body)
-        .deep_transform_keys { |key| key.underscore.to_sym }
+      parse_response(response)
     end
 
     # Every request inside the block will be executed as this client without affecting the gem's initial configuration
@@ -55,24 +52,36 @@ module Octoprint
 
     private
 
-    def process_error(code)
+    def process_error(response)
       errors = {
         400 => Exceptions::BadRequest,
-        403 => Exceptions::AuthenticationError
+        403 => Exceptions::AuthenticationError,
+        500 => Exceptions::InternalServerError
       }
 
-      raise errors[code]
+      raise(errors[response.status], parse_response(response).fetch(:error))
     end
 
-    def request_with_client(http_method, path, body, headers)
-      if body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
-        file_client = Faraday.new(host) do |client|
-          client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
-          client.request :multipart
-        end
+    def parse_response(response)
+      JSON
+        .parse(response.body)
+        .deep_transform_keys { |key| key.underscore.to_sym }
+    end
+
+    def request_with_client(http_method, path, body, headers, force_multipart: false)
+      if force_multipart || body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
+        file_client = new_client(multipart: true)
         file_client.public_send(http_method, path, body, headers)
       else
         client.public_send(http_method, path, body&.to_json, headers)
+      end
+    end
+
+    def new_client(multipart: false)
+      Faraday.new(host) do |client|
+        client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
+        client.headers["Content-Type"] = multipart ? "multipart/form-data" : "application/json"
+        client.request :multipart if multipart
       end
     end
   end
