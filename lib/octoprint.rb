@@ -4,6 +4,7 @@
 require "active_support/all"
 require "pry"
 require "zeitwerk"
+require "sorbet-runtime"
 
 loader = Zeitwerk::Loader.for_gem
 loader.setup
@@ -13,6 +14,8 @@ loader.setup
 # This gem is still under development.
 # @attr [Octoprint::Client] client      The configured API client
 module Octoprint
+  extend T::Sig
+
   class << self
     # Configure the API client with the server's address and key
     #
