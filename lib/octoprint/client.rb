@@ -34,11 +34,9 @@ module Octoprint
 
       return true if response.status == 204 # No content
 
-      process_error(response.status) if response.status >= 400
+      process_error(response) if response.status >= 400
 
-      JSON
-        .parse(response.body)
-        .deep_transform_keys { |key| key.underscore.to_sym }
+      parse_response(response)
     end
 
     # Every request inside the block will be executed as this client without affecting the gem's initial configuration
@@ -54,14 +52,20 @@ module Octoprint
 
     private
 
-    def process_error(code)
+    def process_error(response)
       errors = {
         400 => Exceptions::BadRequest,
         403 => Exceptions::AuthenticationError,
         500 => Exceptions::InternalServerError
       }
 
-      raise errors[code]
+      raise(errors[response.status], parse_response(response).fetch(:error))
+    end
+
+    def parse_response(response)
+      JSON
+        .parse(response.body)
+        .deep_transform_keys { |key| key.underscore.to_sym }
     end
 
     def request_with_client(http_method, path, body, headers, force_multipart: false)
