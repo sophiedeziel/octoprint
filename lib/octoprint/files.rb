@@ -34,13 +34,11 @@ module Octoprint
         file: Faraday::UploadIO.new(file_path, "application/octet-stream")
       }.compact
 
-      headers = { "Content-Type" => "multipart/form-data" }
-
-      post(path: [@path, location].compact.join("/"), params: params, headers: headers)
+      post(path: [@path, location].compact.join("/"), params: params)
     end
 
     sig do
-      params(foldername: String, location: T.nilable(Location), kargs: T.untyped).returns(T::Hash[String, T.untyped])
+      params(foldername: String, location: Location, kargs: T.untyped).returns(T::Hash[String, T.untyped])
     end
     def self.create_folder(foldername:, location: Location::Local, **kargs)
       params = {
@@ -48,9 +46,7 @@ module Octoprint
         file: nil,
         foldername: foldername
       }.compact
-
-      headers = { "Content-Type" => "multipart/form-data" }
-      post(path: [@path, location.serialize].compact.join("/"), params: params, headers: headers,
+      post(path: [@path, location.serialize].compact.join("/"), params: params,
            options: { force_multipart: true })
     end
   end
