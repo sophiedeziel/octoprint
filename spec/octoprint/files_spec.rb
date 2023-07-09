@@ -62,7 +62,7 @@ RSpec.describe Octoprint::Files do
       its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
     end
 
-    context "with an path", vcr: { cassette_name: "files/create_folder_with_path" } do
+    context "with a path", vcr: { cassette_name: "files/create_folder_with_path" } do
       subject { described_class.create_folder(**params).folder }
 
       before { described_class.create_folder(foldername: "test") }
@@ -70,6 +70,14 @@ RSpec.describe Octoprint::Files do
       let(:params) { { foldername: "new_folder", path: "/test" } }
 
       its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test/new_folder" }) }
+    end
+
+    context "with an ivalid path", vcr: { cassette_name: "files/create_folder_with_invalid_path" } do
+      subject(:invalid_path) { described_class.create_folder(**params) }
+
+      let(:params) { { foldername: "new_folder", path: "/does_not_exist" } }
+
+      it { expect { invalid_path }.to raise_error Octoprint::Exceptions::InternalServerError }
     end
   end
 end
