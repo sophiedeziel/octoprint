@@ -46,21 +46,30 @@ RSpec.describe Octoprint::Files do
 
   describe "Create a folder", vcr: { cassette_name: "files/create_folder" } do
     use_octoprint_server
+    subject { described_class.create_folder(**params) }
 
-    subject { described_class.create_folder(foldername: "test") }
+    let(:params) { { foldername: "test" } }
 
-    it { is_expected.to be_a Hash }
-    its(:keys) { are_expected.to eq %i[done folder] }
-    its([:done]) { is_expected.to be true }
+    it { is_expected.to be_a Octoprint::Files::OperationResult }
+    its(:done) { is_expected.to be true }
 
     describe "folder" do
-      subject { described_class.create_folder(foldername: "test").fetch(:folder) }
+      subject { described_class.create_folder(**params).folder }
 
-      its(:keys) { are_expected.to eq %i[name origin path refs] }
-      its([:name]) { is_expected.to eq "test" }
-      its([:origin]) { is_expected.to eq "local" }
-      its([:path]) { is_expected.to eq "test" }
-      its([:refs]) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
+      its(:name) { is_expected.to eq "test" }
+      its(:origin) { is_expected.to eq "local" }
+      its(:path) { is_expected.to eq "test" }
+      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
+    end
+
+    context "with an path", vcr: { cassette_name: "files/create_folder_with_path" } do
+      subject { described_class.create_folder(**params).folder }
+
+      before { described_class.create_folder(foldername: "test") }
+
+      let(:params) { { foldername: "new_folder", path: "/test" } }
+
+      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test/new_folder" }) }
     end
   end
 end
