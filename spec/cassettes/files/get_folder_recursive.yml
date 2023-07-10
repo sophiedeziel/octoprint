@@ -1,0 +1,80 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/files/local/parent?recursive=true"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.7.10
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Etag:
+      - '"2c4d4ceff0814b90f7551f3f0a8e44ff32899925"'
+      Last-Modified:
+      - Mon, 10 Jul 2023 03:19:16 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=38
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "children": [
+            {
+              "children": [],
+              "display": "child",
+              "name": "child",
+              "origin": "local",
+              "path": "parent/child",
+              "refs": {
+                "resource": "<HOST>/api/files/local/parent/child"
+              },
+              "size": 0,
+              "type": "folder",
+              "typePath": [
+                "folder"
+              ]
+            }
+          ],
+          "display": "parent",
+          "name": "parent",
+          "origin": "local",
+          "path": "parent",
+          "refs": {
+            "resource": "<HOST>/api/files/local/parent"
+          },
+          "size": 0,
+          "type": "folder",
+          "typePath": [
+            "folder"
+          ]
+        }
+  recorded_at: Mon, 10 Jul 2023 03:36:31 GMT
+recorded_with: VCR 6.2.0
