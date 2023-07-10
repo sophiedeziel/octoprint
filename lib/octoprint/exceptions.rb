@@ -16,5 +16,7 @@ module Octoprint
     class InternalServerError < Error; end
     class UnknownError < Error; end
     class ConflictError < Error; end
+    class UnsupportedMediaTypeError < Error; end
+    class NotFoundError < Error; end
   end
 end

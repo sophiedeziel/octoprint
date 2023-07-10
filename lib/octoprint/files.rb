@@ -27,12 +27,16 @@ module Octoprint
 
     # Uploads a file
     #
-    # @param [String] file_path       The path to the file to upload
-    # @param [Location] location      The target location to which to upload the file.
-    # @option options [String] :path  The path to upload the file to, relative to the location.
-    # @option options [Boolean] :select  Whether to select the uploaded file after upload.
-    # @option options [Boolean] :print  Whether to print the uploaded file after upload.
-    # @option options [String] :userdata  Additional userdata to pass to the upload.
+    # @param [String] file_path           The path to the file to upload.
+    # @param [Location] location          The target location to which to upload the file.
+    # @option options [String] :path      The path to upload the file to, relative to the location.
+    # @option options [Boolean] :select   Whether to select the file directly after upload. Ignored when creating a
+    #                                     folder.
+    # @option options [Boolean] :print    Whether to start printing the file directly after upload. Ignored when
+    #                                     creating a folder.
+    # @option options [String] :userdata  An optional string that if specified will be interpreted as JSON and then
+    #                                     saved along with the file as metadata (metadata key userdata). Ignored when
+    #                                     creating a folder.
     # @return [OperationResult]
 
     sig do
