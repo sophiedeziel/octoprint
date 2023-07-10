@@ -21,7 +21,7 @@ RSpec.describe Octoprint::ServerVersion do
 
     it { is_expected.to be_a described_class }
     its(:api)    { is_expected.to eq "0.1" }
-    its(:server) { is_expected.to eq "1.7.3" }
-    its(:text)   { is_expected.to eq "OctoPrint 1.7.3" }
+    its(:server) { is_expected.to eq "1.9.1" }
+    its(:text)   { is_expected.to eq "OctoPrint 1.9.1" }
   end
 end

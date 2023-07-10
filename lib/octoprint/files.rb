@@ -15,14 +15,22 @@ module Octoprint
     attr_reader :files, :free, :total
 
     def initialize(files:, free: nil, total: nil)
-      @files = files
+      @files = files.map { |file| Files::File.deserialize(file) }
       @free = free
       @total = total
       super()
     end
 
-    def self.list(location: :local)
-      fetch_resource location
+    # Fetches the list of files at a location
+    #
+    # @param [Location] location      The location to fetch the list of files from. Defaults to local.
+    # @param [Hash] options           Additional parameters
+    #
+    # @return [Files]
+
+    sig { params(location: Location, options: T.untyped).returns(Files) }
+    def self.list(location: Location::Local, **options)
+      fetch_resource location.serialize, **options.compact
     end
 
     # Uploads a file
@@ -69,6 +77,7 @@ module Octoprint
     # @param [Location] location      The target location to which to upload the file.
     # @param [String] path            The path to create the folder in, relative to the location.
     # @param [Hash] kargs             Additional parameters
+    #
     # @return [OperationResult]
     #
     # @example
@@ -76,7 +85,7 @@ module Octoprint
     #           folder.name #=> "test"
     #           folder.origin #=> "local"
     #           folder.path #=> "test"
-    #           folder.refs #=> {resource: "http://localhost:5000/api/files/local/test"}
+    #           folder.refs #=> {resource: "http://octoprint.local/api/files/local/test"}
     sig do
       params(
         foldername: String,

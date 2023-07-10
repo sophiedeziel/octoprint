@@ -16,8 +16,9 @@ module Octoprint
       # Gets a single resource and instanciates the object.
       #
       # @return [BaseResource]
-      def fetch_resource(path = nil)
+      def fetch_resource(path = nil, **kwargs)
         path = [@path, path].compact.join("/")
+        path += "?#{Faraday::Utils.build_query(kwargs)}" if kwargs.any?
         response = client.request(path, http_method: :get)
         deserialize(response)
       end
