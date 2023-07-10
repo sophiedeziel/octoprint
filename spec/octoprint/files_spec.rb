@@ -54,7 +54,7 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Fetch a file", vcr: { cassette_name: "files/get" } do
+  describe "Retrieve a specific file’s or folder’s information", vcr: { cassette_name: "files/get" } do
     use_octoprint_server
     subject(:get) { described_class.get(**params) }
 
@@ -79,7 +79,7 @@ RSpec.describe Octoprint::Files do
     its(:prints) { is_expected.to be_nil }
     its(:statistics) { is_expected.to be_nil }
 
-    context "when fetching from the SD card", vcr: { cassette_name: "files/get_sd" } do
+    context "when location is the SD card", vcr: { cassette_name: "files/get_sd" } do
       let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
 
       it { is_expected.to be_a Octoprint::Files::File }
@@ -97,27 +97,18 @@ RSpec.describe Octoprint::Files do
       }
     end
 
-    context "when the file is a folder", vcr: { cassette_name: "files/get_folder" } do
-      let(:params) { { location: Octoprint::Location::Local, filename: "test_folder" } }
+    context "when the filename is a folder", vcr: { cassette_name: "files/get_folder" } do
+      let(:params) { { location: Octoprint::Location::Local, filename: "parent" } }
 
-      it { is_expected.to be_a Octoprint::Files::File }
-      its(:name) { is_expected.to eq params[:filename] }
-      its(:origin) { is_expected.to eq Octoprint::Location::Local }
-      its(:children) { is_expected.to be_a Array }
-      its(:children) { is_expected.not_to be_empty }
-      its(:children) { is_expected.to all(be_a Octoprint::Files::File) }
+      its("children.first.name") { is_expected.to eq "child" }
+      its("children.first.children") { is_expected.to be_empty }
     end
 
-    context "when the file is a folder and set recursive", vcr: { cassette_name: "files/get_folder_recursive" } do
+    context "when the filename is a folder and set recursive", vcr: { cassette_name: "files/get_folder_recursive" } do
       let(:params) { { location: Octoprint::Location::Local, filename: "parent", options: { recursive: true } } }
 
-      it { is_expected.to be_a Octoprint::Files::File }
-      its(:name) { is_expected.to eq params[:filename] }
-      its(:origin) { is_expected.to eq Octoprint::Location::Local }
-      its(:children) { is_expected.to be_a Array }
-      its(:children) { is_expected.not_to be_empty }
       its("children.first.name") { is_expected.to eq "child" }
-      its(:children) { is_expected.to all(be_a Octoprint::Files::File) }
+      its("children.first.children") { is_expected.not_to be_empty }
     end
   end
 
