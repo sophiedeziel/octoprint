@@ -15,7 +15,7 @@ RSpec.describe Octoprint::Files do
   describe "Get file list", vcr: { cassette_name: "files/list_local" } do
     use_octoprint_server
 
-    subject { described_class.list(**params) }
+    subject { described_class.list(options: params) }
 
     let(:params) { {} }
 
@@ -49,14 +49,14 @@ RSpec.describe Octoprint::Files do
       let(:params) { { location: Octoprint::Location::SDCard } }
 
       its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
-      its(:free) { is_expected.to be_nil }
-      its(:total) { is_expected.to be_nil }
+      its(:free) { is_expected.not_to be_nil }
+      its(:total) { is_expected.not_to be_nil }
     end
   end
 
   describe "Fetch a file", vcr: { cassette_name: "files/get" } do
     use_octoprint_server
-    subject { described_class.get(**params) }
+    subject(:get) { described_class.get(**params) }
 
     let(:params) { { location: Octoprint::Location::Local, filename: "test_file.gcode" } }
 
@@ -78,6 +78,47 @@ RSpec.describe Octoprint::Files do
     its(:children) { is_expected.to be_nil }
     its(:prints) { is_expected.to be_nil }
     its(:statistics) { is_expected.to be_nil }
+
+    context "when fetching from the SD card", vcr: { cassette_name: "files/get_sd" } do
+      let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
+
+      it { is_expected.to be_a Octoprint::Files::File }
+      its(:name) { is_expected.to eq params[:filename] }
+      its(:origin) { is_expected.to eq Octoprint::Location::SDCard }
+    end
+
+    context "when the file does not exist", vcr: { cassette_name: "files/get_not_found" } do
+      let(:params) { { location: Octoprint::Location::Local, filename: "does_not_exist.gcode" } }
+
+      it {
+        expect do
+          get
+        end.to raise_error(Octoprint::Exceptions::NotFoundError, /The requested URL was not found on the server/)
+      }
+    end
+
+    context "when the file is a folder", vcr: { cassette_name: "files/get_folder" } do
+      let(:params) { { location: Octoprint::Location::Local, filename: "test_folder" } }
+
+      it { is_expected.to be_a Octoprint::Files::File }
+      its(:name) { is_expected.to eq params[:filename] }
+      its(:origin) { is_expected.to eq Octoprint::Location::Local }
+      its(:children) { is_expected.to be_a Array }
+      its(:children) { is_expected.not_to be_empty }
+      its(:children) { is_expected.to all(be_a Octoprint::Files::File) }
+    end
+
+    context "when the file is a folder and set recursive", vcr: { cassette_name: "files/get_folder_recursive" } do
+      let(:params) { { location: Octoprint::Location::Local, filename: "parent", options: { recursive: true } } }
+
+      it { is_expected.to be_a Octoprint::Files::File }
+      its(:name) { is_expected.to eq params[:filename] }
+      its(:origin) { is_expected.to eq Octoprint::Location::Local }
+      its(:children) { is_expected.to be_a Array }
+      its(:children) { is_expected.not_to be_empty }
+      its("children.first.name") { is_expected.to eq "child" }
+      its(:children) { is_expected.to all(be_a Octoprint::Files::File) }
+    end
   end
 
   describe "Upload a file", vcr: { cassette_name: "files/upload" } do
@@ -102,6 +143,17 @@ RSpec.describe Octoprint::Files do
       its(:done) { is_expected.to be false }
       its(:files) { is_expected.to be_a Hash }
       its(:files) { is_expected.to have_key Octoprint::Location::SDCard }
+      its(:files) { is_expected.to have_key Octoprint::Location::Local }
+      its(:effective_print) { is_expected.to be false }
+      its(:effective_select) { is_expected.to be false }
+    end
+
+    context "when uploading to a folder", vcr: { cassette_name: "files/upload_to_folder" } do
+      let(:params) { { location: Octoprint::Location::Local, options: { path: "test_folder" } } }
+
+      its(:done) { is_expected.to be true }
+      its(:files) { is_expected.to be_a Hash }
+      its(:files) { is_expected.not_to have_key Octoprint::Location::SDCard }
       its(:files) { is_expected.to have_key Octoprint::Location::Local }
       its(:effective_print) { is_expected.to be false }
       its(:effective_select) { is_expected.to be false }
