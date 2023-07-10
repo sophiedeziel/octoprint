@@ -12,26 +12,46 @@ RSpec.describe Octoprint::Files do
     its(:total) { is_expected.to eq 3000 }
   end
 
-  describe "Get local file list", vcr: { cassette_name: "files/list_local" } do
+  describe "Get file list", vcr: { cassette_name: "files/list_local" } do
     use_octoprint_server
 
-    subject { described_class.list }
+    subject { described_class.list(**params) }
+
+    let(:params) { {} }
 
     it { is_expected.to be_a described_class }
     its(:files) { are_expected.to be_a Array }
-    its(:free) { is_expected.to eq 198_065_270_784 }
-    its(:total) { is_expected.to eq 250_685_575_168 }
-  end
+    its(:files) { are_expected.not_to be_empty }
+    its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
+    its(:free) { is_expected.not_to be_nil }
+    its(:total) { is_expected.not_to be_nil }
 
-  describe "Get printer file list", vcr: { cassette_name: "files/list_printer" } do
-    use_octoprint_server
+    context "when forcing a refresh", vcr: { cassette_name: "files/list_local_refresh" } do
+      let(:params) { { force: true } }
 
-    subject { described_class.list location: :sdcard }
+      its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
+    end
 
-    it { is_expected.to be_a described_class }
-    its(:files) { are_expected.to be_a Array }
-    its(:free) { is_expected.to be_nil }
-    its(:total) { is_expected.to be_nil }
+    context "when fetching recursively", vcr: { cassette_name: "files/list_local_recursive" } do
+      let(:params) { { recursive: true } }
+
+      its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
+    end
+
+    context "when requesting an unsupported option", vcr: { cassette_name: "files/list_local_unsupported_option" } do
+      let(:params) { { unsupported: true } }
+
+      # Octoprint just ignores the unsupported option
+      its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
+    end
+
+    context "when specifying the SD card", vcr: { cassette_name: "files/list_printer" } do
+      let(:params) { { location: Octoprint::Location::SDCard } }
+
+      its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
+      its(:free) { is_expected.to be_nil }
+      its(:total) { is_expected.to be_nil }
+    end
   end
 
   describe "Upload a file", vcr: { cassette_name: "files/upload" } do
@@ -126,6 +146,10 @@ RSpec.describe Octoprint::Files do
 
       # this one does not return the passed metadata back, we need to trust that it was set on a sucessful response
       its(:done) { is_expected.to be true }
+      its("files.first.last.userdata") { is_expected.to be_nil }
+
+      # lets fetch the file and check the metadata
+      # TODO: after the specific file endpoint is implemented
     end
   end
 

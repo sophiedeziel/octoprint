@@ -1,0 +1,380 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/files/local?recursive=true"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.7.10
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Etag:
+      - '"6394519697bd568fcab46093f0315416deb736fb"'
+      Last-Modified:
+      - Mon, 10 Jul 2023 01:31:12 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=26
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "files": [
+            {
+              "DisplayLayerProgress": {
+                "totalLayerCountWithoutOffset": "0"
+              },
+              "dashboard": {
+                "filament_change_array": "[]",
+                "layer_move_array": "[7, 1]"
+              },
+              "date": 1688948269,
+              "display": "test_file.gcode",
+              "gcodeAnalysis": {
+                "dimensions": {
+                  "depth": 180.0,
+                  "height": 0.28,
+                  "width": 0.3000000000000007
+                },
+                "estimatedPrintTime": 16.304844880097193,
+                "filament": {
+                  "tool0": {
+                    "length": 30.0,
+                    "volume": 0.0
+                  }
+                },
+                "printingArea": {
+                  "maxX": 10.4,
+                  "maxY": 200.0,
+                  "maxZ": 0.28,
+                  "minX": 10.1,
+                  "minY": 20.0,
+                  "minZ": 0.0
+                },
+                "travelArea": {
+                  "maxX": 128.348,
+                  "maxY": 200.0,
+                  "maxZ": 2.0,
+                  "minX": 0.0,
+                  "minY": 0.0,
+                  "minZ": 0.0
+                },
+                "travelDimensions": {
+                  "depth": 200.0,
+                  "height": 2.0,
+                  "width": 128.348
+                }
+              },
+              "hash": "89e36832ddc7fa8a71c0133b4048343586d31ea2",
+              "name": "test_file.gcode",
+              "origin": "local",
+              "path": "test_file.gcode",
+              "refs": {
+                "download": "<HOST>/downloads/files/local/test_file.gcode",
+                "resource": "<HOST>/api/files/local/test_file.gcode"
+              },
+              "size": 1164,
+              "type": "machinecode",
+              "typePath": [
+                "machinecode",
+                "gcode"
+              ],
+              "userdata": {
+                "test_value": "some value"
+              }
+            },
+            {
+              "children": [
+                {
+                  "DisplayLayerProgress": {
+                    "totalLayerCountWithoutOffset": "0"
+                  },
+                  "date": 1640886802,
+                  "display": "Flow tower 110-90 PLA.gcode",
+                  "gcodeAnalysis": {
+                    "dimensions": {
+                      "depth": 180.0,
+                      "height": 88.0,
+                      "width": 147.20000000000002
+                    },
+                    "estimatedPrintTime": 9004.799419924939,
+                    "filament": {
+                      "tool0": {
+                        "length": 6472.23187999958,
+                        "volume": 0.0
+                      }
+                    },
+                    "printingArea": {
+                      "maxX": 157.3,
+                      "maxY": 200.0,
+                      "maxZ": 88.0,
+                      "minX": 10.1,
+                      "minY": 20.0,
+                      "minZ": 0.0
+                    }
+                  },
+                  "hash": "9d904aa40e0b154268b48b40945e5f5707d7a523",
+                  "name": "Flow_tower_110-90_PLA.gcode",
+                  "origin": "local",
+                  "path": "Maintenance/Flow_tower_110-90_PLA.gcode",
+                  "prints": {
+                    "failure": 1,
+                    "last": {
+                      "date": 1640903627.712564,
+                      "printTime": 14331.168264679989,
+                      "success": true
+                    },
+                    "success": 1
+                  },
+                  "refs": {
+                    "download": "<HOST>/downloads/files/local/Maintenance/Flow_tower_110-90_PLA.gcode",
+                    "resource": "<HOST>/api/files/local/Maintenance/Flow_tower_110-90_PLA.gcode"
+                  },
+                  "size": 6139488,
+                  "statistics": {
+                    "averagePrintTime": {
+                      "_default": 14331.168264679989
+                    },
+                    "lastPrintTime": {
+                      "_default": 14331.168264679989
+                    }
+                  },
+                  "type": "machinecode",
+                  "typePath": [
+                    "machinecode",
+                    "gcode"
+                  ]
+                },
+                {
+                  "DisplayLayerProgress": {
+                    "totalLayerCountWithoutOffset": "471"
+                  },
+                  "dashboard": {
+                    "filament_change_array": "[]",
+                    "layer_move_array": "[7, 476, 202, 206, 204, 34, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 53, 58, 61, 73, 75, 75, 83, 85, 84, 78, 80, 91, 93, 92, 92, 82, 73, 72, 77, 78, 83, 87, 90, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 50, 55, 61, 59, 59, 63, 69, 66, 69, 68, 79, 77, 80, 81, 81, 73, 75, 79, 82, 83, 79, 80, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 50, 55, 61, 63, 63, 67, 69, 70, 73, 72, 83, 77, 80, 81, 84, 72, 72, 79, 79, 86, 86, 87, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 50, 53, 61, 63, 63, 67, 69, 64, 66, 68, 79, 77, 79, 80, 80, 71, 71, 75, 75, 73, 72, 80, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 51, 53, 65, 63, 63, 67, 69, 68, 66, 68, 79, 77, 79, 81, 85, 73, 75, 79, 80, 85, 85, 90, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 51, 55, 61, 59, 59, 63, 65, 66, 74, 72, 79, 77, 82, 82, 79, 71, 71, 75, 77, 77, 90, 91, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 51, 55, 65, 59, 59, 63, 65, 70, 74, 72, 79, 77, 79, 77, 83, 72, 74, 78, 79, 84, 81, 80, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 50, 51, 61, 63, 63, 67, 69, 66, 70, 72, 79, 77, 82, 82, 81, 73, 72, 81, 79, 87, 84, 88, 122, 146, 149, 146, 150, 34, 35, 35, 35, 35, 35, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 45, 50, 55, 61, 63, 63, 67, 69, 70, 74, 72, 79, 77, 80, 81, 85, 72, 72, 76, 76, 71, 72, 75, 122, 146, 149, 146, 150, 34, 35, 35, 35, 34]"
+                  },
+                  "date": 1645553764,
+                  "display": "temp tower pla 220-180.gcode",
+                  "gcodeAnalysis": {
+                    "dimensions": {
+                      "depth": 137.931,
+                      "height": 75.56,
+                      "width": 165.678
+                    },
+                    "estimatedPrintTime": 5407.618723757242,
+                    "filament": {
+                      "tool0": {
+                        "length": 2500.722399999989,
+                        "volume": 0.0
+                      }
+                    },
+                    "printingArea": {
+                      "maxX": 175.778,
+                      "maxY": 157.931,
+                      "maxZ": 75.56,
+                      "minX": 10.1,
+                      "minY": 20.0,
+                      "minZ": 0.0
+                    }
+                  },
+                  "hash": "4ed5d4de10abf16cb4ea57c7b8277f0ba6aa7442",
+                  "name": "temp_tower_pla_220-180.gcode",
+                  "origin": "local",
+                  "path": "Maintenance/temp_tower_pla_220-180.gcode",
+                  "prints": {
+                    "failure": 6,
+                    "last": {
+                      "date": 1679624153.6199112,
+                      "success": false
+                    },
+                    "success": 6
+                  },
+                  "refs": {
+                    "download": "<HOST>/downloads/files/local/Maintenance/temp_tower_pla_220-180.gcode",
+                    "resource": "<HOST>/api/files/local/Maintenance/temp_tower_pla_220-180.gcode"
+                  },
+                  "size": 941800,
+                  "statistics": {
+                    "averagePrintTime": {
+                      "_default": 6691.093891754183
+                    },
+                    "lastPrintTime": {
+                      "_default": 6626.665982218008
+                    }
+                  },
+                  "type": "machinecode",
+                  "typePath": [
+                    "machinecode",
+                    "gcode"
+                  ]
+                },
+                {
+                  "DisplayLayerProgress": {
+                    "totalLayerCountWithoutOffset": "0"
+                  },
+                  "dashboard": {
+                    "filament_change_array": "[]",
+                    "layer_move_array": "[7, 8520]"
+                  },
+                  "date": 1677249132,
+                  "display": "Bed level calibration.gcode",
+                  "gcodeAnalysis": {
+                    "dimensions": {
+                      "depth": 275.6,
+                      "height": 0.28,
+                      "width": 277.7
+                    },
+                    "estimatedPrintTime": 1868.8953284311167,
+                    "filament": {
+                      "tool0": {
+                        "length": 894.3397800000006,
+                        "volume": 0.0
+                      }
+                    },
+                    "printingArea": {
+                      "maxX": 287.8,
+                      "maxY": 287.8,
+                      "maxZ": 0.28,
+                      "minX": 10.1,
+                      "minY": 12.2,
+                      "minZ": 0.0
+                    }
+                  },
+                  "hash": "7d4baae2dfd77708871440b35e91f5f936d809cd",
+                  "name": "Bed_level_calibration.gcode",
+                  "origin": "local",
+                  "path": "Maintenance/Bed_level_calibration.gcode",
+                  "prints": {
+                    "failure": 8,
+                    "last": {
+                      "date": 1677730525.1948543,
+                      "success": false
+                    },
+                    "success": 1
+                  },
+                  "refs": {
+                    "download": "<HOST>/downloads/files/local/Maintenance/Bed_level_calibration.gcode",
+                    "resource": "<HOST>/api/files/local/Maintenance/Bed_level_calibration.gcode"
+                  },
+                  "size": 243076,
+                  "statistics": {
+                    "averagePrintTime": {
+                      "_default": 2488.272387557983
+                    },
+                    "lastPrintTime": {
+                      "_default": 2488.272387557983
+                    }
+                  },
+                  "type": "machinecode",
+                  "typePath": [
+                    "machinecode",
+                    "gcode"
+                  ]
+                },
+                {
+                  "DisplayLayerProgress": {
+                    "totalLayerCountWithoutOffset": "196"
+                  },
+                  "date": 1642100282,
+                  "display": "retraction speed tower.gcode",
+                  "gcodeAnalysis": {
+                    "dimensions": {
+                      "depth": 138.131,
+                      "height": 39.4,
+                      "width": 160.523
+                    },
+                    "estimatedPrintTime": 2279.970473762487,
+                    "filament": {
+                      "tool0": {
+                        "length": 1406.6449900000014,
+                        "volume": 0.0
+                      }
+                    },
+                    "printingArea": {
+                      "maxX": 170.623,
+                      "maxY": 158.131,
+                      "maxZ": 39.4,
+                      "minX": 10.1,
+                      "minY": 20.0,
+                      "minZ": 0.0
+                    }
+                  },
+                  "hash": "f6af896ea7ae83f53d776976de0b002a6660d7dd",
+                  "name": "retraction_speed_tower.gcode",
+                  "origin": "local",
+                  "path": "Maintenance/retraction_speed_tower.gcode",
+                  "prints": {
+                    "failure": 0,
+                    "last": {
+                      "date": 1642103184.260042,
+                      "printTime": 2896.187864605803,
+                      "success": true
+                    },
+                    "success": 1
+                  },
+                  "refs": {
+                    "download": "<HOST>/downloads/files/local/Maintenance/retraction_speed_tower.gcode",
+                    "resource": "<HOST>/api/files/local/Maintenance/retraction_speed_tower.gcode"
+                  },
+                  "size": 1076523,
+                  "statistics": {
+                    "averagePrintTime": {
+                      "_default": 2896.187864605803
+                    },
+                    "lastPrintTime": {
+                      "_default": 2896.187864605803
+                    }
+                  },
+                  "type": "machinecode",
+                  "typePath": [
+                    "machinecode",
+                    "gcode"
+                  ]
+                }
+              ],
+              "display": "Maintenance",
+              "name": "Maintenance",
+              "origin": "local",
+              "path": "Maintenance",
+              "refs": {
+                "resource": "<HOST>/api/files/local/Maintenance"
+              },
+              "size": 8400887,
+              "type": "folder",
+              "typePath": [
+                "folder"
+              ]
+            }
+          ],
+          "free": 27339821056,
+          "total": 31119536128
+        }
+  recorded_at: Mon, 10 Jul 2023 01:38:59 GMT
+recorded_with: VCR 6.2.0
