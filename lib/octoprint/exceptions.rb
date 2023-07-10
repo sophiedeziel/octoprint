@@ -9,10 +9,14 @@ module Octoprint
     # The client can't access the requested resources because of bad authentication
     class AuthenticationError < Error; end
     # The can't be processed because of invalid inputs
-    class BadRequest < Error; end
+    class BadRequestError < Error; end
     # Credentials are missing from the configuration. Set them using `Octoprint.configure()`
-    class MissingCredentials < Error; end
+    class MissingCredentialsError < Error; end
     # The server encountered an unexpected condition which prevented it from fulfilling the request
     class InternalServerError < Error; end
+    class UnknownError < Error; end
+    class ConflictError < Error; end
+    class UnsupportedMediaTypeError < Error; end
+    class NotFoundError < Error; end
   end
 end

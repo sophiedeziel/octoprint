@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: "<HOST>/api/files/local"
+    uri: "<HOST>/api/files/local?force=true"
     body:
       encoding: US-ASCII
       string: ''
@@ -33,7 +33,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=39
+      - app;dur=51
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -126,8 +126,8 @@ http_interactions:
               ]
             }
           ],
-          "free": 27339780096,
+          "free": 27339833344,
           "total": 31119536128
         }
-  recorded_at: Mon, 10 Jul 2023 02:14:59 GMT
+  recorded_at: Mon, 10 Jul 2023 01:31:23 GMT
 recorded_with: VCR 6.2.0

@@ -7,11 +7,13 @@ RSpec.describe Octoprint::Client do
   it "raises when host is missing" do
     expect do
       described_class.new(host: nil, api_key: api_key)
-    end.to raise_error Octoprint::Exceptions::MissingCredentials
+    end.to raise_error Octoprint::Exceptions::MissingCredentialsError
   end
 
   it "raises when api_key is missing" do
-    expect { described_class.new(host: host, api_key: nil) }.to raise_error Octoprint::Exceptions::MissingCredentials
+    expect do
+      described_class.new(host: host, api_key: nil)
+    end.to raise_error Octoprint::Exceptions::MissingCredentialsError
   end
 
   describe "#request" do
