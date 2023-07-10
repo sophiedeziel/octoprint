@@ -5,8 +5,6 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in octoprint.gemspec
 gemspec
 
-gem "sorbet-runtime"
-
 group :test do
   gem "rspec", "~> 3.0"
   gem "rspec-its"
