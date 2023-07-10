@@ -25,16 +25,38 @@ module Octoprint
       fetch_resource location
     end
 
-    def self.upload(file_path, location: :local, **kargs)
+    # Uploads a file
+    #
+    # @param [String] file_path       The path to the file to upload
+    # @param [Location] location      The target location to which to upload the file.
+    # @option options [String] :path  The path to upload the file to, relative to the location.
+    # @option options [Boolean] :select  Whether to select the uploaded file after upload.
+    # @option options [Boolean] :print  Whether to print the uploaded file after upload.
+    # @option options [String] :userdata  Additional userdata to pass to the upload.
+    # @return [OperationResult]
+
+    sig do
+      params(file_path: String, location: Location,
+             options: {
+               path: T.nilable(String),
+               select: T.nilable(T::Boolean),
+               print: T.nilable(T::Boolean),
+               userdata: T.nilable(String)
+             })
+        .returns(OperationResult)
+    end
+    def self.upload(file_path, location: Location::Local, options: { path: nil, select: nil, print: nil,
+                                                                     userdata: nil })
       params = {
-        path: kargs[:path],
-        select: kargs[:select],
-        print: kargs[:print],
-        userdata: kargs[:userdata],
+        path: options[:path],
+        select: options[:select],
+        print: options[:print],
+        userdata: options[:userdata],
         file: Faraday::UploadIO.new(file_path, "application/octet-stream")
       }.compact
 
-      post(path: [@path, location].compact.join("/"), params: params)
+      result = post(path: [@path, location.serialize].compact.join("/"), params: params)
+      OperationResult.deserialize(result)
     end
 
     # Creates a folder
@@ -43,7 +65,7 @@ module Octoprint
     # @param [Location] location      The target location to which to upload the file.
     # @param [String] path            The path to create the folder in, relative to the location.
     # @param [Hash] kargs             Additional parameters
-    # @return [Files::Folder]
+    # @return [OperationResult]
     #
     # @example
     #           folder = Octoprint::Files.create_folder(foldername: "test")
@@ -68,7 +90,8 @@ module Octoprint
 
       result = post(path: [@path, location.serialize].compact.join("/"), params: params,
                     options: { force_multipart: true })
-      OperationResult.new(done: result[:done], folder: Folder.new(**result[:folder]))
+
+      OperationResult.deserialize(result)
     end
   end
 end
