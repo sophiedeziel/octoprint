@@ -33,6 +33,11 @@ module Octoprint
       fetch_resource location.serialize, **options.compact
     end
 
+    def self.get(filename:, location: Location::Local, **options)
+      path = [location.serialize, filename].compact.join("/")
+      Files::File.deserialize(fetch_resource(path, deserialize: false, **options.compact))
+    end
+
     # Uploads a file
     #
     # @param [String] file_path           The path to the file to upload.
