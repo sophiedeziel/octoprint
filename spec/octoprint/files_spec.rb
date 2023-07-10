@@ -54,6 +54,32 @@ RSpec.describe Octoprint::Files do
     end
   end
 
+  describe "Fetch a file", vcr: { cassette_name: "files/get" } do
+    use_octoprint_server
+    subject { described_class.get(**params) }
+
+    let(:params) { { location: Octoprint::Location::Local, filename: "test_file.gcode" } }
+
+    it { is_expected.to be_a Octoprint::Files::File }
+    its(:name) { is_expected.to eq "test_file.gcode" }
+    its(:origin) { is_expected.to eq Octoprint::Location::Local }
+    its(:path) { is_expected.to eq "test_file.gcode" }
+    its(:refs) { is_expected.to be_a Octoprint::Files::Refs }
+    its("refs.resource") { is_expected.to eq("#{host}/api/files/local/test_file.gcode") }
+    its("refs.download") { is_expected.to eq("#{host}/downloads/files/local/test_file.gcode") }
+    its("refs.model") { is_expected.to be_nil }
+    its(:display_layer_progress) { is_expected.to be_a Hash }
+    its(:dashboard) { is_expected.to be_a Hash }
+    its(:date) { is_expected.to eq 1_688_948_269 }
+    its(:gcode_analysis) { is_expected.to be_a Hash }
+    its(:md5_hash) { is_expected.to eq "89e36832ddc7fa8a71c0133b4048343586d31ea2" }
+    its(:size) { is_expected.to eq 1164 }
+    its(:userdata) { is_expected.to eq({ test_value: "some value" }) }
+    its(:children) { is_expected.to be_nil }
+    its(:prints) { is_expected.to be_nil }
+    its(:statistics) { is_expected.to be_nil }
+  end
+
   describe "Upload a file", vcr: { cassette_name: "files/upload" } do
     use_octoprint_server
 
@@ -140,16 +166,20 @@ RSpec.describe Octoprint::Files do
     end
 
     context "when adding metadata", vcr: { cassette_name: "files/upload_metadata" } do
+      let(:metadata) { { test_value: "some value" } }
       let(:params) do
-        { location: Octoprint::Location::Local, options: { userdata: "{\"test_value\": \"some value\"}" } }
+        { location: Octoprint::Location::Local, options: { userdata: metadata.to_json } }
       end
 
       # this one does not return the passed metadata back, we need to trust that it was set on a sucessful response
       its(:done) { is_expected.to be true }
       its("files.first.last.userdata") { is_expected.to be_nil }
 
-      # lets fetch the file and check the metadata
-      # TODO: after the specific file endpoint is implemented
+      it "sets the metadata" do
+        upload
+        file = described_class.get(location: Octoprint::Location::Local, filename: "test_file.gcode")
+        expect(file.userdata).to eq(metadata)
+      end
     end
   end
 

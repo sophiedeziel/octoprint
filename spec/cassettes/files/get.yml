@@ -1,0 +1,112 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/files/local/test_file.gcode"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.7.10
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Etag:
+      - '"a7d6491c4477f637566882bc3899c54cc067bf85"'
+      Last-Modified:
+      - Mon, 10 Jul 2023 00:17:49 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=38
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "DisplayLayerProgress": {
+            "totalLayerCountWithoutOffset": "0"
+          },
+          "dashboard": {
+            "filament_change_array": "[]",
+            "layer_move_array": "[7, 1]"
+          },
+          "date": 1688948269,
+          "display": "test_file.gcode",
+          "gcodeAnalysis": {
+            "dimensions": {
+              "depth": 180.0,
+              "height": 0.28,
+              "width": 0.3000000000000007
+            },
+            "estimatedPrintTime": 16.304844880097193,
+            "filament": {
+              "tool0": {
+                "length": 30.0,
+                "volume": 0.0
+              }
+            },
+            "printingArea": {
+              "maxX": 10.4,
+              "maxY": 200.0,
+              "maxZ": 0.28,
+              "minX": 10.1,
+              "minY": 20.0,
+              "minZ": 0.0
+            },
+            "travelArea": {
+              "maxX": 128.348,
+              "maxY": 200.0,
+              "maxZ": 2.0,
+              "minX": 0.0,
+              "minY": 0.0,
+              "minZ": 0.0
+            },
+            "travelDimensions": {
+              "depth": 200.0,
+              "height": 2.0,
+              "width": 128.348
+            }
+          },
+          "hash": "89e36832ddc7fa8a71c0133b4048343586d31ea2",
+          "name": "test_file.gcode",
+          "origin": "local",
+          "path": "test_file.gcode",
+          "refs": {
+            "download": "<HOST>/downloads/files/local/test_file.gcode",
+            "resource": "<HOST>/api/files/local/test_file.gcode"
+          },
+          "size": 1164,
+          "type": "machinecode",
+          "typePath": [
+            "machinecode",
+            "gcode"
+          ],
+          "userdata": {
+            "test_value": "some value"
+          }
+        }
+  recorded_at: Mon, 10 Jul 2023 02:42:24 GMT
+recorded_with: VCR 6.2.0
