@@ -37,9 +37,10 @@ RSpec.describe Octoprint::Files do
   describe "Upload a file", vcr: { cassette_name: "files/upload" } do
     use_octoprint_server
 
-    subject { described_class.upload("spec/files/test_file.gcode", **params) }
+    subject(:upload) { described_class.upload(file_to_upload, **params) }
 
     let(:params) { { location: Octoprint::Location::Local } }
+    let(:file_to_upload) { "spec/files/test_file.gcode" }
 
     it { is_expected.to be_a Octoprint::Files::OperationResult }
     its(:done) { is_expected.to be true }
@@ -61,14 +62,45 @@ RSpec.describe Octoprint::Files do
     end
 
     context "when uploading to unavailable SD card", vcr: { cassette_name: "files/upload_sd_unavailable" } do
-      subject(:sd_unavailable) do
-        described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::SDCard)
-      end
+      let(:params) { { location: Octoprint::Location::SDCard } }
 
       it "raises the correct error" do
-        expect { sd_unavailable }.to raise_error(
+        expect { upload }.to raise_error(
           Octoprint::Exceptions::ConflictError,
           /Can not upload to SD card, printer is either not operational or already busy/
+        )
+      end
+    end
+
+    context "when uploading to usupported SD card", vcr: { cassette_name: "files/upload_sd_usupported" } do
+      let(:params) { { location: Octoprint::Location::SDCard } }
+
+      it "raises the correct error" do
+        expect { upload }.to raise_error(
+          Octoprint::Exceptions::NotFoundError,
+          /The requested URL was not found on the server/
+        )
+      end
+    end
+
+    context "when passing an invalid location", vcr: { cassette_name: "files/upload_sd_usupported" } do
+      let(:params) { { location: "invalid" } }
+
+      it "raises the correct error" do
+        expect { upload }.to raise_error(
+          TypeError,
+          /Parameter 'location': Expected type Octoprint::Location, got type/
+        )
+      end
+    end
+
+    context "when uploading an unsupported file", vcr: { cassette_name: "files/upload_unsupported_type" } do
+      let(:file_to_upload) { "spec/files/empty.txt" }
+
+      it "raises the correct error" do
+        expect { upload }.to raise_error(
+          Octoprint::Exceptions::UnsupportedMediaTypeError,
+          /Could not upload file, invalid type/
         )
       end
     end

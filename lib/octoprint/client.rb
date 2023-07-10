@@ -56,7 +56,9 @@ module Octoprint
       errors = {
         400 => Exceptions::BadRequestError,
         403 => Exceptions::AuthenticationError,
+        404 => Exceptions::NotFoundError,
         409 => Exceptions::ConflictError,
+        415 => Exceptions::UnsupportedMediaTypeError,
         500 => Exceptions::InternalServerError
       }
 
