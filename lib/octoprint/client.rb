@@ -14,7 +14,7 @@ module Octoprint
     attr_reader :host, :api_key, :client
 
     def initialize(host:, api_key:)
-      raise Exceptions::MissingCredentials if host.nil? || api_key.nil?
+      raise Exceptions::MissingCredentialsError if host.nil? || api_key.nil?
 
       @host    = host
       @api_key = api_key
@@ -54,12 +54,17 @@ module Octoprint
 
     def process_error(response)
       errors = {
-        400 => Exceptions::BadRequest,
+        400 => Exceptions::BadRequestError,
         403 => Exceptions::AuthenticationError,
+        404 => Exceptions::NotFoundError,
+        409 => Exceptions::ConflictError,
+        415 => Exceptions::UnsupportedMediaTypeError,
         500 => Exceptions::InternalServerError
       }
 
-      raise(errors[response.status], parse_response(response).fetch(:error))
+      error_class = errors[response.status] || Exceptions::UnknownError
+
+      raise(error_class, "[#{response.status}] " + parse_response(response).fetch(:error))
     end
 
     def parse_response(response)
