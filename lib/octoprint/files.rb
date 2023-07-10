@@ -28,9 +28,25 @@ module Octoprint
     #
     # @return [Files]
 
-    sig { params(location: Location, options: T.untyped).returns(Files) }
-    def self.list(location: Location::Local, **options)
-      fetch_resource location.serialize, **options.compact
+    sig { params(location: Location, options: T::Hash[Symbol, T.untyped]).returns(Files) }
+    def self.list(location: Location::Local, options: {})
+      fetch_resource location.serialize, options: options
+    end
+
+    # Fetches a single file or folder
+    #
+    # @param [String] filename        The name of the file to fetch
+    # @param [Location] location      The location to fetch the file from
+    # @param [Hash] options           Additional parameters
+    #
+    # @return [Files::File]
+
+    sig do
+      params(filename: String, location: Location, options: T.nilable(T::Hash[Symbol, T.untyped])).returns(Files::File)
+    end
+    def self.get(filename:, location: Location::Local, options: {})
+      path = [location.serialize, filename].compact.join("/")
+      Files::File.deserialize(fetch_resource(path, deserialize: false, options: options))
     end
 
     # Uploads a file

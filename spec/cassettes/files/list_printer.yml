@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: "<HOST>/api/files/sdcard"
+    uri: "<HOST>/api/files/local?location="
     body:
       encoding: US-ASCII
       string: ''
@@ -24,12 +24,16 @@ http_interactions:
     headers:
       Content-Type:
       - application/json
+      Etag:
+      - '"5f6109ebb1a43507ab8dee64380ba66a37daf1d3"'
+      Last-Modified:
+      - Mon, 10 Jul 2023 03:19:09 GMT
       Cache-Control:
       - max-age=0
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=20
+      - app;dur=44
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -42,7 +46,195 @@ http_interactions:
       encoding: ASCII-8BIT
       string: |
         {
-          "files": []
+          "files": [
+            {
+              "DisplayLayerProgress": {
+                "totalLayerCountWithoutOffset": "0"
+              },
+              "dashboard": {
+                "filament_change_array": "[]",
+                "layer_move_array": "[7, 1]"
+              },
+              "date": 1688957061,
+              "display": "test_file.gcode",
+              "gcodeAnalysis": {
+                "dimensions": {
+                  "depth": 180.0,
+                  "height": 0.28,
+                  "width": 0.3000000000000007
+                },
+                "estimatedPrintTime": 16.304844880097193,
+                "filament": {
+                  "tool0": {
+                    "length": 30.0,
+                    "volume": 0.0
+                  }
+                },
+                "printingArea": {
+                  "maxX": 10.4,
+                  "maxY": 200.0,
+                  "maxZ": 0.28,
+                  "minX": 10.1,
+                  "minY": 20.0,
+                  "minZ": 0.0
+                },
+                "travelArea": {
+                  "maxX": 128.348,
+                  "maxY": 200.0,
+                  "maxZ": 2.0,
+                  "minX": 0.0,
+                  "minY": 0.0,
+                  "minZ": 0.0
+                },
+                "travelDimensions": {
+                  "depth": 200.0,
+                  "height": 2.0,
+                  "width": 128.348
+                }
+              },
+              "hash": "89e36832ddc7fa8a71c0133b4048343586d31ea2",
+              "name": "test_file.gcode",
+              "origin": "local",
+              "path": "test_file.gcode",
+              "refs": {
+                "download": "<HOST>/downloads/files/local/test_file.gcode",
+                "resource": "<HOST>/api/files/local/test_file.gcode"
+              },
+              "size": 1164,
+              "type": "machinecode",
+              "typePath": [
+                "machinecode",
+                "gcode"
+              ],
+              "userdata": {
+                "test_value": "some value"
+              }
+            },
+            {
+              "children": [],
+              "display": "Maintenance",
+              "name": "Maintenance",
+              "origin": "local",
+              "path": "Maintenance",
+              "refs": {
+                "resource": "<HOST>/api/files/local/Maintenance"
+              },
+              "size": 8400887,
+              "type": "folder",
+              "typePath": [
+                "folder"
+              ]
+            },
+            {
+              "children": [],
+              "display": "parent",
+              "name": "parent",
+              "origin": "local",
+              "path": "parent",
+              "refs": {
+                "resource": "<HOST>/api/files/local/parent"
+              },
+              "size": 0,
+              "type": "folder",
+              "typePath": [
+                "folder"
+              ]
+            },
+            {
+              "children": [],
+              "display": "test_folder",
+              "name": "test_folder",
+              "origin": "local",
+              "path": "test_folder",
+              "refs": {
+                "resource": "<HOST>/api/files/local/test_folder"
+              },
+              "size": 2708,
+              "type": "folder",
+              "typePath": [
+                "folder"
+              ]
+            },
+            {
+              "DisplayLayerProgress": {
+                "totalLayerCountWithoutOffset": "0"
+              },
+              "arc_welder": true,
+              "arc_welder_statistics": {
+                "arcs_created": 0,
+                "compression_percent": -16.75257682800293,
+                "compression_ratio": 0.8565121293067932,
+                "gcodes_processed": 29,
+                "lines_processed": 44,
+                "points_compressed": 0,
+                "preprocessing_job_guid": "f3106698-09eb-45a1-b46c-7463bcff38d6",
+                "seconds_elapsed": 0.002086,
+                "segment_statistics_text": "   Min          Max     Source  Target   Change\n-----------------------------------------------\n  0.000mm to   0.002mm       0       0     0.0%\n  0.002mm to   0.005mm       0       0     0.0%\n  0.005mm to   0.010mm       0       0     0.0%\n  0.010mm to   0.050mm       0       0     0.0%\n  0.050mm to   0.100mm       0       0     0.0%\n  0.100mm to   0.500mm       0       0     0.0%\n  0.500mm to   1.000mm       0       0     0.0%\n  1.000mm to   5.000mm       0       0     0.0%\n  5.000mm to  10.000mm       0       0     0.0%\n 10.000mm to  20.000mm       0       0     0.0%\n 20.000mm to  50.000mm       0       0     0.0%\n 50.000mm to 100.000mm       0       0     0.0%\n          >= 100.000mm       2       2     0.0%\n-----------------------------------------------\n       Total distance:................360.000mm\n   Total count source:........................2\n   Total count target:........................2\n Total percent change:.....................0.0%",
+                "source_file_position": 1164,
+                "source_file_size": 1164,
+                "source_file_total_count": 2,
+                "source_file_total_length": 360.0,
+                "source_filename": "test_file.gcode",
+                "target_file_size": 1359,
+                "target_file_total_count": 2322652,
+                "target_file_total_length": 360.0,
+                "target_filename": "test_file.aw.gcode"
+              },
+              "date": 1688957062,
+              "display": "test_file.aw.gcode",
+              "gcodeAnalysis": {
+                "dimensions": {
+                  "depth": 180.0,
+                  "height": 0.28,
+                  "width": 0.3000000000000007
+                },
+                "estimatedPrintTime": 16.304844880097193,
+                "filament": {
+                  "tool0": {
+                    "length": 30.0,
+                    "volume": 0.0
+                  }
+                },
+                "printingArea": {
+                  "maxX": 10.4,
+                  "maxY": 200.0,
+                  "maxZ": 0.28,
+                  "minX": 10.1,
+                  "minY": 20.0,
+                  "minZ": 0.0
+                },
+                "travelArea": {
+                  "maxX": 128.348,
+                  "maxY": 200.0,
+                  "maxZ": 2.0,
+                  "minX": 0.0,
+                  "minY": 0.0,
+                  "minZ": 0.0
+                },
+                "travelDimensions": {
+                  "depth": 200.0,
+                  "height": 2.0,
+                  "width": 128.348
+                }
+              },
+              "hash": "532bb8d4b5d0ea6821548313adf4b8ff22bdced5",
+              "name": "test_file.aw.gcode",
+              "origin": "local",
+              "path": "test_file.aw.gcode",
+              "refs": {
+                "download": "<HOST>/downloads/files/local/test_file.aw.gcode",
+                "resource": "<HOST>/api/files/local/test_file.aw.gcode"
+              },
+              "size": 1544,
+              "type": "machinecode",
+              "typePath": [
+                "machinecode",
+                "gcode"
+              ]
+            }
+          ],
+          "free": 27339509760,
+          "total": 31119536128
         }
-  recorded_at: Mon, 10 Jul 2023 02:14:59 GMT
+  recorded_at: Mon, 10 Jul 2023 03:36:48 GMT
 recorded_with: VCR 6.2.0
