@@ -37,11 +37,64 @@ RSpec.describe Octoprint::Files do
   describe "Upload a file", vcr: { cassette_name: "files/upload" } do
     use_octoprint_server
 
-    subject { described_class.upload("spec/files/test_file.gcode", location: :local) }
+    subject { described_class.upload("spec/files/test_file.gcode", **params) }
 
-    it { is_expected.to be_a Hash }
-    its(:keys) { are_expected.to eq %i[done files] }
-    its([:done]) { is_expected.to be true }
+    let(:params) { { location: Octoprint::Location::Local } }
+
+    it { is_expected.to be_a Octoprint::Files::OperationResult }
+    its(:done) { is_expected.to be true }
+    its(:files) { is_expected.to be_a Hash }
+    its(:files) { is_expected.to have_key Octoprint::Location::Local }
+    its(:files) { is_expected.not_to have_key Octoprint::Location::SDCard }
+    its(:effective_print) { is_expected.to be_nil }
+    its(:effective_select) { is_expected.to be_nil }
+
+    context "when uploading to SD card", vcr: { cassette_name: "files/upload_to_sd" } do
+      let(:params) { { location: Octoprint::Location::SDCard } }
+
+      its(:done) { is_expected.to be false }
+      its(:files) { is_expected.to be_a Hash }
+      its(:files) { is_expected.to have_key Octoprint::Location::SDCard }
+      its(:files) { is_expected.to have_key Octoprint::Location::Local }
+      its(:effective_print) { is_expected.to be false }
+      its(:effective_select) { is_expected.to be false }
+    end
+
+    context "when uploading to unavailable SD card", vcr: { cassette_name: "files/upload_sd_unavailable" } do
+      subject(:sd_unavailable) do
+        described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::SDCard)
+      end
+
+      it "raises the correct error" do
+        expect { sd_unavailable }.to raise_error(
+          Octoprint::Exceptions::ConflictError,
+          /Can not upload to SD card, printer is either not operational or already busy/
+        )
+      end
+    end
+
+    context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
+      let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
+
+      its(:effective_print) { is_expected.to be false }
+      its(:effective_select) { is_expected.to be true }
+    end
+
+    context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
+      let(:params) { { location: Octoprint::Location::Local, options: { print: true } } }
+
+      its(:effective_print) { is_expected.to be true }
+      its(:effective_select) { is_expected.to be false }
+    end
+
+    context "when adding metadata", vcr: { cassette_name: "files/upload_metadata" } do
+      let(:params) do
+        { location: Octoprint::Location::Local, options: { userdata: "{\"test_value\": \"some value\"}" } }
+      end
+
+      # this one does not return the passed metadata back, we need to trust that it was set on a sucessful response
+      its(:done) { is_expected.to be true }
+    end
   end
 
   describe "Create a folder", vcr: { cassette_name: "files/create_folder" } do
@@ -52,6 +105,8 @@ RSpec.describe Octoprint::Files do
 
     it { is_expected.to be_a Octoprint::Files::OperationResult }
     its(:done) { is_expected.to be true }
+    its(:effective_print) { is_expected.to be_nil }
+    its(:effective_select) { is_expected.to be_nil }
 
     describe "folder" do
       subject { described_class.create_folder(**params).folder }
@@ -59,17 +114,17 @@ RSpec.describe Octoprint::Files do
       its(:name) { is_expected.to eq "test" }
       its(:origin) { is_expected.to eq "local" }
       its(:path) { is_expected.to eq "test" }
-      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test" }) }
+      its("refs.resource") { is_expected.to eq("#{host}/api/files/local/test") }
     end
 
     context "with a path", vcr: { cassette_name: "files/create_folder_with_path" } do
-      subject { described_class.create_folder(**params).folder }
+      subject { described_class.create_folder(**params).folder.refs.resource }
 
       before { described_class.create_folder(foldername: "test") }
 
       let(:params) { { foldername: "new_folder", path: "/test" } }
 
-      its(:refs) { is_expected.to eq({ resource: "#{host}/api/files/local/test/new_folder" }) }
+      it { is_expected.to eq("#{host}/api/files/local/test/new_folder") }
     end
 
     context "with an ivalid path", vcr: { cassette_name: "files/create_folder_with_invalid_path" } do

@@ -1,0 +1,69 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/files/sdcard"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-669abb19e7417173cbf2055287acf9c0\r\nContent-Disposition:
+        form-data; name=\"file\"; filename=\"test_file.gcode\"\r\nContent-Length:
+        981\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding:
+        binary\r\n\r\n;FLAVOR:Marlin\n;TIME:1021\n;Filament used: 0.273093m\n;Layer
+        height: 0.12\n;MINX:126.352\n;MINY:88.919\n;MINZ:0.12\n;MAXX:173.648\n;MAXY:211.081\n;MAXZ:0.36\n;Generated
+        with Cura_SteamEngine 4.11.0\nM140 S50\nM105\nM190 S50\nM104 S200\nM105\nM109
+        S200\nM82 ;absolute extrusion mode\nM201 X500.00 Y500.00 Z100.00 E5000.00
+        ;Setup machine max acceleration\nM203 X500.00 Y500.00 Z10.00 E50.00 ;Setup
+        machine max feedrate\nM204 P500.00 R1000.00 T500.00 ;Setup Print/Retract/Travel
+        acceleration\nM205 X8.00 Y8.00 Z0.40 E5.00 ;Setup Jerk\nM220 S100 ;Reset Feedrate\nM221
+        S100 ;Reset Flowrate\n\nG28 ;Home\n\nG92 E0 ;Reset Extruder\nG1 Z2.0 F3000
+        ;Move Z Axis up\nG1 X10.1 Y20 Z0.28 F5000.0 ;Move to start position\nG1 X10.1
+        Y200.0 Z0.28 F1500.0 E15 ;Draw the first line\nG1 X10.4 Y200.0 Z0.28 F5000.0
+        ;Move to side a little\nG1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line\nG92
+        E0 ;Reset Extruder\nG1 Z2.0 F3000 ;Move Z Axis up\n\nG92 E0\nG92 E0\nG1 F1800
+        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-669abb19e7417173cbf2055287acf9c0--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-669abb19e7417173cbf2055287acf9c0
+      User-Agent:
+      - Faraday v2.7.10
+      Content-Length:
+      - '1286'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 409
+      message: CONFLICT
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '94'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=24
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "Can not upload to SD card, printer is either not operational or already busy"
+        }
+  recorded_at: Sun, 09 Jul 2023 23:23:14 GMT
+recorded_with: VCR 6.2.0
