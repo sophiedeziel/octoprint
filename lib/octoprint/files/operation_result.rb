@@ -13,7 +13,7 @@ module Octoprint
 
       def self.deserialize(data)
         data[:folder] = Files::Folder.deserialize(data[:folder]) if data[:folder]
-        data[:files]&.keys&.each do |key|
+        data[:files].clone&.each_key do |key|
           data[:files][Location.deserialize(key.to_s)] = Files::File.deserialize(data[:files].delete(key))
         end
         new(data)
