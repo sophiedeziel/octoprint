@@ -17,7 +17,7 @@ group :development do
 end
 
 group :development, :test do
-  gem "dotenv", "~> 2.7"
+  gem "dotenv", "~> 3.0"
   gem "pry"
   gem "rake", "~> 13.0"
   gem "rspec-sorbet"
