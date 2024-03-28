@@ -23,6 +23,6 @@ group :development, :test do
   gem "rspec-sorbet"
   gem "rubocop", "~> 1.33"
   gem "rubocop-rspec", "~> 2.22"
-  gem "tapioca", "~> 0.12.0", require: false
+  gem "tapioca", "~> 0.13.1", require: false
   gem "yard"
 end
