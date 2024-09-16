@@ -49,7 +49,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854
+      uses: ruby/setup-ruby@a6b46b8a08edb18935835849f2a17072d5cc8c73
       with:
         ruby-version: ${{ matrix.ruby }}
 
