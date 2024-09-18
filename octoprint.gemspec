@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activesupport"
-  spec.add_dependency "faraday", ">= 2.2", "< 2.12"
+  spec.add_dependency "faraday", ">= 2.2", "< 2.13"
   spec.add_dependency "faraday-multipart", "~> 1.0.3"
   spec.add_dependency "sorbet-runtime", "~> 0.5.10908"
   spec.add_dependency "zeitwerk", "~> 2.6"
