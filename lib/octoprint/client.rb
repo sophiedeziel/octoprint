@@ -47,7 +47,6 @@ module Octoprint
       yield
     ensure
       Octoprint.client = config_client
-      self
     end
 
     private
