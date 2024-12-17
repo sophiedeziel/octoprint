@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport"
   spec.add_dependency "faraday", ">= 2.2", "< 2.12"
-  spec.add_dependency "faraday-multipart", "~> 1.0.3"
+  spec.add_dependency "faraday-multipart", ">= 1.0.3", "< 1.2.0"
   spec.add_dependency "sorbet-runtime", "~> 0.5.10908"
   spec.add_dependency "zeitwerk", "~> 2.6"
 
