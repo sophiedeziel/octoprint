@@ -145,9 +145,9 @@ RSpec.describe Octoprint::Deserializable do
       expect(instance.name).to eq("John")
       expect(instance.email).to eq("john@example.com")
       expect(instance.extra).to eq({
-        unknown_field: "value",
-        another_field: 123
-      })
+                                     unknown_field: "value",
+                                     another_field: 123
+                                   })
     end
 
     it "handles case with no unknown fields" do
@@ -211,10 +211,10 @@ RSpec.describe Octoprint::Deserializable do
     end
 
     it "handles arrays of basic types" do
-      data = { items: ["item1", "item2", "item3"] }
+      data = { items: %w[item1 item2 item3] }
       instance = test_class.deserialize(data)
 
-      expect(instance.items).to eq(["item1", "item2", "item3"])
+      expect(instance.items).to eq(%w[item1 item2 item3])
     end
   end
 
@@ -225,8 +225,9 @@ RSpec.describe Octoprint::Deserializable do
         mapping = { old_key: :new_key }
 
         # Use the class method directly
+        klass = Class.new.extend(Octoprint::Deserializable::ClassMethods)
         result = Octoprint::Deserializable::ClassMethods.instance_method(:rename_keys)
-                   .bind_call(Class.new.extend(Octoprint::Deserializable::ClassMethods), data, mapping)
+                                                        .bind_call(klass, data, mapping)
 
         expect(result).to eq({ new_key: "value1", another_key: "value2" })
         expect(data).to eq({ new_key: "value1", another_key: "value2" }) # Modifies original
@@ -236,8 +237,9 @@ RSpec.describe Octoprint::Deserializable do
         data = { existing_key: "value" }
         mapping = { missing_key: :new_key }
 
+        klass = Class.new.extend(Octoprint::Deserializable::ClassMethods)
         result = Octoprint::Deserializable::ClassMethods.instance_method(:rename_keys)
-                   .bind_call(Class.new.extend(Octoprint::Deserializable::ClassMethods), data, mapping)
+                                                        .bind_call(klass, data, mapping)
 
         expect(result).to eq({ existing_key: "value" })
       end

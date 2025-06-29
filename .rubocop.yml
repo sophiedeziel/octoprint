@@ -48,5 +48,20 @@ Style/DocumentDynamicEvalDefinition:
     - 'lib/octoprint/auto_initializable.rb'
     - 'lib/octoprint/deserializable.rb'
 
+# Allow more flexible RSpec rules for comprehensive testing
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/ExampleLength:
+  Max: 25
+
+RSpec/LeakyConstantDeclaration:
+  Enabled: false
+
+# Allow constant definition in test blocks for test-specific classes
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*'
+
 plugins:
   - rubocop-rspec

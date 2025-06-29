@@ -75,9 +75,9 @@ RSpec.describe Octoprint::AutoInitializable do
     end
 
     it "handles arrays of basic types" do
-      instance = test_class.new(tags: ["admin", "user"], numbers: [1, 2, 3])
+      instance = test_class.new(tags: %w[admin user], numbers: [1, 2, 3])
 
-      expect(instance.tags).to eq(["admin", "user"])
+      expect(instance.tags).to eq(%w[admin user])
       expect(instance.numbers).to eq([1, 2, 3])
     end
 
@@ -142,7 +142,7 @@ RSpec.describe Octoprint::AutoInitializable do
         include Octoprint::AutoInitializable
 
         auto_attr :name, type: String
-        auto_attr :location, type: Hash  # Use Hash to avoid type errors
+        auto_attr :location, type: Hash # Use Hash to avoid type errors
 
         auto_initialize!
       end
