@@ -97,7 +97,10 @@ module Octoprint
       def convert_value(value, type)
         return value unless value.is_a?(Hash)
 
-        # Check if type is a class that responds to new
+        # Don't try to convert basic Ruby types like Hash, Array, String, etc.
+        return value if [Hash, Array, String, Integer, Float, TrueClass, FalseClass].include?(type)
+
+        # Check if type is a class that responds to new (for our custom classes)
         if type.is_a?(Class) && type.respond_to?(:new)
           type.new(**value)
         else

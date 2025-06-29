@@ -109,6 +109,11 @@ module Octoprint
           []
         end
         
+        # Debug: let's see what's happening
+        # puts "Class: #{self.name}"
+        # puts "Valid keys: #{valid_keys}"
+        # puts "Data keys: #{data.keys}"
+        
         extra_keys = data.keys - valid_keys
         
         if extra_keys.any?
