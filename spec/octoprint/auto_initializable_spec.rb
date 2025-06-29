@@ -136,17 +136,19 @@ RSpec.describe Octoprint::AutoInitializable do
   end
 
   describe "type conversion with real classes" do
-    it "converts hash to Location object" do
-      # Test with a real class from the codebase
-      class TestWithLocation
+    before do
+      stub_const("TestWithLocation", Class.new do
         include Octoprint::AutoInitializable
 
         auto_attr :name, type: String
         auto_attr :location, type: Hash # Use Hash to avoid type errors
 
         auto_initialize!
-      end
+      end)
+    end
 
+    it "converts hash to Location object" do
+      # Test with a stubbed class to avoid leaky constants
       instance = TestWithLocation.new(
         name: "test",
         location: { type: "local" }

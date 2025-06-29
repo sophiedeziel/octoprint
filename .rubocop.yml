@@ -55,8 +55,6 @@ RSpec/MultipleExpectations:
 RSpec/ExampleLength:
   Max: 25
 
-RSpec/LeakyConstantDeclaration:
-  Enabled: false
 
 # Allow constant definition in test blocks for test-specific classes
 Lint/ConstantDefinitionInBlock:
