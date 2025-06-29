@@ -50,6 +50,32 @@ module Octoprint
         )
       end
 
+      # Sends a DELETE request to the resource's endpoint.
+      #
+      # @param [String] path      the path of the delete request
+      # @param [Hash] params      parameters to the request
+      # @param [Hash] headers     headers to the request
+      # @param [Hash] options     options
+      # @return [Object]
+      sig do
+        params(
+          path: String,
+          params: T::Hash[Symbol, T.untyped],
+          headers: T::Hash[Symbol, T.untyped],
+          options: T::Hash[Symbol, T.untyped]
+        )
+          .returns(T.untyped)
+      end
+      def delete(path: @path, params: {}, headers: {}, options: {})
+        client.request(
+          path,
+          http_method: :delete,
+          body: params.empty? ? nil : params,
+          headers: headers,
+          options: options
+        )
+      end
+
       # Instanciates an object from a hash. Can be overriden by child classes
       #
       # @param [Hash] attrs      the object's attributes
