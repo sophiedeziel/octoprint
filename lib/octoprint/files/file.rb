@@ -11,25 +11,25 @@ module Octoprint
       include Deserializable
       include AutoInitializable
 
-      auto_attr :name
+      auto_attr :name, type: String, nilable: false
       # Display is a reserved keyword in Ruby, so we need to rename it
-      auto_attr :display_name
-      auto_attr :origin
-      auto_attr :path
-      auto_attr :type
-      auto_attr :type_path
-      auto_attr :refs
-      auto_attr :display_layer_progress
-      auto_attr :dashboard
-      auto_attr :date
-      auto_attr :gcode_analysis
-      auto_attr :md5_hash
-      auto_attr :size
-      auto_attr :userdata
-      auto_attr :children
-      auto_attr :prints
-      auto_attr :statistics
-      auto_attr :extra
+      auto_attr :display_name, type: String
+      auto_attr :origin, type: Location, nilable: false
+      auto_attr :path, type: String, nilable: false
+      auto_attr :type, type: String
+      auto_attr :type_path, type: String, array: true
+      auto_attr :refs, type: Refs
+      auto_attr :display_layer_progress, type: Hash
+      auto_attr :dashboard, type: Hash
+      auto_attr :date, type: Integer
+      auto_attr :gcode_analysis, type: Hash
+      auto_attr :md5_hash, type: String
+      auto_attr :size, type: Integer
+      auto_attr :userdata, type: Hash
+      auto_attr :children, type: File, array: true
+      auto_attr :prints, type: Hash
+      auto_attr :statistics, type: Hash
+      auto_attr :extra, type: Hash
 
       auto_initialize!
 
