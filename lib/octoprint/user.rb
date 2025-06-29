@@ -4,6 +4,7 @@
 module Octoprint
   # Represents a user from the OctoPrint API
   class User < BaseResource
+    extend T::Sig
     include Deserializable
     include AutoInitializable
 
@@ -22,6 +23,7 @@ module Octoprint
 
     # Retrieves information about the current user
     # @return [User] The current user
+    sig { returns(T.nilable(Octoprint::User)) }
     def self.current
       fetch_resource("/api/currentuser")
     end

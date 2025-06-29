@@ -70,5 +70,4 @@ RSpec.describe Octoprint::Client do
       expect(client_in_thread).to be_nil
     end
   end
-
 end
