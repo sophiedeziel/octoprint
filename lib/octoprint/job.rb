@@ -20,16 +20,16 @@ module Octoprint
   #           job = Octoprint::Job.get
   #           job.state #=> "Printing"
   class Job < BaseResource
+    include AutoInitializable
+    
     resource_path("/api/job")
-    attr_reader :information, :progress, :state, :error
-
-    def initialize(job:, progress:, state:, error: nil)
-      @information = Information.new(**job)
-      @progress = Progress.new(**progress)
-      @state = state
-      @error = error
-      super()
-    end
+    
+    auto_attr :information, type: Information, from: :job
+    auto_attr :progress, type: Progress, from: :progress
+    auto_attr :state
+    auto_attr :error
+    
+    auto_initialize!
 
     # Retrieve information about the current job (if there is one).
     #

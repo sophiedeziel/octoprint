@@ -16,14 +16,14 @@ module Octoprint
   #           connection.current.state= #=> "Printing"
   #           connection.options.ports #=> ["/dev/ttyACM0"]
   class Connection < BaseResource
+    include AutoInitializable
+    
     resource_path("/api/connection")
-    attr_reader :current, :options
-
-    def initialize(current:, options:)
-      @current = Settings.new(**current)
-      @options = Options.new(**options)
-      super()
-    end
+    
+    auto_attr :current, type: Settings, from: :current
+    auto_attr :options, type: Options, from: :options
+    
+    auto_initialize!
 
     # Retrieve the current connection settings, including information regarding the available baudrates and serial ports
     # and the current connection state.

@@ -8,6 +8,7 @@ module Octoprint
     # File information
     class File < T::Struct
       extend T::Sig
+      include Deserializable
 
       prop :name, String
       # Display is a reserved keyword in Ruby, so we need to rename it
@@ -31,21 +32,14 @@ module Octoprint
 
       sig { params(data: T::Hash[Symbol, T.untyped]).returns(File) }
       def self.deserialize(data)
-        data[:refs] = Refs.new(data[:refs]) if data[:refs]
-        data[:origin] = Location.deserialize(data[:origin]) if data[:origin]
-        data[:children]&.map! { |child| File.deserialize(child) }
-
+        deserialize_nested(data, :refs, Refs)
+        deserialize_nested(data, :origin, Location)
+        deserialize_array(data, :children, File)
+        
         rename_keys(data, { display: :display_name, hash: :md5_hash })
         extras(data)
 
         new(**T.unsafe(data))
-      end
-
-      sig { params(data: T::Hash[Symbol, T.untyped], mapping: T::Hash[Symbol, Symbol]).void }
-      def self.rename_keys(data, mapping)
-        mapping.each do |old_key, new_key|
-          data[new_key] = data.delete(old_key) if data[old_key]
-        end
       end
 
       sig { params(data: T::Hash[Symbol, T.untyped]).void }

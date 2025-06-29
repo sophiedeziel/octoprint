@@ -22,14 +22,14 @@ module Octoprint
     #           settings.baudrate #=> 250000
     #           settings.printer_profile #=> "_default"
     class Settings
-      attr_reader :state, :port, :baudrate, :printer_profile
-
-      def initialize(state:, port:, baudrate:, printer_profile:)
-        @state = state
-        @port = port
-        @baudrate = baudrate
-        @printer_profile = printer_profile
-      end
+      include AutoInitializable
+      
+      auto_attr :state
+      auto_attr :port
+      auto_attr :baudrate
+      auto_attr :printer_profile
+      
+      auto_initialize!
     end
   end
 end

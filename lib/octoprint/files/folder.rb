@@ -7,6 +7,9 @@ module Octoprint
   class Files
     # A folder in the file system
     class Folder < T::Struct
+      extend T::Sig
+      include Deserializable
+      
       prop :name, String
       # Display is a reserved keyword in Ruby, so we need to rename it
       prop :display_name, T.nilable(String), default: nil
@@ -14,9 +17,10 @@ module Octoprint
       prop :path, String
       prop :refs, Refs
 
+      sig { params(data: T::Hash[Symbol, T.untyped]).returns(Folder) }
       def self.deserialize(data)
-        data[:refs] = Refs.new(data[:refs]) if data[:refs]
-        data[:display_name] = data.delete(:display) if data[:display]
+        deserialize_nested(data, :refs, Refs)
+        rename_keys(data, { display: :display_name })
         new(data)
       end
     end
