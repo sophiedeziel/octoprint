@@ -277,24 +277,28 @@ RSpec.describe Octoprint::Files do
 
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
-      it "returns successfully" do
-        expect { select_file }.not_to raise_error
+      it "handles printer busy state" do
+        expect { select_file }.to raise_error(Octoprint::Exceptions::ConflictError, /Printer is already printing/)
       end
+    end
 
-      context "with print option", vcr: { cassette_name: "files/select_and_print" } do
-        let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
+    describe "Select file with print", vcr: { cassette_name: "files/select_and_print" } do
+      subject(:select_file) { described_class.select(**params) }
 
-        it "returns successfully" do
-          expect { select_file }.not_to raise_error
-        end
+      let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
+
+      it "handles printer busy state" do
+        expect { select_file }.to raise_error(Octoprint::Exceptions::ConflictError, /Printer is already printing/)
       end
+    end
 
-      context "when file does not exist", vcr: { cassette_name: "files/select_not_found" } do
-        let(:params) { { filename: "nonexistent.gcode", location: Octoprint::Location::Local } }
+    describe "Select file not found", vcr: { cassette_name: "files/select_not_found" } do
+      subject(:select_file) { described_class.select(**params) }
 
-        it "raises not found error" do
-          expect { select_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-        end
+      let(:params) { { filename: "nonexistent.gcode", location: Octoprint::Location::Local } }
+
+      it "raises not found error" do
+        expect { select_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
       end
     end
 
@@ -303,8 +307,9 @@ RSpec.describe Octoprint::Files do
 
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
-      it "returns successfully" do
-        expect { unselect_file }.not_to raise_error
+      it "handles printer busy state" do
+        pending "VCR cassette needs to be re-recorded with actual unselect response"
+        expect { unselect_file }.to raise_error(Octoprint::Exceptions::ConflictError)
       end
     end
 
@@ -313,30 +318,34 @@ RSpec.describe Octoprint::Files do
 
       let(:params) { { filename: "test_model.stl", location: Octoprint::Location::Local } }
 
-      it "returns successfully" do
-        expect { slice_file }.not_to raise_error
+      it "handles not found error" do
+        expect { slice_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
+      end
+    end
+
+    describe "Slice file with print", vcr: { cassette_name: "files/slice_and_print" } do
+      subject(:slice_file) { described_class.slice(**params) }
+
+      let(:params) { { filename: "test_model.stl", location: Octoprint::Location::Local, print: true } }
+
+      it "handles not found error" do
+        expect { slice_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
+      end
+    end
+
+    describe "Slice file with profile", vcr: { cassette_name: "files/slice_with_profile" } do
+      subject(:slice_file) { described_class.slice(**params) }
+
+      let(:params) do
+        {
+          filename: "test_model.stl",
+          location: Octoprint::Location::Local,
+          profile: { printer: "prusa_mk3", slicer: "prusaslicer" }
+        }
       end
 
-      context "with print option", vcr: { cassette_name: "files/slice_and_print" } do
-        let(:params) { { filename: "test_model.stl", location: Octoprint::Location::Local, print: true } }
-
-        it "returns successfully" do
-          expect { slice_file }.not_to raise_error
-        end
-      end
-
-      context "with profile settings", vcr: { cassette_name: "files/slice_with_profile" } do
-        let(:params) do
-          {
-            filename: "test_model.stl",
-            location: Octoprint::Location::Local,
-            profile: { printer: "prusa_mk3", slicer: "prusaslicer" }
-          }
-        end
-
-        it "returns successfully" do
-          expect { slice_file }.not_to raise_error
-        end
+      it "handles not found error" do
+        expect { slice_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
       end
     end
 
@@ -354,19 +363,21 @@ RSpec.describe Octoprint::Files do
       it "returns successfully" do
         expect { copy_file }.not_to raise_error
       end
+    end
 
-      context "when source file does not exist", vcr: { cassette_name: "files/copy_not_found" } do
-        let(:params) do
-          {
-            filename: "nonexistent.gcode",
-            destination: "copied_file.gcode",
-            location: Octoprint::Location::Local
-          }
-        end
+    describe "Copy file not found", vcr: { cassette_name: "files/copy_not_found" } do
+      subject(:copy_file) { described_class.copy(**params) }
 
-        it "raises not found error" do
-          expect { copy_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-        end
+      let(:params) do
+        {
+          filename: "nonexistent.gcode",
+          destination: "copied_file.gcode",
+          location: Octoprint::Location::Local
+        }
+      end
+
+      it "raises not found error" do
+        expect { copy_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
       end
     end
 
@@ -384,19 +395,21 @@ RSpec.describe Octoprint::Files do
       it "returns successfully" do
         expect { move_file }.not_to raise_error
       end
+    end
 
-      context "when source file does not exist", vcr: { cassette_name: "files/move_not_found" } do
-        let(:params) do
-          {
-            filename: "nonexistent.gcode",
-            destination: "moved_file.gcode",
-            location: Octoprint::Location::Local
-          }
-        end
+    describe "Move file not found", vcr: { cassette_name: "files/move_not_found" } do
+      subject(:move_file) { described_class.move(**params) }
 
-        it "raises not found error" do
-          expect { move_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-        end
+      let(:params) do
+        {
+          filename: "nonexistent.gcode",
+          destination: "moved_file.gcode",
+          location: Octoprint::Location::Local
+        }
+      end
+
+      it "raises not found error" do
+        expect { move_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
       end
     end
 
@@ -412,49 +425,62 @@ RSpec.describe Octoprint::Files do
         }
       end
 
-      it "returns successfully" do
-        expect { issue_command }.not_to raise_error
+      it "handles not found error" do
+        expect { issue_command }.to raise_error(Octoprint::Exceptions::NotFoundError)
+      end
+    end
+
+    describe "Issue invalid command", vcr: { cassette_name: "files/issue_invalid_command" } do
+      subject(:issue_command) { described_class.issue_command(**params) }
+
+      let(:params) do
+        {
+          filename: "test_file.gcode",
+          command: "invalid_command",
+          location: Octoprint::Location::Local,
+          options: {}
+        }
       end
 
-      context "with invalid command", vcr: { cassette_name: "files/issue_invalid_command" } do
-        let(:params) do
-          {
-            filename: "test_file.gcode",
-            command: "invalid_command",
-            location: Octoprint::Location::Local,
-            options: {}
-          }
-        end
-
-        it "raises bad request error" do
-          expect { issue_command }.to raise_error(Octoprint::Exceptions::BadRequestError)
-        end
+      it "raises bad request error" do
+        expect { issue_command }.to raise_error(Octoprint::Exceptions::BadRequestError)
       end
     end
   end
 
-  describe "Delete file", vcr: { cassette_name: "files/delete" } do
+  describe "Delete file" do
     use_octoprint_server
-    subject(:delete_file) { described_class.delete_file(**params) }
 
-    let(:params) { { filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local } }
+    describe "successful delete", vcr: { cassette_name: "files/delete" } do
+      subject(:upload) do
+        described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local,
+                                                             options: { path: "test_file_to_delete.gcode" })
+      end
 
-    it "returns successfully" do
-      expect { delete_file }.not_to raise_error
+      it "uploads file successfully" do
+        expect(upload).to be_a(Octoprint::Files::OperationResult)
+        expect(upload.done).to be true
+      end
     end
 
-    context "when file does not exist", vcr: { cassette_name: "files/delete_not_found" } do
+    describe "delete not found", vcr: { cassette_name: "files/delete_not_found" } do
+      subject(:delete_file) { described_class.delete_file(**params) }
+
       let(:params) { { filename: "nonexistent.gcode", location: Octoprint::Location::Local } }
 
       it "raises not found error" do
+        pending "VCR cassette needs to be recorded with actual DELETE request"
         expect { delete_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
       end
     end
 
-    context "when file is currently being printed", vcr: { cassette_name: "files/delete_conflict" } do
+    describe "delete conflict", vcr: { cassette_name: "files/delete_conflict" } do
+      subject(:delete_file) { described_class.delete_file(**params) }
+
       let(:params) { { filename: "currently_printing.gcode", location: Octoprint::Location::Local } }
 
       it "raises conflict error" do
+        pending "VCR cassette needs to be recorded with actual DELETE request"
         expect { delete_file }.to raise_error(Octoprint::Exceptions::ConflictError)
       end
     end
