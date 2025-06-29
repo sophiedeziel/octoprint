@@ -3,7 +3,7 @@ inherit_mode:
     - Exclude
 
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.2
   NewCops: enable
   Exclude:
     - 'sorbet/rbi/**/*'
@@ -21,4 +21,49 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
-require: rubocop-rspec
+# Allow higher complexity for infrastructure/metaprogramming methods
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+
+# Disable DocumentDynamicEvalDefinition for metaprogramming modules
+Style/DocumentDynamicEvalDefinition:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+# Allow more flexible RSpec rules for comprehensive testing
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/ExampleLength:
+  Max: 25
+
+
+# Allow constant definition in test blocks for test-specific classes
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*'
+
+plugins:
+  - rubocop-rspec

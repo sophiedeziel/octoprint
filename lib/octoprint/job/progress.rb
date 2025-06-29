@@ -24,15 +24,15 @@ module Octoprint
     #           options.print_time_left #=>  912
     #           options.print_time_left_origin #=>  "estimate"
     class Progress
-      attr_reader :completion, :filepos, :print_time, :print_time_left, :print_time_left_origin
+      include AutoInitializable
 
-      def initialize(**kwargs)
-        @completion                 = kwargs[:completion]
-        @filepos                    = kwargs[:filepos]
-        @print_time                 = kwargs[:print_time]
-        @print_time_left            = kwargs[:print_time_left]
-        @print_time_left_origin     = kwargs[:print_time_left_origin]
-      end
+      auto_attr :completion, type: Float
+      auto_attr :filepos, type: Integer
+      auto_attr :print_time, type: Float
+      auto_attr :print_time_left, type: Float
+      auto_attr :print_time_left_origin, type: String
+
+      auto_initialize!
     end
   end
 end

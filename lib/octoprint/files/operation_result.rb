@@ -4,19 +4,34 @@
 module Octoprint
   class Files
     # Result of uploading a file or creating a folder
-    class OperationResult < T::Struct
-      prop :done, T::Boolean
-      prop :effective_select, T.nilable(T::Boolean), default: nil
-      prop :effective_print, T.nilable(T::Boolean), default: nil
-      prop :files, T.nilable(T::Hash[Location, File]), default: nil
-      prop :folder, T.nilable(Folder)
+    class OperationResult
+      extend T::Sig
+      include Deserializable
+      include AutoInitializable
 
-      def self.deserialize(data)
-        data[:folder] = Files::Folder.deserialize(data[:folder]) if data[:folder]
-        data[:files].clone&.each_key do |key|
-          data[:files][Location.deserialize(key.to_s)] = Files::File.deserialize(data[:files].delete(key))
+      auto_attr :done, type: T::Boolean
+      auto_attr :effective_select, type: T::Boolean
+      auto_attr :effective_print, type: T::Boolean
+      auto_attr :files, type: Hash
+      auto_attr :folder, type: Folder
+
+      auto_initialize!
+
+      # Configure deserialization
+      deserialize_config do
+        nested :folder, Files::Folder
+
+        # Custom transformation for files hash with Location keys
+        transform do |data|
+          if data[:files]
+            new_files = {}
+            data[:files].each do |key, value|
+              location_key = Location.deserialize(key.to_s)
+              new_files[location_key] = Files::File.deserialize(value)
+            end
+            data[:files] = new_files
+          end
         end
-        new(data)
       end
     end
   end
