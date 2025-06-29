@@ -25,10 +25,11 @@ module Octoprint
     # @param [String] host      Server's API version
     # @param [String] api_key   Server's version
     # @return [true]
+    sig { params(host: String, api_key: String).void }
     def configure(host:, api_key:)
       self.client = Client.new(host: host, api_key: api_key)
 
-      true
+      nil
     end
 
     # The API client used for the requests
