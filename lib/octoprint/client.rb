@@ -49,6 +49,13 @@ module Octoprint
       Octoprint.client = config_client
     end
 
+    # Retrieves information about the current user
+    # @return [User] The current user
+    def current_user
+      response = request("/api/currentuser")
+      User.deserialize(response)
+    end
+
     private
 
     def process_error(response)
