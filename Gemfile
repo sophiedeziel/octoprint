@@ -21,8 +21,8 @@ group :development, :test do
   gem "pry"
   gem "rake", "~> 13.0"
   gem "rspec-sorbet"
-  gem "rubocop", "~> 1.33"
+  gem "rubocop", "~> 1.77"
   gem "rubocop-rspec", "~> 3.0"
-  gem "tapioca", "~> 0.13.1", require: false
+  gem "tapioca", "~> 0.17.5", require: false
   gem "yard"
 end

@@ -7,7 +7,11 @@ require "zeitwerk"
 require "sorbet-runtime"
 
 loader = Zeitwerk::Loader.for_gem
+loader.ignore("#{__dir__}/tapioca")
 loader.setup
+
+# Load Tapioca compiler if available
+require_relative "tapioca/dsl/compilers/auto_initializable" if defined?(Tapioca)
 
 # Welcome to the Octoprint Gem!
 #
@@ -21,10 +25,11 @@ module Octoprint
     # @param [String] host      Server's API version
     # @param [String] api_key   Server's version
     # @return [true]
+    sig { params(host: String, api_key: String).void }
     def configure(host:, api_key:)
       self.client = Client.new(host: host, api_key: api_key)
 
-      true
+      nil
     end
 
     # The API client used for the requests

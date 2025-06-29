@@ -28,18 +28,17 @@ module Octoprint
     #           options.printer_profile_preference #=>  "_default"
     #           options.autoconnect #=>  nil
     class Options
-      attr_reader :ports, :baudrates, :printer_profiles, :port_preference, :baudrate_preference,
-                  :printer_profile_preference, :autoconnect
+      include AutoInitializable
 
-      def initialize(**kwargs)
-        @ports                      = kwargs[:ports]
-        @baudrates                  = kwargs[:baudrates]
-        @printer_profiles           = kwargs[:printer_profiles]
-        @port_preference            = kwargs[:port_preference]
-        @baudrate_preference        = kwargs[:baudrate_preference]
-        @printer_profile_preference = kwargs[:printer_profile_preference]
-        @autoconnect                = kwargs[:autoconnect]
-      end
+      auto_attr :ports, type: String, array: true
+      auto_attr :baudrates, type: Integer, array: true
+      auto_attr :printer_profiles, type: Hash, array: true
+      auto_attr :port_preference, type: String
+      auto_attr :baudrate_preference, type: Integer
+      auto_attr :printer_profile_preference, type: String
+      auto_attr :autoconnect, type: T::Boolean
+
+      auto_initialize!
     end
   end
 end

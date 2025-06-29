@@ -22,14 +22,14 @@ module Octoprint
     #           options.last_print_time #=>  nil
     #           options.filament #=>  {tool0: {length: 810, volume: 5.36}}
     class Information
-      attr_reader :file, :estimated_print_time, :last_print_time, :filament
+      include AutoInitializable
 
-      def initialize(**kwargs)
-        @file                       = kwargs[:file]
-        @estimated_print_time       = kwargs[:estimated_print_time]
-        @last_print_time            = kwargs[:last_print_time]
-        @filament                   = kwargs[:filament]
-      end
+      auto_attr :file, type: Hash
+      auto_attr :estimated_print_time, type: Float
+      auto_attr :last_print_time, type: Float
+      auto_attr :filament, type: Hash
+
+      auto_initialize!
     end
   end
 end

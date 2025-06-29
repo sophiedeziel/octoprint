@@ -6,10 +6,15 @@ require "sorbet-runtime"
 module Octoprint
   class Files
     # References relevant to this file, left out in abridged version
-    class Refs < T::Struct
-      prop :resource, String
-      prop :download, T.nilable(String), default: nil
-      prop :model, T.nilable(String), default: nil
+    class Refs
+      extend T::Sig
+      include AutoInitializable
+
+      auto_attr :resource, type: String
+      auto_attr :download, type: String
+      auto_attr :model, type: String
+
+      auto_initialize!
     end
   end
 end
