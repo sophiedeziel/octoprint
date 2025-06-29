@@ -26,11 +26,11 @@ module Octoprint
     class Progress
       include AutoInitializable
 
-      auto_attr :completion
-      auto_attr :filepos
-      auto_attr :print_time
-      auto_attr :print_time_left
-      auto_attr :print_time_left_origin
+      auto_attr :completion, type: Float
+      auto_attr :filepos, type: Integer
+      auto_attr :print_time, type: Float
+      auto_attr :print_time_left, type: Float
+      auto_attr :print_time_left_origin, type: String
 
       auto_initialize!
     end

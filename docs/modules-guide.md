@@ -464,6 +464,53 @@ module Octoprint
 end
 ```
 
+## RBI Generation and Type Safety
+
+The AutoInitializable module includes a **Tapioca compiler** that generates static RBI files with proper Sorbet type signatures. This provides better IDE support and static analysis compared to dynamic code generation.
+
+### How It Works
+
+1. **Runtime**: Simple `attr_reader` methods are created
+2. **Type Safety**: Static RBI files provide Sorbet signatures
+3. **IDE Support**: Full autocomplete and navigation
+4. **Performance**: No runtime code generation overhead
+
+### Regenerating RBI Files
+
+After adding or modifying `auto_attr` declarations, regenerate the RBI files:
+
+```bash
+# Regenerate all DSL RBI files (including AutoInitializable)
+bin/tapioca dsl
+
+# This will create/update files in sorbet/rbi/dsl/
+```
+
+### Generated RBI Example
+
+For a class with:
+```ruby
+auto_attr :name, type: String, nilable: false
+auto_attr :tags, type: String, array: true
+```
+
+Tapioca generates:
+```ruby
+# sorbet/rbi/dsl/your_class.rbi
+sig { returns(String) }
+attr_reader :name
+
+sig { returns(T.nilable(T::Array[String])) }
+attr_reader :tags
+```
+
+### Integration with Development Workflow
+
+1. **Add/modify** `auto_attr` declarations
+2. **Run** `bin/tapioca dsl` to update RBI files
+3. **Commit** both the source changes and RBI updates
+4. **Sorbet** will have complete type information
+
 ## Best Practices
 
 ### 1. Always Use Both Modules Together

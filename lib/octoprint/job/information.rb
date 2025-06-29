@@ -24,10 +24,10 @@ module Octoprint
     class Information
       include AutoInitializable
 
-      auto_attr :file
-      auto_attr :estimated_print_time
-      auto_attr :last_print_time
-      auto_attr :filament
+      auto_attr :file, type: Hash
+      auto_attr :estimated_print_time, type: Float
+      auto_attr :last_print_time, type: Float
+      auto_attr :filament, type: Hash
 
       auto_initialize!
     end

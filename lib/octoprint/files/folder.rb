@@ -11,12 +11,12 @@ module Octoprint
       include Deserializable
       include AutoInitializable
 
-      auto_attr :name
+      auto_attr :name, type: String
       # Display is a reserved keyword in Ruby, so we need to rename it
-      auto_attr :display_name
-      auto_attr :origin
-      auto_attr :path
-      auto_attr :refs
+      auto_attr :display_name, type: String
+      auto_attr :origin, type: Location
+      auto_attr :path, type: String
+      auto_attr :refs, type: Refs
 
       auto_initialize!
 

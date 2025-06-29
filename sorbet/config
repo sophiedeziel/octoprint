@@ -4,3 +4,4 @@
 --ignore=/tmp/
 --ignore=/vendor/bundle
 --ignore=/spec/
+--ignore=/lib/tapioca/

@@ -24,10 +24,10 @@ module Octoprint
     class Settings
       include AutoInitializable
 
-      auto_attr :state
-      auto_attr :port
-      auto_attr :baudrate
-      auto_attr :printer_profile
+      auto_attr :state, type: String
+      auto_attr :port, type: String
+      auto_attr :baudrate, type: Integer
+      auto_attr :printer_profile, type: String
 
       auto_initialize!
     end

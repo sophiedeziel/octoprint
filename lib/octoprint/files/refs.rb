@@ -10,9 +10,9 @@ module Octoprint
       extend T::Sig
       include AutoInitializable
 
-      auto_attr :resource
-      auto_attr :download
-      auto_attr :model
+      auto_attr :resource, type: String
+      auto_attr :download, type: String
+      auto_attr :model, type: String
 
       auto_initialize!
     end

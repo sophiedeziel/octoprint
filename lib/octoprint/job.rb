@@ -26,8 +26,8 @@ module Octoprint
 
     auto_attr :information, type: Information, from: :job
     auto_attr :progress, type: Progress, from: :progress
-    auto_attr :state
-    auto_attr :error
+    auto_attr :state, type: String
+    auto_attr :error, type: String
 
     auto_initialize!
 

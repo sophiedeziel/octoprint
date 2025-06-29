@@ -9,11 +9,11 @@ module Octoprint
       include Deserializable
       include AutoInitializable
 
-      auto_attr :done
-      auto_attr :effective_select
-      auto_attr :effective_print
-      auto_attr :files
-      auto_attr :folder
+      auto_attr :done, type: T::Boolean
+      auto_attr :effective_select, type: T::Boolean
+      auto_attr :effective_print, type: T::Boolean
+      auto_attr :files, type: Hash
+      auto_attr :folder, type: Folder
 
       auto_initialize!
 

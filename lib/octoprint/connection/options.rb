@@ -30,13 +30,13 @@ module Octoprint
     class Options
       include AutoInitializable
 
-      auto_attr :ports
-      auto_attr :baudrates
-      auto_attr :printer_profiles
-      auto_attr :port_preference
-      auto_attr :baudrate_preference
-      auto_attr :printer_profile_preference
-      auto_attr :autoconnect
+      auto_attr :ports, type: String, array: true
+      auto_attr :baudrates, type: Integer, array: true
+      auto_attr :printer_profiles, type: Hash, array: true
+      auto_attr :port_preference, type: String
+      auto_attr :baudrate_preference, type: Integer
+      auto_attr :printer_profile_preference, type: String
+      auto_attr :autoconnect, type: T::Boolean
 
       auto_initialize!
     end
