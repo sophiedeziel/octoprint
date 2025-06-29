@@ -5,8 +5,8 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-43cd1991418855d6b3c6c0e5f82a522a\r\nContent-Disposition:
-        form-data; name=\"select\"\r\n\r\ntrue\r\n-------------RubyMultipartPost-43cd1991418855d6b3c6c0e5f82a522a\r\nContent-Disposition:
+      string: "-------------RubyMultipartPost-5481dc2b69779916c40d0fee6d9ea3ca\r\nContent-Disposition:
+        form-data; name=\"select\"\r\n\r\ntrue\r\n-------------RubyMultipartPost-5481dc2b69779916c40d0fee6d9ea3ca\r\nContent-Disposition:
         form-data; name=\"file\"; filename=\"test_file.gcode\"\r\nContent-Length:
         981\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding:
         binary\r\n\r\n;FLAVOR:Marlin\n;TIME:1021\n;Filament used: 0.273093m\n;Layer
@@ -21,14 +21,14 @@ http_interactions:
         Y200.0 Z0.28 F1500.0 E15 ;Draw the first line\nG1 X10.4 Y200.0 Z0.28 F5000.0
         ;Move to side a little\nG1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line\nG92
         E0 ;Reset Extruder\nG1 Z2.0 F3000 ;Move Z Axis up\n\nG92 E0\nG92 E0\nG1 F1800
-        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-43cd1991418855d6b3c6c0e5f82a522a--\r\n"
+        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-5481dc2b69779916c40d0fee6d9ea3ca--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-43cd1991418855d6b3c6c0e5f82a522a
+      - multipart/form-data; boundary=-----------RubyMultipartPost-5481dc2b69779916c40d0fee6d9ea3ca
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Content-Length:
       - '1406'
       Accept-Encoding:
@@ -53,7 +53,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=171
+      - app;dur=204
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -68,7 +68,7 @@ http_interactions:
         {
           "done": true,
           "effectivePrint": false,
-          "effectiveSelect": true,
+          "effectiveSelect": false,
           "files": {
             "local": {
               "name": "test_file.gcode",
@@ -81,5 +81,5 @@ http_interactions:
             }
           }
         }
-  recorded_at: Sun, 09 Jul 2023 23:58:24 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 15:19:59 GMT
+recorded_with: VCR 6.3.1

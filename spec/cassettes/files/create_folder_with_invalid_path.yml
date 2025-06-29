@@ -5,16 +5,16 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3\r\nContent-Disposition:
-        form-data; name=\"path\"\r\n\r\n/does_not_exist\r\n-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-753adafc7549268a5e7787911a685fb3--\r\n"
+      string: "-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/does_not_exist\r\n-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-753adafc7549268a5e7787911a685fb3
+      - multipart/form-data; boundary=-----------RubyMultipartPost-899729a104e3b693f977e56b94203c26
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Content-Length:
       - '326'
       Accept-Encoding:
@@ -39,7 +39,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=24
+      - app;dur=30
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -52,5 +52,5 @@ http_interactions:
         {
           "error": "[Errno 2] No such file or directory"
         }
-  recorded_at: Sun, 09 Jul 2023 18:22:13 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
+recorded_with: VCR 6.3.1

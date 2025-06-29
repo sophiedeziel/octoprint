@@ -48,5 +48,5 @@ http_interactions:
         {
           "error": "Printer is already printing, cannot select a new file"
         }
-  recorded_at: Sun, 29 Jun 2025 14:18:52 GMT
+  recorded_at: Sun, 29 Jun 2025 15:20:01 GMT
 recorded_with: VCR 6.3.1

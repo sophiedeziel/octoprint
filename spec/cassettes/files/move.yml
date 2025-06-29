@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: "<HOST>/api/files/local/test_file.gcode"
+    uri: "<HOST>/api/files/local/test_file_for_move.gcode"
     body:
       encoding: UTF-8
       string: '{"command":"move","destination":"moved_file.gcode"}'
@@ -19,13 +19,13 @@ http_interactions:
       - "*/*"
   response:
     status:
-      code: 201
-      message: CREATED
+      code: 404
+      message: NOT FOUND
     headers:
       Content-Type:
       - application/json
-      Location:
-      - "<HOST>/api/files/local/moved_file.gcode"
+      Content-Length:
+      - '138'
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -35,26 +35,18 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=134
+      - app;dur=54
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
-      Transfer-Encoding:
-      - chunked
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: |
         {
-          "name": "test_file.gcode",
-          "origin": "local",
-          "path": "moved_file.gcode",
-          "refs": {
-            "download": "<HOST>/downloads/files/local/moved_file.gcode",
-            "resource": "<HOST>/api/files/local/moved_file.gcode"
-          }
+          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
         }
-  recorded_at: Sun, 29 Jun 2025 14:18:53 GMT
+  recorded_at: Sun, 29 Jun 2025 15:20:01 GMT
 recorded_with: VCR 6.3.1

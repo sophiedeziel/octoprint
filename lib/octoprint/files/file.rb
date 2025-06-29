@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
+require "time"
 
 module Octoprint
   class Files
@@ -21,7 +22,7 @@ module Octoprint
       auto_attr :refs, type: Refs
       auto_attr :display_layer_progress, type: Hash
       auto_attr :dashboard, type: Hash
-      auto_attr :date, type: Integer
+      auto_attr :date_timestamp, type: Integer
       auto_attr :gcode_analysis, type: Hash
       auto_attr :md5_hash, type: String
       auto_attr :size, type: Integer
@@ -38,8 +39,18 @@ module Octoprint
         nested :refs, Refs
         nested :origin, Location
         array :children, File
-        rename display: :display_name, hash: :md5_hash
+        rename display: :display_name, hash: :md5_hash, date: :date_timestamp
         collect_extras
+      end
+
+      # Convert Unix timestamp to Time object
+      #
+      # @return [Time, nil] The file date as a Time object, or nil if no timestamp
+      sig { returns(T.nilable(Time)) }
+      def date
+        return nil unless date_timestamp
+
+        Time.at(date_timestamp)
       end
     end
   end

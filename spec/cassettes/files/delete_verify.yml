@@ -1,11 +1,11 @@
 ---
 http_interactions:
 - request:
-    method: post
-    uri: "<HOST>/api/files/local/test_model.stl"
+    method: delete
+    uri: "<HOST>/api/files/local/test_file_to_delete.gcode"
     body:
-      encoding: UTF-8
-      string: '{"command":"slice","print":true}'
+      encoding: US-ASCII
+      string: ''
     headers:
       Authorization:
       - Bearer <API_KEY>
@@ -35,7 +35,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=21
+      - app;dur=20
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -48,5 +48,5 @@ http_interactions:
         {
           "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
         }
-  recorded_at: Sun, 29 Jun 2025 14:18:52 GMT
+  recorded_at: Sun, 29 Jun 2025 15:20:02 GMT
 recorded_with: VCR 6.3.1

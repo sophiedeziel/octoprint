@@ -48,5 +48,5 @@ http_interactions:
         {
           "error": "command is invalid"
         }
-  recorded_at: Sun, 29 Jun 2025 14:18:53 GMT
+  recorded_at: Sun, 29 Jun 2025 14:58:26 GMT
 recorded_with: VCR 6.3.1

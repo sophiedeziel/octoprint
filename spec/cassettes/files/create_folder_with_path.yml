@@ -5,15 +5,15 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-96d75ddc2cbd19855d051e27db28a15f\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\ntest\r\n-------------RubyMultipartPost-96d75ddc2cbd19855d051e27db28a15f--\r\n"
+      string: "-------------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\ntest\r\n-------------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-96d75ddc2cbd19855d051e27db28a15f
+      - multipart/form-data; boundary=-----------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Content-Length:
       - '191'
       Accept-Encoding:
@@ -38,7 +38,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=49
+      - app;dur=78
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -61,22 +61,22 @@ http_interactions:
             }
           }
         }
-  recorded_at: Sun, 09 Jul 2023 17:40:33 GMT
+  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
 - request:
     method: post
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-c498f41925705ba17dd0914c1a854218\r\nContent-Disposition:
-        form-data; name=\"path\"\r\n\r\n/test\r\n-------------RubyMultipartPost-c498f41925705ba17dd0914c1a854218\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-c498f41925705ba17dd0914c1a854218--\r\n"
+      string: "-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/test\r\n-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-c498f41925705ba17dd0914c1a854218
+      - multipart/form-data; boundary=-----------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Content-Length:
       - '316'
       Accept-Encoding:
@@ -101,7 +101,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=23
+      - app;dur=57
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -124,5 +124,5 @@ http_interactions:
             }
           }
         }
-  recorded_at: Sun, 09 Jul 2023 17:40:33 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
+recorded_with: VCR 6.3.1
