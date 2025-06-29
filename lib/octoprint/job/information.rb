@@ -23,12 +23,12 @@ module Octoprint
     #           options.filament #=>  {tool0: {length: 810, volume: 5.36}}
     class Information
       include AutoInitializable
-      
+
       auto_attr :file
       auto_attr :estimated_print_time
       auto_attr :last_print_time
       auto_attr :filament
-      
+
       auto_initialize!
     end
   end

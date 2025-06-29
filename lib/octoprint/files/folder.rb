@@ -10,7 +10,7 @@ module Octoprint
       extend T::Sig
       include Deserializable
       include AutoInitializable
-      
+
       auto_attr :name
       # Display is a reserved keyword in Ruby, so we need to rename it
       auto_attr :display_name

@@ -12,14 +12,14 @@ module Octoprint
   # @example Basic usage
   #   class User
   #     include AutoInitializable
-  #     
+  #
   #     auto_attr :name, type: String, nilable: false
   #     auto_attr :email, type: String
   #     auto_attr :age, type: Integer
-  #     
+  #
   #     auto_initialize!
   #   end
-  #   
+  #
   #   user = User.new(name: "John", email: "john@example.com", age: 30)
   #   user.name  # => "John" (typed as String)
   #   user.email # => "john@example.com" (typed as T.nilable(String))
@@ -27,14 +27,14 @@ module Octoprint
   # @example With custom classes and arrays
   #   class Profile
   #     include AutoInitializable
-  #     
+  #
   #     auto_attr :user, type: User
   #     auto_attr :tags, type: String, array: true
   #     auto_attr :metadata, type: Hash
-  #     
+  #
   #     auto_initialize!
   #   end
-  #   
+  #
   #   profile = Profile.new(
   #     user: { name: "John", email: "john@example.com" },  # Auto-converted to User
   #     tags: ["admin", "developer"],                       # Typed as T.nilable(T::Array[String])
@@ -44,10 +44,10 @@ module Octoprint
   # @example Type conversion behavior
   #   # Basic Ruby types (Hash, Array, String, Integer) are preserved as-is
   #   auto_attr :data, type: Hash        # No conversion, preserves original hash
-  #   
+  #
   #   # Custom classes are auto-converted from hash data
   #   auto_attr :user, type: User        # Calls User.new(**hash_data)
-  #   
+  #
   #   # Arrays of custom classes
   #   auto_attr :users, type: User, array: true  # Maps each hash to User.new(**hash)
   module AutoInitializable
@@ -110,10 +110,10 @@ module Octoprint
       # @example
       #   class User
       #     include AutoInitializable
-      #     
+      #
       #     auto_attr :name, type: String
       #     auto_attr :age, type: Integer
-      #     
+      #
       #     auto_initialize!  # Must be called after auto_attr declarations
       #   end
       #
@@ -125,15 +125,16 @@ module Octoprint
       sig { void }
       def auto_initialize!
         attrs = @auto_attrs || {}
+        klass = self
 
-        define_method :initialize do |**kwargs|
+        T.unsafe(self).define_method :initialize do |**kwargs|
           attrs.each do |name, config|
             source_key = config[:from]
             value = kwargs[source_key]
 
             # Skip if nil and nilable
             if value.nil?
-              instance_variable_set("@#{name}", nil)
+              T.unsafe(self).instance_variable_set("@#{name}", nil)
               next
             end
 
@@ -142,41 +143,36 @@ module Octoprint
                                 if config[:array] && value.is_a?(Array)
                                   # Handle array of objects
                                   value.map do |item|
-                                    self.class.send(:convert_value, item, config[:type])
+                                    T.unsafe(klass).send(:convert_value, item, config[:type])
                                   end
                                 else
-                                  self.class.send(:convert_value, value, config[:type])
+                                  T.unsafe(klass).send(:convert_value, value, config[:type])
                                 end
                               else
                                 value
                               end
 
-            instance_variable_set("@#{name}", converted_value)
+            T.unsafe(self).instance_variable_set("@#{name}", converted_value)
           end
 
           # Call parent initializer if it exists and has an initialize method
-          if self.class.superclass.instance_methods.include?(:initialize)
-            super()
-          end
+          return unless T.unsafe(self).class.superclass.instance_methods.include?(:initialize)
+
+          super()
         end
 
         # Create typed attr_readers
         attrs.each do |name, config|
           # Generate the Sorbet type signature
           sorbet_type = generate_sorbet_type(config)
-          
+
           # Define the typed attr_reader
-          if sorbet_type
-            # Use class_eval to define the signature and method together
-            class_eval <<~RUBY, __FILE__, __LINE__ + 1
-              extend T::Sig
-              sig { returns(#{sorbet_type}) }
-              attr_reader :#{name}
-            RUBY
-          else
-            # Fallback to regular attr_reader if no type info
-            attr_reader name
-          end
+          # Use class_eval to define the signature and method together
+          T.unsafe(self).class_eval <<~RUBY, __FILE__, __LINE__ + 1
+            extend T::Sig
+            sig { returns(#{sorbet_type}) }
+            attr_reader :#{name}
+          RUBY
         end
       end
 
@@ -237,46 +233,38 @@ module Octoprint
       # @example
       #   generate_sorbet_type({ type: String, nilable: true, array: false })
       #   # => "T.nilable(String)"
-      #   
+      #
       #   generate_sorbet_type({ type: User, nilable: false, array: true })
       #   # => "T::Array[User]"
       sig { params(config: T::Hash[Symbol, T.untyped]).returns(String) }
       def generate_sorbet_type(config)
         type = config[:type]
-        
+
         # Handle the case where type is already a Sorbet type
-        if type.is_a?(T::Types::Base) || type.is_a?(T::Private::Types::TypeAlias)
-          return type.to_s
-        end
-        
+        return type.to_s if type.is_a?(T::Types::Base)
+
         # Convert type to string representation
         base_type = case type
-        when Class
-          # For regular classes, use the class name
-          type.name
-        when String
-          # For primitive types passed as strings
-          type
-        when Symbol
-          # For primitive types passed as symbols
-          type.to_s.capitalize
-        when T.untyped
-          "T.untyped"
-        else
-          # Default fallback
-          "T.untyped"
-        end
-        
+                    when Class
+                      # For regular classes, use the class name
+                      T.must(type.name)
+                    when String
+                      # For primitive types passed as strings
+                      type
+                    when Symbol
+                      # For primitive types passed as symbols
+                      type.to_s.capitalize
+                    else
+                      # Handle T.untyped case and other untyped cases
+                      "T.untyped"
+                    end
+
         # Handle array types
-        if config[:array]
-          base_type = "T::Array[#{base_type}]"
-        end
-        
+        base_type = "T::Array[#{base_type}]" if config[:array]
+
         # Handle nilable types
-        if config[:nilable]
-          base_type = "T.nilable(#{base_type})"
-        end
-        
+        base_type = "T.nilable(#{base_type})" if config[:nilable]
+
         base_type
       end
     end

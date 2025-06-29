@@ -12,19 +12,19 @@ module Octoprint
   #   class User
   #     include Deserializable
   #     include AutoInitializable
-  #     
+  #
   #     auto_attr :name, type: String
   #     auto_attr :display_name, type: String
   #     auto_attr :profile, type: Profile
-  #     
+  #
   #     auto_initialize!
-  #     
+  #
   #     deserialize_config do
   #       rename display: :display_name            # Rename API keys
   #       nested :profile, Profile                 # Convert nested hash to Profile object
   #     end
   #   end
-  #   
+  #
   #   # API response: { name: "John", display: "John Doe", profile: { bio: "Developer" } }
   #   user = User.deserialize(api_data)
   #   user.name         # => "John"
@@ -35,20 +35,20 @@ module Octoprint
   #   class Post
   #     include Deserializable
   #     include AutoInitializable
-  #     
+  #
   #     auto_attr :title, type: String
   #     auto_attr :author, type: User
   #     auto_attr :tags, type: String, array: true
   #     auto_attr :metadata, type: Hash
   #     auto_attr :extra, type: Hash
-  #     
+  #
   #     auto_initialize!
-  #     
+  #
   #     deserialize_config do
   #       nested :author, User                     # Convert author hash to User
   #       array :tags, String                     # Array of strings (no conversion needed)
   #       collect_extras                          # Collect unknown fields into :extra
-  #       
+  #
   #       # Custom transformation
   #       transform do |data|
   #         data[:metadata][:processed_at] = Time.now
@@ -59,7 +59,7 @@ module Octoprint
   # @example Manual deserialization (without DSL)
   #   class LegacyClass
   #     include Deserializable
-  #     
+  #
   #     def self.deserialize(data)
   #       # Manual processing
   #       rename_keys(data, { old_key: :new_key })
@@ -92,10 +92,10 @@ module Octoprint
       #   end
       #
       # @see DeserializationConfig DSL methods available in the configuration block
-      sig { params(block: T.proc.bind(DeserializationConfig).void).void }
+      sig { params(block: T.nilable(T.proc.bind(DeserializationConfig).void)).void }
       def deserialize_config(&block)
         @deserialize_config ||= DeserializationConfig.new
-        @deserialize_config.instance_eval(&block) if block_given?
+        @deserialize_config.instance_eval(&block) if block
       end
 
       # Returns the current deserialization configuration.
@@ -111,7 +111,7 @@ module Octoprint
       #
       # This method applies all configured transformations in order:
       # 1. Nested object conversions
-      # 2. Array element conversions  
+      # 2. Array element conversions
       # 3. Key renaming
       # 4. Custom transformations
       # 5. Extra field collection (if enabled)
@@ -129,49 +129,55 @@ module Octoprint
       sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
       def deserialize(data)
         config = deserialize_configuration
-        
+
         if config
           # Apply nested object deserializations
           config.nested_objects.each do |field, klass|
             deserialize_nested(data, field, klass)
           end
-          
+
           # Apply array deserializations
           config.array_objects.each do |field, klass|
             deserialize_array(data, field, klass)
           end
-          
+
           # Apply key renamings
           rename_keys(data, config.key_mappings) if config.key_mappings.any?
-          
+
           # Apply custom transformations
           config.transformations.each do |transformation|
             transformation.call(data)
           end
-          
+
           # Handle extras if configured
           handle_extras(data) if config.handle_extras?
         end
-        
-        new(**data)
+
+        T.unsafe(self).new(**data)
       end
 
       # Helper methods (kept for backward compatibility and direct use)
-      
+
       # Renames keys in a data hash according to the provided mapping.
       #
-      # This is useful for handling API responses where field names don't match
-      # Ruby conventions or where field names are reserved keywords.
+      # This is essential for handling API responses where field names conflict with
+      # Ruby built-in methods or don't match Ruby conventions. Many APIs use field
+      # names that would override important Object methods if used as attribute names.
       #
       # @param data [Hash<Symbol, Object>] The data hash to modify
       # @param mapping [Hash<Symbol, Symbol>] Mapping from old keys to new keys
       # @return [Hash<Symbol, Object>] The modified data hash
       #
-      # @example
-      #   data = { display: "John Doe", hash: "abc123" }
-      #   rename_keys(data, { display: :display_name, hash: :md5_hash })
-      #   # data is now { display_name: "John Doe", md5_hash: "abc123" }
-      sig { params(data: T::Hash[Symbol, T.untyped], mapping: T::Hash[Symbol, Symbol]).returns(T::Hash[Symbol, T.untyped]) }
+      # @example Avoiding Ruby method conflicts
+      #   data = { display: "John Doe", hash: "abc123", class: "User" }
+      #   rename_keys(data, { display: :display_name, hash: :md5_hash, class: :klass })
+      #   # data is now { display_name: "John Doe", md5_hash: "abc123", klass: "User" }
+      #   # Avoids conflicts with Object#display, Object#hash, Object#class
+      #
+      # @note Common Ruby method conflicts include: display, hash, class, type, method, send
+      sig do
+        params(data: T::Hash[Symbol, T.untyped], mapping: T::Hash[Symbol, Symbol]).returns(T::Hash[Symbol, T.untyped])
+      end
       def rename_keys(data, mapping)
         mapping.each do |old_key, new_key|
           data[new_key] = data.delete(old_key) if data.key?(old_key)
@@ -197,14 +203,14 @@ module Octoprint
         params(
           data: T::Hash[Symbol, T.untyped],
           field: Symbol,
-          klass: T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))
+          klass: T.untyped
         ).returns(T::Hash[Symbol, T.untyped])
       end
       def deserialize_nested(data, field, klass)
         if data[field] && klass.respond_to?(:deserialize)
-          data[field] = klass.deserialize(data[field])
+          data[field] = T.unsafe(klass).deserialize(data[field])
         elsif data[field] && klass.respond_to?(:new) && data[field].is_a?(Hash)
-          data[field] = klass.new(**data[field])
+          data[field] = T.unsafe(klass).new(**data[field])
         end
         data
       end
@@ -227,16 +233,16 @@ module Octoprint
         params(
           data: T::Hash[Symbol, T.untyped],
           field: Symbol,
-          klass: T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))
+          klass: T.untyped
         ).returns(T::Hash[Symbol, T.untyped])
       end
       def deserialize_array(data, field, klass)
         if data[field].is_a?(Array)
           data[field] = data[field].map do |item|
             if klass.respond_to?(:deserialize)
-              klass.deserialize(item)
+              T.unsafe(klass).deserialize(item)
             elsif klass.respond_to?(:new) && item.is_a?(Hash)
-              klass.new(**item)
+              T.unsafe(klass).new(**item)
             else
               item
             end
@@ -262,26 +268,26 @@ module Octoprint
       sig { params(data: T::Hash[Symbol, T.untyped]).void }
       def handle_extras(data)
         # Get valid keys from AutoInitializable if included
-        valid_keys = if respond_to?(:auto_attrs)
-          auto_attrs.keys
-        else
-          []
-        end
-        
+        valid_keys = if T.unsafe(self).respond_to?(:auto_attrs)
+                       T.unsafe(self).auto_attrs.keys
+                     else
+                       []
+                     end
+
         # Debug: let's see what's happening
         # puts "Class: #{self.name}"
         # puts "Valid keys: #{valid_keys}"
         # puts "Data keys: #{data.keys}"
-        
+
         extra_keys = data.keys - valid_keys
-        
-        if extra_keys.any?
-          extras_hash = {}
-          extra_keys.each do |key|
-            extras_hash[key] = data.delete(key)
-          end
-          data[:extra] = extras_hash
+
+        return unless extra_keys.any?
+
+        extras_hash = {}
+        extra_keys.each do |key|
+          extras_hash[key] = data.delete(key)
         end
+        data[:extra] = extras_hash
       end
     end
 
@@ -306,12 +312,12 @@ module Octoprint
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for nested object conversion
       # @api private
-      sig { returns(T::Hash[Symbol, T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))]) }
+      sig { returns(T::Hash[Symbol, T.untyped]) }
       attr_reader :nested_objects
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for array element conversion
-      # @api private  
-      sig { returns(T::Hash[Symbol, T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))]) }
+      # @api private
+      sig { returns(T::Hash[Symbol, T.untyped]) }
       attr_reader :array_objects
 
       # @return [Hash<Symbol, Symbol>] Mapping of old field names to new field names
@@ -335,7 +341,7 @@ module Octoprint
       # @example
       #   nested :profile, Profile      # data[:profile] hash becomes Profile instance
       #   nested :location, Location    # data[:location] becomes Location instance
-      sig { params(field: Symbol, klass: T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))).void }
+      sig { params(field: Symbol, klass: T.untyped).void }
       def nested(field, klass)
         @nested_objects[field] = klass
       end
@@ -351,21 +357,28 @@ module Octoprint
       # @example
       #   array :users, User           # data[:users] array of hashes becomes array of User instances
       #   array :tags, Tag            # data[:tags] becomes array of Tag instances
-      sig { params(field: Symbol, klass: T.any(T::Class[T.anything], T.class_of(T::Struct), T.class_of(T::Enum))).void }
+      sig { params(field: Symbol, klass: T.untyped).void }
       def array(field, klass)
         @array_objects[field] = klass
       end
 
       # Configures key renaming for API response fields.
       #
-      # This is useful when API field names don't match Ruby conventions or when
-      # they conflict with Ruby reserved words.
+      # This is essential when API field names conflict with Ruby built-in methods
+      # or don't match Ruby naming conventions. Many APIs use field names that
+      # would override important Object methods if used directly as attribute names.
       #
       # @param mappings [Hash<Symbol, Symbol>] Mapping from API field names to Ruby attribute names
       #
-      # @example
+      # @example Avoiding Ruby method conflicts
       #   rename display: :display_name, hash: :md5_hash, class: :klass
-      #   # API "display" becomes "display_name", "hash" becomes "md5_hash", etc.
+      #   # "display" conflicts with Object#display (prints to stdout)
+      #   # "hash" conflicts with Object#hash (returns object hash code)
+      #   # "class" conflicts with Object#class (returns object's class)
+      #
+      # @example Converting API naming to Ruby conventions
+      #   rename firstName: :first_name, lastName: :last_name
+      #   # Convert camelCase API fields to snake_case Ruby attributes
       sig { params(mappings: T::Hash[Symbol, Symbol]).void }
       def rename(mappings)
         @key_mappings.merge!(mappings)

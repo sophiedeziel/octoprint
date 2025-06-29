@@ -21,14 +21,14 @@ module Octoprint
   #           job.state #=> "Printing"
   class Job < BaseResource
     include AutoInitializable
-    
+
     resource_path("/api/job")
-    
+
     auto_attr :information, type: Information, from: :job
     auto_attr :progress, type: Progress, from: :progress
     auto_attr :state
     auto_attr :error
-    
+
     auto_initialize!
 
     # Retrieve information about the current job (if there is one).

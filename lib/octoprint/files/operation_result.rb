@@ -8,7 +8,7 @@ module Octoprint
       extend T::Sig
       include Deserializable
       include AutoInitializable
-      
+
       auto_attr :done
       auto_attr :effective_select
       auto_attr :effective_print
@@ -20,7 +20,7 @@ module Octoprint
       # Configure deserialization
       deserialize_config do
         nested :folder, Files::Folder
-        
+
         # Custom transformation for files hash with Location keys
         transform do |data|
           if data[:files]

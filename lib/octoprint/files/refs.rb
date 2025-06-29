@@ -9,7 +9,7 @@ module Octoprint
     class Refs
       extend T::Sig
       include AutoInitializable
-      
+
       auto_attr :resource
       auto_attr :download
       auto_attr :model

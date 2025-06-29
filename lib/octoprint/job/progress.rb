@@ -25,13 +25,13 @@ module Octoprint
     #           options.print_time_left_origin #=>  "estimate"
     class Progress
       include AutoInitializable
-      
+
       auto_attr :completion
       auto_attr :filepos
       auto_attr :print_time
       auto_attr :print_time_left
       auto_attr :print_time_left_origin
-      
+
       auto_initialize!
     end
   end

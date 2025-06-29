@@ -17,12 +17,12 @@ module Octoprint
   #           connection.options.ports #=> ["/dev/ttyACM0"]
   class Connection < BaseResource
     include AutoInitializable
-    
+
     resource_path("/api/connection")
-    
+
     auto_attr :current, type: Settings, from: :current
     auto_attr :options, type: Options, from: :options
-    
+
     auto_initialize!
 
     # Retrieve the current connection settings, including information regarding the available baudrates and serial ports

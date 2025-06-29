@@ -29,7 +29,7 @@ module Octoprint
     #           options.autoconnect #=>  nil
     class Options
       include AutoInitializable
-      
+
       auto_attr :ports
       auto_attr :baudrates
       auto_attr :printer_profiles
@@ -37,7 +37,7 @@ module Octoprint
       auto_attr :baudrate_preference
       auto_attr :printer_profile_preference
       auto_attr :autoconnect
-      
+
       auto_initialize!
     end
   end

@@ -23,12 +23,12 @@ module Octoprint
     #           settings.printer_profile #=> "_default"
     class Settings
       include AutoInitializable
-      
+
       auto_attr :state
       auto_attr :port
       auto_attr :baudrate
       auto_attr :printer_profile
-      
+
       auto_initialize!
     end
   end
