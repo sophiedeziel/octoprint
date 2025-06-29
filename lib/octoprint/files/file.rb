@@ -33,31 +33,13 @@ module Octoprint
 
       auto_initialize!
 
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(File) }
-      def self.deserialize(data)
-        deserialize_nested(data, :refs, Refs)
-        deserialize_nested(data, :origin, Location)
-        deserialize_array(data, :children, File)
-        
-        rename_keys(data, { display: :display_name, hash: :md5_hash })
-        extras(data)
-
-        new(**data)
-      end
-
-      sig { params(data: T::Hash[Symbol, T.untyped]).void }
-      def self.extras(data)
-        # Get all valid attribute names from auto_attrs
-        valid_keys = auto_attrs.keys
-        extra_keys = data.keys - valid_keys
-        
-        if extra_keys.any?
-          extras_hash = {}
-          extra_keys.each do |key|
-            extras_hash[key] = data.delete(key)
-          end
-          data[:extra] = extras_hash
-        end
+      # Configure deserialization
+      deserialize_config do
+        nested :refs, Refs
+        nested :origin, Location
+        array :children, File
+        rename display: :display_name, hash: :md5_hash
+        collect_extras
       end
     end
   end

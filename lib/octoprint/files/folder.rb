@@ -20,11 +20,10 @@ module Octoprint
 
       auto_initialize!
 
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(Folder) }
-      def self.deserialize(data)
-        deserialize_nested(data, :refs, Refs)
-        rename_keys(data, { display: :display_name })
-        new(**data)
+      # Configure deserialization
+      deserialize_config do
+        nested :refs, Refs
+        rename display: :display_name
       end
     end
   end

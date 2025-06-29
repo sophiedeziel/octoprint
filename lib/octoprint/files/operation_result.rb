@@ -17,21 +17,21 @@ module Octoprint
 
       auto_initialize!
 
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(OperationResult) }
-      def self.deserialize(data)
-        deserialize_nested(data, :folder, Files::Folder)
+      # Configure deserialization
+      deserialize_config do
+        nested :folder, Files::Folder
         
-        # Handle the special case of files hash with Location keys
-        if data[:files]
-          new_files = {}
-          data[:files].each do |key, value|
-            location_key = Location.deserialize(key.to_s)
-            new_files[location_key] = Files::File.deserialize(value)
+        # Custom transformation for files hash with Location keys
+        transform do |data|
+          if data[:files]
+            new_files = {}
+            data[:files].each do |key, value|
+              location_key = Location.deserialize(key.to_s)
+              new_files[location_key] = Files::File.deserialize(value)
+            end
+            data[:files] = new_files
           end
-          data[:files] = new_files
         end
-        
-        new(**data)
       end
     end
   end
