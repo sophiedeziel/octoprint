@@ -3,7 +3,7 @@
 
 module Octoprint
   # Represents a user from the OctoPrint API
-  class User
+  class User < BaseResource
     include Deserializable
     include AutoInitializable
 
@@ -18,6 +18,12 @@ module Octoprint
     deserialize_config do
       # Collect any unknown fields for future compatibility
       collect_extras
+    end
+
+    # Retrieves information about the current user
+    # @return [User] The current user
+    def self.current
+      fetch_resource("/api/currentuser")
     end
   end
 end

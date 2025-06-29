@@ -71,16 +71,4 @@ RSpec.describe Octoprint::Client do
     end
   end
 
-  describe "#current_user" do
-    let(:client) do
-      described_class.new(host: host, api_key: api_key)
-    end
-
-    it "returns a User object", vcr: { cassette_name: "currentuser" } do
-      user = client.current_user
-
-      expect(user).to be_a(Octoprint::User)
-      expect(user.name).to be_a(String)
-    end
-  end
 end
