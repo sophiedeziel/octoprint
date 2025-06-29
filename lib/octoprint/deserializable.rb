@@ -71,6 +71,10 @@ module Octoprint
     extend T::Sig
     extend T::Helpers
 
+    # Class methods added when Deserializable is included.
+    #
+    # These methods provide the DSL for configuring deserialization behavior
+    # and performing the actual deserialization of API responses.
     module ClassMethods
       extend T::Sig
 

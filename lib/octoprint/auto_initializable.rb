@@ -54,6 +54,10 @@ module Octoprint
     extend T::Sig
     extend T::Helpers
 
+    # Class methods added when AutoInitializable is included.
+    #
+    # These methods provide the DSL for declaring auto-initialized attributes
+    # and generating the corresponding initialization logic.
     module ClassMethods
       extend T::Sig
 
@@ -168,6 +172,16 @@ module Octoprint
 
           # Define the typed attr_reader
           # Use class_eval to define the signature and method together
+          #
+          # Example of generated code for name: String, nilable: false:
+          #   extend T::Sig
+          #   sig { returns(String) }
+          #   attr_reader :name
+          #
+          # Example of generated code for tags: String, array: true, nilable: true:
+          #   extend T::Sig
+          #   sig { returns(T.nilable(T::Array[String])) }
+          #   attr_reader :tags
           T.unsafe(self).class_eval <<~RUBY, __FILE__, __LINE__ + 1
             extend T::Sig
             sig { returns(#{sorbet_type}) }

@@ -21,4 +21,32 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
-require: rubocop-rspec
+# Allow higher complexity for infrastructure/metaprogramming methods
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+# Disable DocumentDynamicEvalDefinition for metaprogramming modules
+Style/DocumentDynamicEvalDefinition:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+
+plugins:
+  - rubocop-rspec
