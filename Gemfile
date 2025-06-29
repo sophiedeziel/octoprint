@@ -14,6 +14,7 @@ end
 
 group :development do
   gem "sorbet", "~> 0.5"
+  gem "tapioca", "~> 0.17.5", require: false
 end
 
 group :development, :test do
@@ -23,6 +24,5 @@ group :development, :test do
   gem "rspec-sorbet"
   gem "rubocop", "~> 1.77"
   gem "rubocop-rspec", "~> 3.0"
-  gem "tapioca", "~> 0.17.5", require: false
   gem "yard"
 end
