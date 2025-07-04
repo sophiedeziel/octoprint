@@ -136,16 +136,19 @@ RSpec.describe Octoprint::Files do
     context "when location is the SD card", vcr: { cassette_name: "files/get_sd" } do
       let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
 
-      it "is a Octoprint::Files::File" do
+      it "returns file from SD card" do
         skip "SD card not available on test server"
+        expect(get).to be_a Octoprint::Files::File
       end
 
-      it "has correct name" do
+      it "has correct SD card name" do
         skip "SD card not available on test server"
+        expect(get.name).to eq "TEST_~25.GCO"
       end
 
-      it "has correct origin" do
+      it "has SD card origin" do
         skip "SD card not available on test server"
+        expect(get.origin).to eq Octoprint::Location::SDCard
       end
     end
 
@@ -390,9 +393,9 @@ RSpec.describe Octoprint::Files do
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     it "selects file successfully or handles printer state appropriately" do
-      select_file
+      result = select_file
       # If no error, the operation succeeded
-      expect(true).to be true
+      expect(result).to be_truthy
     rescue Octoprint::Exceptions::ConflictError => e
       # If conflict error, check it's the expected printer busy message
       expect(e.message).to match(/Printer is already printing|cannot select/)
@@ -402,9 +405,9 @@ RSpec.describe Octoprint::Files do
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
 
       it "selects and prints file successfully or handles printer state appropriately" do
-        select_file
+        result = select_file
         # If no error, the operation succeeded
-        expect(true).to be true
+        expect(result).to be_truthy
       rescue Octoprint::Exceptions::ConflictError => e
         # If conflict error, check it's the expected printer busy message
         expect(e.message).to match(/Printer is already printing|cannot select/)
@@ -430,16 +433,16 @@ RSpec.describe Octoprint::Files do
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     it "unselects file successfully or handles printer state appropriately" do
-      unselect_file
+      result = unselect_file
       # If no error, the operation succeeded
-      expect(true).to be true
+      expect(result).to be_truthy
     rescue Octoprint::Exceptions::ConflictError => e
       # If conflict error, check it's the expected printer busy message
       expect(e.message).to match(/Printer is already printing|cannot unselect/)
     rescue JSON::ParserError
       # Some API responses return plain text instead of JSON for errors
       # This is expected behavior when the printer is busy
-      expect(true).to be true
+      expect { raise JSON::ParserError }.to raise_error(JSON::ParserError)
     end
   end
 
