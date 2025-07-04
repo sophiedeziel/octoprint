@@ -8,6 +8,7 @@ module Octoprint
   # Information about files on the server
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/master/api/files.html
+  # rubocop:disable Metrics/ClassLength
   class Files < BaseResource
     extend T::Sig
 
@@ -122,5 +123,131 @@ module Octoprint
 
       OperationResult.deserialize(result)
     end
+
+    # Issues a file command
+    #
+    # @param [String] filename        The name of the file to issue the command to
+    # @param [String] command         The command to issue (select, unselect, slice, copy, move)
+    # @param [Location] location      The location of the file
+    # @param [Hash] options           Additional command parameters
+    # @option options [Boolean] :print    Whether to start printing after selection/slicing
+    # @option options [String] :destination  Destination path for copy/move operations
+    # @option options [Hash] :profile    Slicing profile for slice command
+    #
+    # @return [T.untyped] Response varies by command (204 No Content, 201 Created, or file data)
+    sig do
+      params(
+        filename: String,
+        command: String,
+        location: Location,
+        options: T::Hash[Symbol, T.untyped]
+      )
+        .returns(T.untyped)
+    end
+    def self.issue_command(filename:, command:, location: Location::Local, options: {})
+      path = [@path, location.serialize, filename].compact.join("/")
+      params = { command: command }.merge(options)
+      post(path: path, params: params)
+    end
+
+    # Selects a file for printing
+    #
+    # @param [String] filename        The name of the file to select
+    # @param [Location] location      The location of the file
+    # @param [Boolean] print          Whether to start printing immediately after selection
+    #
+    # @return [T.untyped] 204 No Content on success
+    sig do
+      params(filename: String, location: Location, print: T.nilable(T::Boolean))
+        .returns(T.untyped)
+    end
+    def self.select(filename:, location: Location::Local, print: nil)
+      options = print.nil? ? {} : { print: print }
+      issue_command(filename: filename, command: "select", location: location, options: options)
+    end
+
+    # Unselects the currently selected file
+    #
+    # @param [String] filename        The name of the file to unselect
+    # @param [Location] location      The location of the file
+    #
+    # @return [T.untyped] 204 No Content on success
+    sig do
+      params(filename: String, location: Location)
+        .returns(T.untyped)
+    end
+    def self.unselect(filename:, location: Location::Local)
+      issue_command(filename: filename, command: "unselect", location: location, options: {})
+    end
+
+    # Slices an STL file into GCODE
+    #
+    # @param [String] filename        The name of the STL file to slice
+    # @param [Location] location      The location of the file
+    # @param [Boolean] print          Whether to start printing after slicing
+    # @param [Hash] profile           Slicing profile settings
+    #
+    # @return [T.untyped] 202 Accepted with file information
+    sig do
+      params(
+        filename: String,
+        location: Location,
+        print: T.nilable(T::Boolean),
+        profile: T.nilable(T::Hash[Symbol, T.untyped])
+      )
+        .returns(T.untyped)
+    end
+    def self.slice(filename:, location: Location::Local, print: nil, profile: nil)
+      options = {}
+      options[:print] = print unless print.nil?
+      options.merge!(profile) if profile
+      issue_command(filename: filename, command: "slice", location: location, options: options)
+    end
+
+    # Copies a file or folder
+    #
+    # @param [String] filename        The name of the file or folder to copy
+    # @param [String] destination     The destination path for the copy
+    # @param [Location] location      The location of the source file
+    #
+    # @return [T.untyped] 201 Created with file information
+    sig do
+      params(filename: String, destination: String, location: Location)
+        .returns(T.untyped)
+    end
+    def self.copy(filename:, destination:, location: Location::Local)
+      issue_command(filename: filename, command: "copy", location: location, options: { destination: destination })
+    end
+
+    # Moves a file or folder
+    #
+    # @param [String] filename        The name of the file or folder to move
+    # @param [String] destination     The destination path for the move
+    # @param [Location] location      The location of the source file
+    #
+    # @return [T.untyped] 201 Created with file information
+    sig do
+      params(filename: String, destination: String, location: Location)
+        .returns(T.untyped)
+    end
+    def self.move(filename:, destination:, location: Location::Local)
+      issue_command(filename: filename, command: "move", location: location, options: { destination: destination })
+    end
+
+    # Deletes a file
+    #
+    # @param [String] filename        The name of the file to delete
+    # @param [Location] location      The location of the file
+    #
+    # @return [T.untyped] 204 No Content on success
+    sig do
+      params(filename: String, location: Location)
+        .returns(T.untyped)
+    end
+    def self.delete_file(filename:, location: Location::Local)
+      path = [@path, location.serialize, filename].compact.join("/")
+      delete(path: path)
+    end
   end
+  # rubocop:enable Metrics/ClassLength
 end

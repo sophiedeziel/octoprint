@@ -1,6 +1,194 @@
 ---
 http_interactions:
 - request:
+    method: post
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-f16ff3f13d3be572e518a62d4bb2abb0\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nparent\r\n-------------RubyMultipartPost-f16ff3f13d3be572e518a62d4bb2abb0--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-f16ff3f13d3be572e518a62d4bb2abb0
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Length:
+      - '193'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: CREATED
+    headers:
+      Content-Type:
+      - application/json
+      Location:
+      - "<HOST>/api/files/local/parent"
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=38
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "done": true,
+          "folder": {
+            "name": "parent",
+            "origin": "local",
+            "path": "parent",
+            "refs": {
+              "resource": "<HOST>/api/files/local/parent"
+            }
+          }
+        }
+  recorded_at: Sun, 29 Jun 2025 15:31:55 GMT
+- request:
+    method: post
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-9469ce5f67e58228f0d6bc208429727b\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/parent\r\n-------------RubyMultipartPost-9469ce5f67e58228f0d6bc208429727b\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nchild\r\n-------------RubyMultipartPost-9469ce5f67e58228f0d6bc208429727b--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-9469ce5f67e58228f0d6bc208429727b
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Length:
+      - '313'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: CREATED
+    headers:
+      Content-Type:
+      - application/json
+      Location:
+      - "<HOST>/api/files/local/parent/child"
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=28
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "done": true,
+          "folder": {
+            "name": "child",
+            "origin": "local",
+            "path": "parent/child",
+            "refs": {
+              "resource": "<HOST>/api/files/local/parent/child"
+            }
+          }
+        }
+  recorded_at: Sun, 29 Jun 2025 15:31:55 GMT
+- request:
+    method: post
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-751cbaade96591c6de25368b39afd32b\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/parent/child\r\n-------------RubyMultipartPost-751cbaade96591c6de25368b39afd32b\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\ngrandchild\r\n-------------RubyMultipartPost-751cbaade96591c6de25368b39afd32b--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-751cbaade96591c6de25368b39afd32b
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Length:
+      - '324'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: CREATED
+    headers:
+      Content-Type:
+      - application/json
+      Location:
+      - "<HOST>/api/files/local/parent/child/grandchild"
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=29
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "done": true,
+          "folder": {
+            "name": "grandchild",
+            "origin": "local",
+            "path": "parent/child/grandchild",
+            "refs": {
+              "resource": "<HOST>/api/files/local/parent/child/grandchild"
+            }
+          }
+        }
+  recorded_at: Sun, 29 Jun 2025 15:31:55 GMT
+- request:
     method: get
     uri: "<HOST>/api/files/local/parent?recursive=true"
     body:
@@ -12,7 +200,7 @@ http_interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -25,15 +213,15 @@ http_interactions:
       Content-Type:
       - application/json
       Etag:
-      - '"c74351bb80f1ca59b65943cb13642492d8d6bd0f"'
+      - '"5fd051a03bf5fa0b1ace75117f51cb23f7845dee"'
       Last-Modified:
-      - Mon, 10 Jul 2023 03:47:18 GMT
+      - Sun, 29 Jun 2025 15:31:55 GMT
       Cache-Control:
       - max-age=0
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=38
+      - app;dur=140
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -51,12 +239,12 @@ http_interactions:
               "children": [
                 {
                   "children": [],
-                  "display": "Recursive",
-                  "name": "Recursive",
+                  "display": "grandchild",
+                  "name": "grandchild",
                   "origin": "local",
-                  "path": "parent/child/Recursive",
+                  "path": "parent/child/grandchild",
                   "refs": {
-                    "resource": "<HOST>/api/files/local/parent/child/Recursive"
+                    "resource": "<HOST>/api/files/local/parent/child/grandchild"
                   },
                   "size": 0,
                   "type": "folder",
@@ -92,5 +280,5 @@ http_interactions:
             "folder"
           ]
         }
-  recorded_at: Mon, 10 Jul 2023 03:47:37 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 15:31:55 GMT
+recorded_with: VCR 6.3.1

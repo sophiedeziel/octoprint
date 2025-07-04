@@ -2,33 +2,30 @@
 http_interactions:
 - request:
     method: post
-    uri: "<HOST>/api/files/local"
+    uri: "<HOST>/api/files/local/nonexistent.gcode"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-156cddc51fe96a26c1a3493b7e19cdd3\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\ntest\r\n-------------RubyMultipartPost-156cddc51fe96a26c1a3493b7e19cdd3--\r\n"
+      string: '{"command":"select"}'
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-156cddc51fe96a26c1a3493b7e19cdd3
+      - application/json
       User-Agent:
       - Faraday v2.13.1
-      Content-Length:
-      - '191'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - "*/*"
   response:
     status:
-      code: 201
-      message: CREATED
+      code: 404
+      message: NOT FOUND
     headers:
       Content-Type:
       - application/json
-      Location:
-      - "<HOST>/api/files/local/test"
+      Content-Length:
+      - '138'
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -38,28 +35,18 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=46
+      - app;dur=21
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
-      Transfer-Encoding:
-      - chunked
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: |
         {
-          "done": true,
-          "folder": {
-            "name": "test",
-            "origin": "local",
-            "path": "test",
-            "refs": {
-              "resource": "<HOST>/api/files/local/test"
-            }
-          }
+          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
         }
   recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
 recorded_with: VCR 6.3.1
