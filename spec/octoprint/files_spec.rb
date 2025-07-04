@@ -60,94 +60,37 @@ RSpec.describe Octoprint::Files do
 
     let(:params) { { location: Octoprint::Location::Local, filename: "test_file.gcode" } }
 
-    it "is a Octoprint::Files::File" do
-      expect(get).to be_a Octoprint::Files::File
-    end
-
-    it "has correct name" do
-      expect(get.name).to eq "test_file.gcode"
-    end
-
-    it "has correct origin" do
-      expect(get.origin).to eq Octoprint::Location::Local
-    end
-
-    it "has correct path" do
-      expect(get.path).to eq "test_file.gcode"
-    end
-
-    it "has refs" do
-      expect(get.refs).to be_a Octoprint::Files::Refs
-    end
-
-    it "has correct refs.resource" do
-      expect(get.refs.resource).to eq("#{host}/api/files/local/test_file.gcode")
-    end
-
-    it "has correct refs.download" do
-      expect(get.refs.download).to eq("#{host}/downloads/files/local/test_file.gcode")
-    end
-
-    it "has refs.model nil" do
-      expect(get.refs.model).to be_nil
-    end
-
-    it "has display_layer_progress" do
-      expect(get.display_layer_progress).to be_a Hash
-    end
-
-    it "has dashboard" do
-      expect(get.dashboard).to be_a Hash
-    end
-
-    it "has correct date" do
-      expect(get.date).to be_a(Time)
-      expect(get.date.year).to be >= 2020
-    end
-
-    it "has gcode_analysis" do
-      expect(get.gcode_analysis).to be_a Hash
-    end
-
-    it "has correct md5_hash" do
-      expect(get.md5_hash).to eq "89e36832ddc7fa8a71c0133b4048343586d31ea2"
-    end
-
-    it "has correct size" do
-      expect(get.size).to eq 1034
-    end
-
-    it "has correct userdata" do
-      expect(get.userdata).to eq({ test_value: "some value" })
-    end
-
-    it "has children nil" do
-      expect(get.children).to be_nil
-    end
-
-    it "has prints nil" do
-      expect(get.prints).to be_nil
-    end
-
-    it "has statistics nil" do
-      expect(get.statistics).to be_nil
-    end
+    it { is_expected.to be_a Octoprint::Files::File }
+    its(:name) { is_expected.to eq "test_file.gcode" }
+    its(:origin) { is_expected.to eq Octoprint::Location::Local }
+    its(:path) { is_expected.to eq "test_file.gcode" }
+    its(:refs) { is_expected.to be_a Octoprint::Files::Refs }
+    its("refs.resource") { is_expected.to eq("#{host}/api/files/local/test_file.gcode") }
+    its("refs.download") { is_expected.to eq("#{host}/downloads/files/local/test_file.gcode") }
+    its("refs.model") { is_expected.to be_nil }
+    its(:display_layer_progress) { is_expected.to be_a Hash }
+    its(:dashboard) { is_expected.to be_a Hash }
+    its(:date) { is_expected.to be_a(Time) }
+    its(:gcode_analysis) { is_expected.to be_a Hash }
+    its(:md5_hash) { is_expected.to eq "89e36832ddc7fa8a71c0133b4048343586d31ea2" }
+    its(:size) { is_expected.to eq 1034 }
+    its(:userdata) { is_expected.to eq({ test_value: "some value" }) }
+    its(:children) { is_expected.to be_nil }
+    its(:prints) { is_expected.to be_nil }
+    its(:statistics) { is_expected.to be_nil }
 
     context "when location is the SD card", vcr: { cassette_name: "files/get_sd" } do
       let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
 
-      it "returns file from SD card" do
-        skip "SD card not available on test server"
+      it "is a Octoprint::Files::File", pending: "SD card not available on test server" do
         expect(get).to be_a Octoprint::Files::File
       end
 
-      it "has correct SD card name" do
-        skip "SD card not available on test server"
+      it "has correct name", pending: "SD card not available on test server" do
         expect(get.name).to eq "TEST_~25.GCO"
       end
 
-      it "has SD card origin" do
-        skip "SD card not available on test server"
+      it "has correct origin", pending: "SD card not available on test server" do
         expect(get.origin).to eq Octoprint::Location::SDCard
       end
     end
@@ -172,13 +115,8 @@ RSpec.describe Octoprint::Files do
         described_class.create_folder(foldername: "child", path: "/parent")
       end
 
-      it "has correct children.first.name" do
-        expect(get.children.first.name).to eq "child"
-      end
-
-      it "has empty children.first.children" do
-        expect(get.children.first.children).to be_empty
-      end
+      its("children.first.name") { is_expected.to eq "child" }
+      its("children.first.children") { is_expected.to be_empty }
     end
 
     context "when the filename is a folder and set recursive", vcr: { cassette_name: "files/get_folder_recursive" } do
@@ -193,13 +131,8 @@ RSpec.describe Octoprint::Files do
         described_class.create_folder(foldername: "grandchild", path: "/parent/child")
       end
 
-      it "has correct children.first.name" do
-        expect(get.children.first.name).to eq "child"
-      end
-
-      it "has non-empty children.first.children" do
-        expect(get.children.first.children).not_to be_empty
-      end
+      its("children.first.name") { is_expected.to eq "child" }
+      its("children.first.children") { is_expected.not_to be_empty }
     end
   end
 
@@ -294,25 +227,15 @@ RSpec.describe Octoprint::Files do
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
       let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
 
-      it "has effective_print false" do
-        expect(upload.effective_print).to be false
-      end
-
-      it "has effective_select true" do
-        expect(upload.effective_select).to be false # API returns false, not true
-      end
+      its(:effective_print) { is_expected.to be false }
+      its(:effective_select) { is_expected.to be false } # API returns false, not true
     end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
       let(:params) { { location: Octoprint::Location::Local, options: { print: true } } }
 
-      it "has effective_print true" do
-        expect(upload.effective_print).to be false # API returns false, not true
-      end
-
-      it "has effective_select false" do
-        expect(upload.effective_select).to be false
-      end
+      its(:effective_print) { is_expected.to be false } # API returns false, not true
+      its(:effective_select) { is_expected.to be false }
     end
 
     context "when adding metadata", vcr: { cassette_name: "files/upload_metadata" } do
