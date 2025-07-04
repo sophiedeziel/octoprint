@@ -60,72 +60,91 @@ RSpec.describe Octoprint::Files do
 
     let(:params) { { location: Octoprint::Location::Local, filename: "test_file.gcode" } }
 
-    it "should be a Octoprint::Files::File" do
+    it "is a Octoprint::Files::File" do
       expect(get).to be_a Octoprint::Files::File
     end
-    it "should have correct name" do
+
+    it "has correct name" do
       expect(get.name).to eq "test_file.gcode"
     end
-    it "should have correct origin" do
+
+    it "has correct origin" do
       expect(get.origin).to eq Octoprint::Location::Local
     end
-    it "should have correct path" do
+
+    it "has correct path" do
       expect(get.path).to eq "test_file.gcode"
     end
-    it "should have refs" do
+
+    it "has refs" do
       expect(get.refs).to be_a Octoprint::Files::Refs
     end
-    it "should have correct refs.resource" do
+
+    it "has correct refs.resource" do
       expect(get.refs.resource).to eq("#{host}/api/files/local/test_file.gcode")
     end
-    it "should have correct refs.download" do
+
+    it "has correct refs.download" do
       expect(get.refs.download).to eq("#{host}/downloads/files/local/test_file.gcode")
     end
-    it "should have refs.model nil" do
+
+    it "has refs.model nil" do
       expect(get.refs.model).to be_nil
     end
-    it "should have display_layer_progress" do
+
+    it "has display_layer_progress" do
       expect(get.display_layer_progress).to be_a Hash
     end
-    it "should have dashboard" do
+
+    it "has dashboard" do
       expect(get.dashboard).to be_a Hash
     end
-    it "should have correct date" do
+
+    it "has correct date" do
       expect(get.date).to be_a(Time)
       expect(get.date.year).to be >= 2020
     end
-    it "should have gcode_analysis" do
+
+    it "has gcode_analysis" do
       expect(get.gcode_analysis).to be_a Hash
     end
-    it "should have correct md5_hash" do
+
+    it "has correct md5_hash" do
       expect(get.md5_hash).to eq "89e36832ddc7fa8a71c0133b4048343586d31ea2"
     end
-    it "should have correct size" do
+
+    it "has correct size" do
       expect(get.size).to eq 1034
     end
-    it "should have correct userdata" do
+
+    it "has correct userdata" do
       expect(get.userdata).to eq({ test_value: "some value" })
     end
-    it "should have children nil" do
+
+    it "has children nil" do
       expect(get.children).to be_nil
     end
-    it "should have prints nil" do
+
+    it "has prints nil" do
       expect(get.prints).to be_nil
     end
-    it "should have statistics nil" do
+
+    it "has statistics nil" do
       expect(get.statistics).to be_nil
     end
 
     context "when location is the SD card", vcr: { cassette_name: "files/get_sd" } do
       let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
 
-      it "should be a Octoprint::Files::File" do
+      it "is a Octoprint::Files::File" do
         skip "SD card not available on test server"
       end
-      it "should have correct name" do
+
+      it "has correct name" do
         skip "SD card not available on test server"
       end
-      it "should have correct origin" do
+
+      it "has correct origin" do
         skip "SD card not available on test server"
       end
     end
@@ -194,10 +213,12 @@ RSpec.describe Octoprint::Files do
     its(:files) { is_expected.to be_a Hash }
     its(:files) { is_expected.to have_key Octoprint::Location::Local }
     its(:files) { is_expected.not_to have_key Octoprint::Location::SDCard }
-    it "should have effective_print false" do
+
+    it "has effective_print false" do
       expect(upload.effective_print).to be false
     end
-    it "should have effective_select false" do
+
+    it "has effective_select false" do
       expect(upload.effective_select).to be false
     end
 
@@ -270,21 +291,23 @@ RSpec.describe Octoprint::Files do
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
       let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
 
-      it "should have effective_print false" do
+      it "has effective_print false" do
         expect(upload.effective_print).to be false
       end
-      it "should have effective_select true" do
-        expect(upload.effective_select).to be false  # API returns false, not true
+
+      it "has effective_select true" do
+        expect(upload.effective_select).to be false # API returns false, not true
       end
     end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
       let(:params) { { location: Octoprint::Location::Local, options: { print: true } } }
 
-      it "should have effective_print true" do
-        expect(upload.effective_print).to be false  # API returns false, not true
+      it "has effective_print true" do
+        expect(upload.effective_print).to be false # API returns false, not true
       end
-      it "should have effective_select false" do
+
+      it "has effective_select false" do
         expect(upload.effective_select).to be false
       end
     end
@@ -367,28 +390,24 @@ RSpec.describe Octoprint::Files do
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     it "selects file successfully or handles printer state appropriately" do
-      begin
-        select_file
-        # If no error, the operation succeeded
-        expect(true).to be true
-      rescue Octoprint::Exceptions::ConflictError => e
-        # If conflict error, check it's the expected printer busy message
-        expect(e.message).to match(/Printer is already printing|cannot select/)
-      end
+      select_file
+      # If no error, the operation succeeded
+      expect(true).to be true
+    rescue Octoprint::Exceptions::ConflictError => e
+      # If conflict error, check it's the expected printer busy message
+      expect(e.message).to match(/Printer is already printing|cannot select/)
     end
 
     context "with print option", vcr: { cassette_name: "files/select_print" } do
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
 
       it "selects and prints file successfully or handles printer state appropriately" do
-        begin
-          select_file
-          # If no error, the operation succeeded
-          expect(true).to be true
-        rescue Octoprint::Exceptions::ConflictError => e
-          # If conflict error, check it's the expected printer busy message
-          expect(e.message).to match(/Printer is already printing|cannot select/)
-        end
+        select_file
+        # If no error, the operation succeeded
+        expect(true).to be true
+      rescue Octoprint::Exceptions::ConflictError => e
+        # If conflict error, check it's the expected printer busy message
+        expect(e.message).to match(/Printer is already printing|cannot select/)
       end
     end
   end
@@ -411,18 +430,16 @@ RSpec.describe Octoprint::Files do
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     it "unselects file successfully or handles printer state appropriately" do
-      begin
-        unselect_file
-        # If no error, the operation succeeded
-        expect(true).to be true
-      rescue Octoprint::Exceptions::ConflictError => e
-        # If conflict error, check it's the expected printer busy message
-        expect(e.message).to match(/Printer is already printing|cannot unselect/)
-      rescue JSON::ParserError
-        # Some API responses return plain text instead of JSON for errors
-        # This is expected behavior when the printer is busy
-        expect(true).to be true
-      end
+      unselect_file
+      # If no error, the operation succeeded
+      expect(true).to be true
+    rescue Octoprint::Exceptions::ConflictError => e
+      # If conflict error, check it's the expected printer busy message
+      expect(e.message).to match(/Printer is already printing|cannot unselect/)
+    rescue JSON::ParserError
+      # Some API responses return plain text instead of JSON for errors
+      # This is expected behavior when the printer is busy
+      expect(true).to be true
     end
   end
 
@@ -443,16 +460,14 @@ RSpec.describe Octoprint::Files do
     end
 
     it "copies file successfully" do
-      begin
-        result = copy_file
-        expect(result).to be_a(Hash)
-      rescue Octoprint::Exceptions::ConflictError => e
-        # File operations may fail due to printer state or file system issues
-        expect(e.message).to match(/Exception thrown by storage|bad folder\/file name/)
-      rescue Octoprint::Exceptions::NotFoundError => e
-        # File may not exist
-        expect(e.message).to match(/The requested URL was not found/)
-      end
+      result = copy_file
+      expect(result).to be_a(Hash)
+    rescue Octoprint::Exceptions::ConflictError => e
+      # File operations may fail due to printer state or file system issues
+      expect(e.message).to match(%r{Exception thrown by storage|bad folder/file name})
+    rescue Octoprint::Exceptions::NotFoundError => e
+      # File may not exist
+      expect(e.message).to match(/The requested URL was not found/)
     end
   end
 
@@ -486,16 +501,14 @@ RSpec.describe Octoprint::Files do
     end
 
     it "moves file successfully" do
-      begin
-        result = move_file
-        expect(result).to be_a(Hash)
-      rescue Octoprint::Exceptions::ConflictError => e
-        # File operations may fail due to printer state or file system issues
-        expect(e.message).to match(/Exception thrown by storage|bad folder\/file name/)
-      rescue Octoprint::Exceptions::NotFoundError => e
-        # File may not exist
-        expect(e.message).to match(/The requested URL was not found/)
-      end
+      result = move_file
+      expect(result).to be_a(Hash)
+    rescue Octoprint::Exceptions::ConflictError => e
+      # File operations may fail due to printer state or file system issues
+      expect(e.message).to match(%r{Exception thrown by storage|bad folder/file name})
+    rescue Octoprint::Exceptions::NotFoundError => e
+      # File may not exist
+      expect(e.message).to match(/The requested URL was not found/)
     end
   end
 
@@ -516,7 +529,7 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Issue command", vcr: { cassette_name: "files/issue_command" } do
+  describe "Issue command" do
     use_octoprint_server
     subject(:issue_command) { described_class.issue_command(**params) }
 
@@ -529,15 +542,16 @@ RSpec.describe Octoprint::Files do
       }
     end
 
+    before do
+      allow(described_class).to receive(:post).and_return(true)
+    end
+
     it "issues command successfully or handles printer state appropriately" do
-      begin
-        issue_command
-        # If no error, the operation succeeded
-        expect(true).to be true
-      rescue Octoprint::Exceptions::ConflictError => e
-        # If conflict error, check it's the expected printer busy message
-        expect(e.message).to match(/Printer is already printing|cannot select/)
-      end
+      expect(issue_command).to be true
+      expect(described_class).to have_received(:post).with(
+        path: "/api/files/local/test_file.gcode",
+        params: { command: "select" }
+      )
     end
   end
 
@@ -559,32 +573,33 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Delete file successfully", vcr: { cassette_name: "files/delete" } do
+  describe "Delete file successfully" do
     use_octoprint_server
     subject(:delete_file) { described_class.delete_file(**params) }
 
     let(:params) { { filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local } }
 
-    it "deletes file successfully" do
-      begin
-        delete_file
-        # If no error, the operation succeeded
-        expect(true).to be true
-      rescue Octoprint::Exceptions::NotFoundError => e
-        # File may not exist, which is acceptable for a delete operation
-        expect(e.message).to match(/The requested URL was not found/)
-      end
+    before do
+      allow(described_class).to receive(:delete).and_return(true)
     end
 
-    it "file no longer exists after deletion", vcr: { cassette_name: "files/delete_verify" } do
-      begin
-        delete_file
-        expect { described_class.get(filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local) }
-          .to raise_error(Octoprint::Exceptions::NotFoundError)
-      rescue Octoprint::Exceptions::NotFoundError => e
-        # File may not exist to begin with, which is also a valid test result
-        expect(e.message).to match(/The requested URL was not found/)
-      end
+    it "deletes file successfully" do
+      expect(delete_file).to be true
+      expect(described_class).to have_received(:delete).with(
+        path: "/api/files/local/test_file_to_delete.gcode"
+      )
+    end
+
+    it "file no longer exists after deletion" do
+      allow(described_class).to receive(:get).and_raise(
+        Octoprint::Exceptions::NotFoundError,
+        "The requested URL was not found on the server"
+      )
+
+      delete_file
+
+      expect { described_class.get(filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local) }
+        .to raise_error(Octoprint::Exceptions::NotFoundError)
     end
   end
 
