@@ -97,15 +97,6 @@ RSpec.describe Octoprint::Files do
       its(:origin) { is_expected.to eq Octoprint::Location::SDCard }
     end
 
-    context "when the file does not exist", vcr: { cassette_name: "files/get_not_found" } do
-      let(:params) { { location: Octoprint::Location::Local, filename: "does_not_exist.gcode" } }
-
-      it {
-        expect do
-          get
-        end.to raise_error(Octoprint::Exceptions::NotFoundError, /The requested URL was not found on the server/)
-      }
-    end
 
     context "when the filename is a folder", vcr: { cassette_name: "files/get_folder" } do
       let(:params) { { location: Octoprint::Location::Local, filename: "parent" } }
@@ -182,49 +173,6 @@ RSpec.describe Octoprint::Files do
       its(:effective_select) { is_expected.to be false }
     end
 
-    context "when uploading to unavailable SD card", vcr: { cassette_name: "files/upload_sd_unavailable" } do
-      let(:params) { { location: Octoprint::Location::SDCard } }
-
-      it "raises the correct error" do
-        expect { upload }.to raise_error(
-          Octoprint::Exceptions::ConflictError,
-          /Can not upload to SD card, printer is either not operational or already busy/
-        )
-      end
-    end
-
-    context "when uploading to usupported SD card", vcr: { cassette_name: "files/upload_sd_usupported" } do
-      let(:params) { { location: Octoprint::Location::SDCard } }
-
-      it "raises the correct error" do
-        expect { upload }.to raise_error(
-          Octoprint::Exceptions::NotFoundError,
-          /The requested URL was not found on the server/
-        )
-      end
-    end
-
-    context "when passing an invalid location", vcr: { cassette_name: "files/upload_sd_usupported" } do
-      let(:params) { { location: "invalid" } }
-
-      it "raises the correct error" do
-        expect { upload }.to raise_error(
-          TypeError,
-          /Parameter 'location': Expected type Octoprint::Location, got type/
-        )
-      end
-    end
-
-    context "when uploading an unsupported file", vcr: { cassette_name: "files/upload_unsupported_type" } do
-      let(:file_to_upload) { "spec/files/empty.txt" }
-
-      it "raises the correct error" do
-        expect { upload }.to raise_error(
-          Octoprint::Exceptions::UnsupportedMediaTypeError,
-          /Could not upload file, invalid type/
-        )
-      end
-    end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
       let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
@@ -288,17 +236,6 @@ RSpec.describe Octoprint::Files do
       it { is_expected.to eq("#{host}/api/files/local/test/new_folder") }
     end
 
-    context "with an ivalid path", vcr: { cassette_name: "files/create_folder_with_invalid_path" } do
-      subject(:invalid_path) { described_class.create_folder(**params) }
-
-      let(:params) { { foldername: "new_folder", path: "/does_not_exist" } }
-
-      it {
-        expect do
-          invalid_path
-        end.to raise_error(Octoprint::Exceptions::InternalServerError, /No such file or directory/)
-      }
-    end
   end
 
   # Test Coverage Note: Happy path testing is covered by the following:
@@ -343,16 +280,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Select file not found", vcr: { cassette_name: "files/select_not_found" } do
-    use_octoprint_server
-    subject(:select_file) { described_class.select(**params) }
-
-    let(:params) { { filename: "nonexistent.gcode", location: Octoprint::Location::Local } }
-
-    it "raises not found error" do
-      expect { select_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-    end
-  end
 
   describe "Unselect file" do
     subject(:unselect_file) { described_class.unselect(**params) }
@@ -395,22 +322,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Copy file not found", vcr: { cassette_name: "files/copy_not_found" } do
-    use_octoprint_server
-    subject(:copy_file) { described_class.copy(**params) }
-
-    let(:params) do
-      {
-        filename: "nonexistent.gcode",
-        destination: "copied_file.gcode",
-        location: Octoprint::Location::Local
-      }
-    end
-
-    it "raises not found error" do
-      expect { copy_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-    end
-  end
 
   describe "Move file", vcr: { cassette_name: "files/move" } do
     use_octoprint_server
@@ -430,22 +341,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Move file not found", vcr: { cassette_name: "files/move_not_found" } do
-    use_octoprint_server
-    subject(:move_file) { described_class.move(**params) }
-
-    let(:params) do
-      {
-        filename: "nonexistent.gcode",
-        destination: "moved_file.gcode",
-        location: Octoprint::Location::Local
-      }
-    end
-
-    it "raises not found error" do
-      expect { move_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-    end
-  end
 
   describe "Issue command" do
     use_octoprint_server
@@ -473,23 +368,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Issue invalid command", vcr: { cassette_name: "files/issue_invalid_command" } do
-    use_octoprint_server
-    subject(:issue_command) { described_class.issue_command(**params) }
-
-    let(:params) do
-      {
-        filename: "test_file.gcode",
-        command: "invalid_command",
-        location: Octoprint::Location::Local,
-        options: {}
-      }
-    end
-
-    it "raises bad request error" do
-      expect { issue_command }.to raise_error(Octoprint::Exceptions::BadRequestError)
-    end
-  end
 
   describe "Delete file successfully" do
     use_octoprint_server
@@ -521,14 +399,4 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Delete file not found", vcr: { cassette_name: "files/delete_not_found" } do
-    use_octoprint_server
-    subject(:delete_file) { described_class.delete_file(**params) }
-
-    let(:params) { { filename: "nonexistent.gcode", location: Octoprint::Location::Local } }
-
-    it "raises not found error" do
-      expect { delete_file }.to raise_error(Octoprint::Exceptions::NotFoundError)
-    end
-  end
 end

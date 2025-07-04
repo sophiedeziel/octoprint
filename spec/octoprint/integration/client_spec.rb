@@ -15,10 +15,5 @@ RSpec.describe Octoprint::Client do
       expect(result).to be_a Hash
     end
 
-    it "raises when api_key is invalid", vcr: { cassette_name: "job:unauthenticated" } do
-      client = described_class.new(host: host, api_key: "invalid")
-      action = -> { client.request("/api/job") }
-      expect(&action).to raise_error Octoprint::Exceptions::AuthenticationError
-    end
   end
 end

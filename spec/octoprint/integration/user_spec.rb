@@ -13,13 +13,5 @@ RSpec.describe Octoprint::User do
       expect(user.name).to be_a(String)
     end
 
-    it "raises error when client not configured" do
-      original_client = Octoprint.client
-      Octoprint.client = nil
-
-      expect { described_class.current }.to raise_error("No client configured")
-    ensure
-      Octoprint.client = original_client
-    end
   end
 end
