@@ -2,34 +2,30 @@
 http_interactions:
 - request:
     method: post
-    uri: "<HOST>/api/files/local"
+    uri: "<HOST>/api/files/local/test_file.gcode"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26\r\nContent-Disposition:
-        form-data; name=\"path\"\r\n\r\n/does_not_exist\r\n-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-899729a104e3b693f977e56b94203c26--\r\n"
+      string: '{"command":"invalid_command"}'
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-899729a104e3b693f977e56b94203c26
+      - application/json
       User-Agent:
       - Faraday v2.13.1
-      Content-Length:
-      - '326'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - "*/*"
   response:
     status:
-      code: 500
-      message: INTERNAL SERVER ERROR
+      code: 400
+      message: BAD REQUEST
     headers:
       Content-Type:
       - application/json
       Content-Length:
-      - '53'
+      - '36'
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -39,7 +35,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=30
+      - app;dur=19
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -50,7 +46,7 @@ http_interactions:
       encoding: UTF-8
       string: |
         {
-          "error": "[Errno 2] No such file or directory"
+          "error": "command is invalid"
         }
-  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
+  recorded_at: Sun, 29 Jun 2025 14:58:26 GMT
 recorded_with: VCR 6.3.1

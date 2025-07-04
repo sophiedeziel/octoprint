@@ -5,16 +5,16 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-2f8144c0cc2bf9a9ec3a2e0d76914fac\r\nContent-Disposition:
+      string: "-------------RubyMultipartPost-46e389dcef1c1c5e983c7ea6f021fd51\r\nContent-Disposition:
         form-data; name=\"file\"; filename=\"empty.txt\"\r\nContent-Length: 0\r\nContent-Type:
-        application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n\r\n-------------RubyMultipartPost-2f8144c0cc2bf9a9ec3a2e0d76914fac--\r\n"
+        application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n\r\n-------------RubyMultipartPost-46e389dcef1c1c5e983c7ea6f021fd51--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-2f8144c0cc2bf9a9ec3a2e0d76914fac
+      - multipart/form-data; boundary=-----------RubyMultipartPost-46e389dcef1c1c5e983c7ea6f021fd51
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Content-Length:
       - '297'
       Accept-Encoding:
@@ -39,7 +39,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=125
+      - app;dur=234
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -52,5 +52,5 @@ http_interactions:
         {
           "error": "Could not upload file, invalid type"
         }
-  recorded_at: Mon, 10 Jul 2023 00:24:17 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 14:58:22 GMT
+recorded_with: VCR 6.3.1

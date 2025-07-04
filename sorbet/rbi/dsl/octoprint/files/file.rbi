@@ -13,7 +13,7 @@ class Octoprint::Files::File
   def dashboard; end
 
   sig { returns(T.nilable(::Integer)) }
-  def date; end
+  def date_timestamp; end
 
   sig { returns(T.nilable(::Hash)) }
   def display_layer_progress; end

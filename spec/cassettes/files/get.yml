@@ -12,7 +12,7 @@ http_interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - Faraday v2.7.10
+      - Faraday v2.13.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -25,15 +25,15 @@ http_interactions:
       Content-Type:
       - application/json
       Etag:
-      - '"a7d6491c4477f637566882bc3899c54cc067bf85"'
+      - '"d1cd6c2858d91368e020d6246bd6c46f1732095b"'
       Last-Modified:
-      - Mon, 10 Jul 2023 00:17:49 GMT
+      - Sun, 29 Jun 2025 15:17:27 GMT
       Cache-Control:
       - max-age=0
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=38
+      - app;dur=54
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -53,7 +53,7 @@ http_interactions:
             "filament_change_array": "[]",
             "layer_move_array": "[7, 1]"
           },
-          "date": 1688948269,
+          "date": 1751210247,
           "display": "test_file.gcode",
           "gcodeAnalysis": {
             "dimensions": {
@@ -98,7 +98,7 @@ http_interactions:
             "download": "<HOST>/downloads/files/local/test_file.gcode",
             "resource": "<HOST>/api/files/local/test_file.gcode"
           },
-          "size": 1164,
+          "size": 1034,
           "type": "machinecode",
           "typePath": [
             "machinecode",
@@ -108,5 +108,5 @@ http_interactions:
             "test_value": "some value"
           }
         }
-  recorded_at: Mon, 10 Jul 2023 02:42:24 GMT
-recorded_with: VCR 6.2.0
+  recorded_at: Sun, 29 Jun 2025 15:19:57 GMT
+recorded_with: VCR 6.3.1
