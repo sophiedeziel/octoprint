@@ -19,13 +19,13 @@ http_interactions:
       - "*/*"
   response:
     status:
-      code: 404
-      message: NOT FOUND
+      code: 409
+      message: CONFLICT
     headers:
       Content-Type:
       - application/json
       Content-Length:
-      - '138'
+      - '68'
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -35,7 +35,7 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=54
+      - app;dur=41
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
@@ -46,7 +46,7 @@ http_interactions:
       encoding: UTF-8
       string: |
         {
-          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+          "error": "Exception thrown by storage, bad folder/file name?"
         }
-  recorded_at: Sun, 29 Jun 2025 15:20:01 GMT
+  recorded_at: Fri, 04 Jul 2025 22:57:13 GMT
 recorded_with: VCR 6.3.1

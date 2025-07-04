@@ -19,13 +19,13 @@ http_interactions:
       - "*/*"
   response:
     status:
-      code: 409
-      message: CONFLICT
+      code: 201
+      message: CREATED
     headers:
       Content-Type:
       - application/json
-      Content-Length:
-      - '68'
+      Location:
+      - "<HOST>/api/files/local/copied_file.gcode"
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -35,18 +35,26 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=51
+      - app;dur=65
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
+      Transfer-Encoding:
+      - chunked
     body:
-      encoding: UTF-8
+      encoding: ASCII-8BIT
       string: |
         {
-          "error": "Exception thrown by storage, bad folder/file name?"
+          "name": "test_file.gcode",
+          "origin": "local",
+          "path": "copied_file.gcode",
+          "refs": {
+            "download": "<HOST>/downloads/files/local/copied_file.gcode",
+            "resource": "<HOST>/api/files/local/copied_file.gcode"
+          }
         }
-  recorded_at: Sun, 29 Jun 2025 15:20:01 GMT
+  recorded_at: Fri, 04 Jul 2025 22:52:32 GMT
 recorded_with: VCR 6.3.1

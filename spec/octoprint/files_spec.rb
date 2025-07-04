@@ -311,31 +311,34 @@ RSpec.describe Octoprint::Files do
   # Error case testing provides comprehensive coverage for all new operations,
   # demonstrating that the methods correctly construct requests and handle responses.
 
-  describe "Select file", vcr: { cassette_name: "files/select" } do
-    use_octoprint_server
+  describe "Select file" do
     subject(:select_file) { described_class.select(**params) }
 
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
-    it "selects file successfully or handles printer state appropriately" do
-      result = select_file
-      # If no error, the operation succeeded
-      expect(result).to be_truthy
-    rescue Octoprint::Exceptions::ConflictError => e
-      # If conflict error, check it's the expected printer busy message
-      expect(e.message).to match(/Printer is already printing|cannot select/)
+    before do
+      allow(described_class).to receive(:post).and_return(true)
     end
 
-    context "with print option", vcr: { cassette_name: "files/select_print" } do
+    it "selects file successfully" do
+      result = select_file
+      expect(result).to be true
+      expect(described_class).to have_received(:post).with(
+        path: "/api/files/local/test_file.gcode",
+        params: { command: "select" }
+      )
+    end
+
+    context "with print option" do
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
 
-      it "selects and prints file successfully or handles printer state appropriately" do
+      it "selects and prints file successfully" do
         result = select_file
-        # If no error, the operation succeeded
-        expect(result).to be_truthy
-      rescue Octoprint::Exceptions::ConflictError => e
-        # If conflict error, check it's the expected printer busy message
-        expect(e.message).to match(/Printer is already printing|cannot select/)
+        expect(result).to be true
+        expect(described_class).to have_received(:post).with(
+          path: "/api/files/local/test_file.gcode",
+          params: { command: "select", print: true }
+        )
       end
     end
   end
@@ -351,23 +354,22 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "Unselect file", vcr: { cassette_name: "files/unselect" } do
-    use_octoprint_server
+  describe "Unselect file" do
     subject(:unselect_file) { described_class.unselect(**params) }
 
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
-    it "unselects file successfully or handles printer state appropriately" do
+    before do
+      allow(described_class).to receive(:post).and_return(true)
+    end
+
+    it "unselects file successfully" do
       result = unselect_file
-      # If no error, the operation succeeded
-      expect(result).to be_truthy
-    rescue Octoprint::Exceptions::ConflictError => e
-      # If conflict error, check it's the expected printer busy message
-      expect(e.message).to match(/Printer is already printing|cannot unselect/)
-    rescue JSON::ParserError
-      # Some API responses return plain text instead of JSON for errors
-      # This is expected behavior when the printer is busy
-      expect { raise JSON::ParserError }.to raise_error(JSON::ParserError)
+      expect(result).to be true
+      expect(described_class).to have_received(:post).with(
+        path: "/api/files/local/test_file.gcode",
+        params: { command: "unselect" }
+      )
     end
   end
 
@@ -390,12 +392,6 @@ RSpec.describe Octoprint::Files do
     it "copies file successfully" do
       result = copy_file
       expect(result).to be_a(Hash)
-    rescue Octoprint::Exceptions::ConflictError => e
-      # File operations may fail due to printer state or file system issues
-      expect(e.message).to match(%r{Exception thrown by storage|bad folder/file name})
-    rescue Octoprint::Exceptions::NotFoundError => e
-      # File may not exist
-      expect(e.message).to match(/The requested URL was not found/)
     end
   end
 
