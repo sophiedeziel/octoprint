@@ -198,8 +198,8 @@ RSpec.describe Octoprint::Files do
 
       it "raises the correct error" do
         expect { upload }.to raise_error(
-          Octoprint::Exceptions::ConflictError,
-          /Can not upload to SD card, printer is either not operational or already busy/
+          Octoprint::Exceptions::NotFoundError,
+          /The requested URL was not found on the server/
         )
       end
     end
@@ -230,13 +230,13 @@ RSpec.describe Octoprint::Files do
       let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
 
       its(:effective_print) { is_expected.to be false }
-      its(:effective_select) { is_expected.to be false } # API returns false, not true
+      its(:effective_select) { is_expected.to be true }
     end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
       let(:params) { { location: Octoprint::Location::Local, options: { print: true } } }
 
-      its(:effective_print) { is_expected.to be false } # API returns false, not true
+      its(:effective_print) { is_expected.to be true }
       its(:effective_select) { is_expected.to be false }
     end
 
@@ -427,12 +427,6 @@ RSpec.describe Octoprint::Files do
     it "moves file successfully" do
       result = move_file
       expect(result).to be_a(Hash)
-    rescue Octoprint::Exceptions::ConflictError => e
-      # File operations may fail due to printer state or file system issues
-      expect(e.message).to match(%r{Exception thrown by storage|bad folder/file name})
-    rescue Octoprint::Exceptions::NotFoundError => e
-      # File may not exist
-      expect(e.message).to match(/The requested URL was not found/)
     end
   end
 
