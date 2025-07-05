@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Files do
+RSpec.describe Octoprint::Files, type: :integration do
   include_context "with default Octoprint config"
 
   describe "The empty files container" do

@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Client do
+RSpec.describe Octoprint::Client, type: :integration do
   include_context "with default Octoprint config"
 
   describe "#request" do

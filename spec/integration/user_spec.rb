@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::User do
+RSpec.describe Octoprint::User, type: :integration do
   include_context "with default Octoprint config"
 
   describe ".current" do
