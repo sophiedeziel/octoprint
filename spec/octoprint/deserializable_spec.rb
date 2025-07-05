@@ -311,6 +311,66 @@ RSpec.describe Octoprint::Deserializable do
     end
   end
 
+  describe "camelCase to snake_case conversion" do
+    let(:test_class) do
+      Class.new do
+        include Octoprint::Deserializable
+        include Octoprint::AutoInitializable
+
+        auto_attr :first_name, type: String
+        auto_attr :last_name, type: String
+        auto_attr :heated_bed, type: T::Boolean
+        auto_attr :phone_number, type: String
+
+        auto_initialize!
+
+        deserialize_config do
+          # No special configuration needed - automatic camelCase conversion should work
+        end
+      end
+    end
+
+    it "automatically converts camelCase keys to snake_case" do
+      # This test covers lines 303-304 and 329 in deserializable.rb
+      data = {
+        firstName: "John",
+        lastName: "Doe", 
+        heatedBed: true,
+        phoneNumber: "123-456-7890"
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("John")
+      expect(instance.last_name).to eq("Doe")
+      expect(instance.heated_bed).to be true
+      expect(instance.phone_number).to eq("123-456-7890")
+    end
+
+    it "handles mixed camelCase and snake_case keys" do
+      data = {
+        firstName: "Jane",
+        last_name: "Smith",  # Already snake_case
+        heatedBed: false
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("Jane")
+      expect(instance.last_name).to eq("Smith")
+      expect(instance.heated_bed).to be false
+    end
+
+    it "leaves non-camelCase keys unchanged" do
+      data = {
+        first_name: "Bob",  # Already snake_case
+        last_name: "Wilson"
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("Bob")
+      expect(instance.last_name).to eq("Wilson")
+    end
+  end
+
   describe "edge cases in deserialization" do
     let(:test_class) do
       Class.new do
