@@ -484,17 +484,6 @@ module Octoprint
       def transform(&block)
         @transformations << block
       end
-
-      # Enables collection of unknown fields into an :extra hash.
-      #
-      # NOTE: This method is now a no-op as extras collection is automatic
-      # when a class has an :extra attribute. Kept for backward compatibility.
-      #
-      # @deprecated Extras collection is now automatic when class has :extra attribute
-      sig { void }
-      def collect_extras
-        # No-op - extras collection is now automatic
-      end
     end
 
     mixes_in_class_methods(ClassMethods)

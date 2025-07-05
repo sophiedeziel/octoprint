@@ -128,7 +128,7 @@ RSpec.describe Octoprint::Deserializable do
         auto_initialize!
 
         deserialize_config do
-          collect_extras
+          # Extras collection is automatic when class has :extra attribute
         end
       end
     end
@@ -303,11 +303,6 @@ RSpec.describe Octoprint::Deserializable do
       transform_proc = proc { |data| data[:processed] = true }
       config.transform(&transform_proc)
       expect(config.transformations).to include(transform_proc)
-    end
-
-    it "supports collect_extras for backward compatibility" do
-      # collect_extras is now a no-op but should not raise errors
-      expect { config.collect_extras }.not_to raise_error
     end
   end
 
