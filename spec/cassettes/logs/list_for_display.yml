@@ -1,0 +1,157 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/plugin/logging/logs"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=27
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "files": [
+            {
+              "date": 1713926250,
+              "name": "plugin_PrintJobHistory_singlePrintJob.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_PrintJobHistory_singlePrintJob.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_PrintJobHistory_singlePrintJob.log"
+              },
+              "size": 1949
+            },
+            {
+              "date": 1645500986,
+              "name": "plugin_DisplayLayerProgress_events.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_DisplayLayerProgress_events.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_DisplayLayerProgress_events.log"
+              },
+              "size": 0
+            },
+            {
+              "date": 1681363580,
+              "name": "plugin_firmwareupdater_console.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_firmwareupdater_console.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_firmwareupdater_console.log"
+              },
+              "size": 0
+            },
+            {
+              "date": 1681434037,
+              "name": "plugin_arc_welder.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_arc_welder.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_arc_welder.log"
+              },
+              "size": 0
+            },
+            {
+              "date": 1709497609,
+              "name": "plugin_softwareupdate_console.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_softwareupdate_console.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_softwareupdate_console.log"
+              },
+              "size": 298935
+            },
+            {
+              "date": 1751696044,
+              "name": "tornado.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/tornado.log",
+                "resource": "<HOST>/plugin/logging/logs/tornado.log"
+              },
+              "size": 509197
+            },
+            {
+              "date": 1645500994,
+              "name": "plugin_bedlevelvisualizer_debug.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_bedlevelvisualizer_debug.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_bedlevelvisualizer_debug.log"
+              },
+              "size": 0
+            },
+            {
+              "date": 1749399456,
+              "name": "plugin_octolapse.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_octolapse.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_octolapse.log"
+              },
+              "size": 5957
+            },
+            {
+              "date": 1751669428,
+              "name": "auth.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/auth.log",
+                "resource": "<HOST>/plugin/logging/logs/auth.log"
+              },
+              "size": 88
+            },
+            {
+              "date": 1709507714,
+              "name": "plugin_pluginmanager_console.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/plugin_pluginmanager_console.log",
+                "resource": "<HOST>/plugin/logging/logs/plugin_pluginmanager_console.log"
+              },
+              "size": 14824
+            },
+            {
+              "date": 1751695326,
+              "name": "octoprint.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/octoprint.log",
+                "resource": "<HOST>/plugin/logging/logs/octoprint.log"
+              },
+              "size": 67537
+            },
+            {
+              "date": 1751669889,
+              "name": "serial.log",
+              "refs": {
+                "download": "<HOST>/downloads/logs/serial.log",
+                "resource": "<HOST>/plugin/logging/logs/serial.log"
+              },
+              "size": 296
+            }
+          ],
+          "free": 27211382784,
+          "total": 31119536128
+        }
+  recorded_at: Sat, 05 Jul 2025 06:14:03 GMT
+recorded_with: VCR 6.3.1
