@@ -13,23 +13,26 @@ A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbe
 
 ## Installation
 
+### Gemfile installation
+
 Add this line to your application's Gemfile:
 
 ```Ruby
 gem 'octoprint'
 ```
 
-or
-    $ bundle add octoprint
+or run in the terminal
+
+    bundle add octoprint
 
 
 And then execute:
 
-    $ bundle install
+    bundle install
 
-Or install it yourself as:
+### global manual installation
 
-    $ gem install octoprint
+    gem install octoprint
 
 ## Usage
 
