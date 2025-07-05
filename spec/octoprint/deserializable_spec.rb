@@ -311,4 +311,170 @@ RSpec.describe Octoprint::Deserializable do
       expect(config.handle_extras?).to be(true)
     end
   end
+
+  describe "edge cases in deserialization" do
+    let(:test_class) do
+      Class.new do
+        include Octoprint::Deserializable
+        attr_reader :value, :nested_obj, :array_items
+
+        def initialize(value: nil, nested_obj: nil, array_items: [])
+          @value = value
+          @nested_obj = nested_obj
+          @array_items = array_items
+        end
+
+        deserialize_config do
+          nested :nested_obj, self
+          array :array_items, self
+        end
+      end
+    end
+
+    it "handles falsy but not nil values in nested deserialization" do
+      data = { nested_obj: false }
+      result = test_class.deserialize(data)
+      expect(result.nested_obj).to be false
+    end
+
+    it "handles falsy but not nil values in array deserialization" do
+      data = { array_items: [false, 0, ""] }
+      result = test_class.deserialize(data)
+      expect(result.array_items).to eq([false, 0, ""])
+    end
+
+    it "handles objects without deserialize method in nested fields" do
+      simple_class = Class.new do
+        attr_reader :name
+
+        def initialize(name:)
+          @name = name
+        end
+      end
+
+      test_class_with_simple = Class.new do
+        include Octoprint::Deserializable
+        attr_reader :simple_obj
+
+        def initialize(simple_obj: nil)
+          @simple_obj = simple_obj
+        end
+
+        deserialize_config do
+          nested :simple_obj, simple_class
+        end
+      end
+
+      data = { simple_obj: { name: "test" } }
+      result = test_class_with_simple.deserialize(data)
+      # Since simple_class doesn't have deserialize, it creates a new instance
+      expect(result.simple_obj).to be_a(simple_class)
+      expect(result.simple_obj.name).to eq("test")
+    end
+
+    it "handles array items that cannot be deserialized" do
+      # Create a class that responds to :new but we'll pass non-hash items
+      # to trigger the else branch on line 250
+      simple_class = Class.new do
+        def self.respond_to?(method_name, include_private: false)
+          return false if method_name == :deserialize
+
+          super
+        end
+
+        def self.new(**)
+          # This would normally work for hash items
+          "new_called"
+        end
+      end
+
+      test_class_with_array = Class.new do
+        include Octoprint::Deserializable
+        attr_reader :items
+
+        def initialize(items: [])
+          @items = items
+        end
+
+        deserialize_config do
+          array :items, simple_class
+        end
+      end
+
+      # Test with non-hash items - since items are strings, not hashes,
+      # the elsif condition fails and we hit the else branch (line 250)
+      data = { items: %w[item1 item2 item3] }
+      result = test_class_with_array.deserialize(data)
+
+      # Items should remain unchanged since they can't be deserialized (line 250)
+      expect(result.items).to eq(%w[item1 item2 item3])
+    end
+
+    it "handles array items that can be deserialized with new" do
+      # Create a class that responds to :new but NOT to :deserialize to trigger the elsif branch on line 249
+      simple_class = Class.new do
+        attr_reader :name
+
+        def self.respond_to?(method_name, include_private: false)
+          return false if method_name == :deserialize
+
+          super
+        end
+
+        def initialize(name:)
+          @name = name
+        end
+      end
+
+      test_class_with_array = Class.new do
+        include Octoprint::Deserializable
+        attr_reader :items
+
+        def initialize(items: [])
+          @items = items
+        end
+
+        deserialize_config do
+          array :items, simple_class
+        end
+      end
+
+      # Test with hash items - since items are hashes and class responds to :new,
+      # we hit the elsif branch (line 249)
+      data = { items: [{ name: "item1" }, { name: "item2" }] }
+      result = test_class_with_array.deserialize(data)
+
+      # Items should be converted to simple_class instances via new (line 249)
+      expect(result.items).to be_an(Array)
+      expect(result.items.length).to eq(2)
+      expect(result.items.first).to be_a(simple_class)
+      expect(result.items.first.name).to eq("item1")
+      expect(result.items.last.name).to eq("item2")
+    end
+
+    it "handles classes without auto_attrs when collecting extras" do
+      # Create a class that doesn't respond to auto_attrs
+      test_class_without_auto_attrs = Class.new do
+        include Octoprint::Deserializable
+        attr_reader :name, :extra
+
+        def initialize(**kwargs)
+          @name = kwargs[:name]
+          @extra = kwargs[:extra] || {}
+        end
+
+        deserialize_config do
+          collect_extras
+        end
+      end
+
+      data = { name: "test", unknown_field: "value" }
+      result = test_class_without_auto_attrs.deserialize(data)
+
+      # Since class doesn't respond to auto_attrs, valid_keys should be empty (line 279)
+      # So all fields should be moved to extra
+      expect(result.name).to be_nil
+      expect(result.extra).to eq({ name: "test", unknown_field: "value" })
+    end
+  end
 end

@@ -57,7 +57,17 @@ RSpec/MultipleExpectations:
   Max: 10
 
 RSpec/ExampleLength:
-  Max: 25
+  Max: 45
+
+RSpec/DescribeClass:
+  IgnoredMetadata:
+    type:
+      - integration
+
+RSpec/SpecFilePathFormat:
+  Enabled: true
+  Exclude:
+    - 'spec/integration/**/*'
 
 
 # Allow constant definition in test blocks for test-specific classes
