@@ -5,7 +5,7 @@ A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbe
 ## ✨ Key Features
 
 - **🛡️ Type Safety**: Full Sorbet type annotations with compile-time error checking
-- **🔥 Smart Error Handling**: HTTP status codes mapped to specific exception types  
+- **🔥 Smart Error Handling**: HTTP status codes mapped to specific exception types
 - **📦 Comprehensive API Coverage**: Support for Files, Jobs, Printer Profiles, Connections, Logs, and more
 - **🧪 Exceptional Quality**: 100% test coverage with 464 test examples and 0 failures
 - **🎯 Multi-Printer Support**: Manage multiple OctoPrint instances with thread-safe clients
@@ -18,6 +18,10 @@ Add this line to your application's Gemfile:
 ```Ruby
 gem 'octoprint'
 ```
+
+or
+    $ bundle add octoprint
+
 
 And then execute:
 
@@ -35,18 +39,18 @@ require 'octoprint'
 # Configure globally for single printer
 Octoprint.configure(host: 'https://octopi.local/', api_key: 'your_api_key')
 
-# List files with full type safety  
+# List files with full type safety
 files = Octoprint::Files.list                    # => Array<Octoprint::File>
 files.first.name                                 # => String (typed)
-files.first.type_path                           # => Array<String> (typed)
+files.first.type_path                            # => Array<String> (typed)
 
 # Get current job with progress tracking
-job = Octoprint::Job.current                     # => Octoprint::Job  
+job = Octoprint::Job.current                     # => Octoprint::Job
 puts "#{job.file.name}: #{job.progress.percent}%" if job.progress.percent
 
 # Upload and start a print job
 Octoprint::Files.upload("awesome_model.gcode", "local")
-Octoprint::Files.select("local", "awesome_model.gcode") 
+Octoprint::Files.select("local", "awesome_model.gcode")
 Octoprint::Job.start
 ```
 
@@ -61,15 +65,11 @@ This gem provides complete type safety with Sorbet integration:
 job = Octoprint::Job.current
 job.file.name         # => String (typed)
 job.progress.percent  # => Float | nil (typed)
-
-# IDE autocomplete and compile-time error checking
-client = Octoprint::Client.new(host: url, api_key: key)
-files = client.use { Octoprint::Files.list }  # => Array<Octoprint::File>
 ```
 
 **Benefits:**
 - **Compile-time Error Detection**: Catch errors before runtime with `srb tc`
-- **IDE Integration**: Full autocomplete and type information (requires proper IDE setup with ruby-lsp and sorbet plugins for VSCode)
+- **IDE Integration**: Full autocomplete and type information (requires proper IDE setup, for example: ruby-lsp and sorbet plugins for VSCode)
 - **Refactoring Safety**: Type-checked code changes across the entire codebase
 - **Runtime Type Checking**: Optional runtime validation in development
 
@@ -84,7 +84,7 @@ rescue Octoprint::BadRequestError => e
   # Handle 400 errors specifically
   puts "Invalid request: #{e.message}"
 rescue Octoprint::AuthenticationError => e
-  # Handle 403 errors specifically  
+  # Handle 403 errors specifically
   puts "Authentication failed: #{e.message}"
 rescue Octoprint::NotFoundError => e
   # Handle 404 errors specifically
@@ -103,7 +103,7 @@ end
 
 ## 📦 Comprehensive API Coverage
 
-This gem provides complete coverage of OctoPrint's REST API:
+This gem aims to provide complete coverage of OctoPrint's REST API:
 
 | **Category** | **Features** |
 |---|---|
@@ -118,17 +118,17 @@ This gem provides complete coverage of OctoPrint's REST API:
 
 ```ruby
 # File management
-Octoprint::Files.upload("model.gcode", "local") 
+Octoprint::Files.upload("model.gcode", "local")
 Octoprint::Files.slice("model.stl", slicer: "cura")
 
-# Job control  
+# Job control
 job = Octoprint::Job.current
 Octoprint::Job.start if job.state == "ready"
 
 # Printer profiles
 profile = Octoprint::PrinterProfile.create(
   id: "ender3",
-  name: "Ender 3 Pro", 
+  name: "Ender 3 Pro",
   model: "Ender 3 Pro"
 )
 
@@ -177,8 +177,7 @@ This gem maintains exceptional quality standards:
 
 ### Test Coverage
 - **100% Line Coverage**: 718/718 lines covered
-- **464 Test Examples**: Comprehensive test suite with 0 failures  
-- **VCR Integration**: Real API interactions recorded and replayed
+- **VCR Integration**: Real API interactions recorded and replayed, ensuring tests ran in real conditions
 - **Sensitive Data Protection**: Automatically filters hosts and API keys
 
 ### Code Quality
@@ -188,9 +187,9 @@ This gem maintains exceptional quality standards:
 
 ```bash
 # Run all quality checks
-bundle exec rspec        # 464 examples, 0 failures, 100% coverage
-bundle exec rubocop      # 70 files inspected, 0 offenses  
-bundle exec srb tc       # No errors found
+bundle exec rspec
+bundle exec rubocop
+bundle exec srb tc
 ```
 
 ## Development
@@ -212,10 +211,10 @@ If you need all request to pass through while developing, you can add the `:wip`
 example:
 ```Ruby
     it "calls the API", :wip, vcr: {cassette_name: '/currentuser'} do
-        result = Octoprint.User.current
+      result = Octoprint.User.current
 
-        expect(result).to be_a Octoprint::User
-        expect(result.name).to eq 'sophie'
+      expect(result).to be_a Octoprint::User
+      expect(result.name).to eq 'sophie'
     end
 ```
 
