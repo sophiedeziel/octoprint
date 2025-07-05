@@ -69,7 +69,7 @@ files = client.use { Octoprint::Files.list }  # => Array<Octoprint::File>
 
 **Benefits:**
 - **Compile-time Error Detection**: Catch errors before runtime with `srb tc`
-- **IDE Integration**: Full autocomplete and type information
+- **IDE Integration**: Full autocomplete and type information (requires proper IDE setup with ruby-lsp and sorbet plugins for VSCode)
 - **Refactoring Safety**: Type-checked code changes across the entire codebase
 - **Runtime Type Checking**: Optional runtime validation in development
 
