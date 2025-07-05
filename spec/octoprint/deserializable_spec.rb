@@ -128,7 +128,7 @@ RSpec.describe Octoprint::Deserializable do
         auto_initialize!
 
         deserialize_config do
-          collect_extras
+          # Extras collection is automatic when class has :extra attribute
         end
       end
     end
@@ -282,7 +282,6 @@ RSpec.describe Octoprint::Deserializable do
       expect(config.array_objects).to eq({})
       expect(config.key_mappings).to eq({})
       expect(config.transformations).to eq([])
-      expect(config.handle_extras?).to be(false)
     end
 
     it "stores nested configuration" do
@@ -305,10 +304,65 @@ RSpec.describe Octoprint::Deserializable do
       config.transform(&transform_proc)
       expect(config.transformations).to include(transform_proc)
     end
+  end
 
-    it "enables extras collection" do
-      config.collect_extras
-      expect(config.handle_extras?).to be(true)
+  describe "camelCase to snake_case conversion" do
+    let(:test_class) do
+      Class.new do
+        include Octoprint::Deserializable
+        include Octoprint::AutoInitializable
+
+        auto_attr :first_name, type: String
+        auto_attr :last_name, type: String
+        auto_attr :heated_bed, type: T::Boolean
+        auto_attr :phone_number, type: String
+
+        auto_initialize!
+
+        deserialize_config do
+          # No special configuration needed - automatic camelCase conversion should work
+        end
+      end
+    end
+
+    it "automatically converts camelCase keys to snake_case" do
+      # This test covers lines 303-304 and 329 in deserializable.rb
+      data = {
+        firstName: "John",
+        lastName: "Doe",
+        heatedBed: true,
+        phoneNumber: "123-456-7890"
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("John")
+      expect(instance.last_name).to eq("Doe")
+      expect(instance.heated_bed).to be true
+      expect(instance.phone_number).to eq("123-456-7890")
+    end
+
+    it "handles mixed camelCase and snake_case keys" do
+      data = {
+        firstName: "Jane",
+        last_name: "Smith", # Already snake_case
+        heatedBed: false
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("Jane")
+      expect(instance.last_name).to eq("Smith")
+      expect(instance.heated_bed).to be false
+    end
+
+    it "leaves non-camelCase keys unchanged" do
+      data = {
+        first_name: "Bob", # Already snake_case
+        last_name: "Wilson"
+      }
+      instance = test_class.deserialize(data)
+
+      expect(instance.first_name).to eq("Bob")
+      expect(instance.last_name).to eq("Wilson")
     end
   end
 
@@ -452,29 +506,23 @@ RSpec.describe Octoprint::Deserializable do
       expect(result.items.last.name).to eq("item2")
     end
 
-    it "handles classes without auto_attrs when collecting extras" do
+    it "handles classes without auto_attrs gracefully" do
       # Create a class that doesn't respond to auto_attrs
       test_class_without_auto_attrs = Class.new do
         include Octoprint::Deserializable
-        attr_reader :name, :extra
+        attr_reader :name
 
         def initialize(**kwargs)
           @name = kwargs[:name]
-          @extra = kwargs[:extra] || {}
-        end
-
-        deserialize_config do
-          collect_extras
         end
       end
 
       data = { name: "test", unknown_field: "value" }
       result = test_class_without_auto_attrs.deserialize(data)
 
-      # Since class doesn't respond to auto_attrs, valid_keys should be empty (line 279)
-      # So all fields should be moved to extra
-      expect(result.name).to be_nil
-      expect(result.extra).to eq({ name: "test", unknown_field: "value" })
+      # With automatic extras collection, classes without :extra attribute
+      # simply ignore unknown fields (no extras collection happens)
+      expect(result.name).to eq("test")
     end
   end
 end
