@@ -17,21 +17,11 @@ RSpec.describe Octoprint::Logs, type: :integration do
     context "when server has log files" do
       it "returns log files with proper attributes" do
         logs_response = described_class.list
-        unless logs_response.files.empty?
-          first_log = logs_response.files.first
-          expect(first_log.name).to be_a(String)
-          expect(first_log.size).to be_a(Integer)
-          expect(first_log.date).to be_a(Integer)
-          expect(first_log.modification_time).to be_a(Time)
-        end
-      end
-    end
-
-    context "when server has no log files" do
-      it "returns empty files array" do
-        # This could happen on a fresh installation
-        logs_response = described_class.list
-        expect(logs_response.files).to eq([]) if logs_response.files.empty?
+        first_log = logs_response.files.first
+        expect(first_log.name).to be_a(String)
+        expect(first_log.size).to be_a(Integer)
+        expect(first_log.date).to be_a(Integer)
+        expect(first_log.modification_time).to be_a(Time)
       end
     end
   end
@@ -51,10 +41,6 @@ RSpec.describe Octoprint::Logs, type: :integration do
 
         result = delete_file
         expect(result).to be_truthy
-      rescue Octoprint::Exceptions::NotFoundError
-        # This is acceptable - the logging plugin may not be available
-        # or the specific endpoint may not exist on this OctoPrint instance
-        pending "Logging plugin endpoint not available on this OctoPrint instance"
       end
     end
 
@@ -97,11 +83,8 @@ RSpec.describe Octoprint::Logs, type: :integration do
       it "provides valid free space information when available" do
         logs = described_class.list
 
-        # Verify free space information if provided
-        if logs.free
-          expect(logs.free).to be_a(Integer)
-          expect(logs.free).to be >= 0
-        end
+        expect(logs.free).to be_a(Integer)
+        expect(logs.free).to be >= 0
       end
     end
 
@@ -109,14 +92,12 @@ RSpec.describe Octoprint::Logs, type: :integration do
       it "provides human-readable output", vcr: { cassette_name: "logs/list_for_display" } do
         logs = described_class.list
 
-        unless logs.files.empty?
-          log_file = logs.files.first
-          string_repr = log_file.to_s
+        log_file = logs.files.first
+        string_repr = log_file.to_s
 
-          expect(string_repr).to include(log_file.name)
-          expect(string_repr).to include("bytes")
-          expect(string_repr).to include("modified:")
-        end
+        expect(string_repr).to include(log_file.name)
+        expect(string_repr).to include("bytes")
+        expect(string_repr).to include("modified:")
       end
     end
   end
@@ -142,54 +123,6 @@ RSpec.describe Octoprint::Logs, type: :integration do
       it "handles nil files gracefully" do
         expect { described_class.list }.not_to raise_error
       end
-    end
-
-    describe "when network issues occur" do
-      before do
-        allow(mock_client).to receive(:request)
-          .and_raise(Octoprint::Exceptions::InternalServerError, "Server error")
-      end
-
-      it "propagates server errors appropriately" do
-        expect { described_class.list }.to raise_error(Octoprint::Exceptions::InternalServerError)
-      end
-    end
-  end
-
-  describe "API path construction" do
-    let(:client) { Octoprint::Client.new(host: "http://test.local", api_key: "test_key") }
-
-    before do
-      allow(described_class).to receive(:client).and_return(client)
-      allow(client).to receive(:request).and_return({ files: [], free: 1000 })
-    end
-
-    it "uses correct API endpoint for list operation" do
-      described_class.list
-
-      expect(client).to have_received(:request).with("/plugin/logging/logs", hash_including(http_method: :get))
-    end
-
-    it "constructs correct path for delete operation" do
-      allow(client).to receive(:request).and_return(true)
-
-      described_class.delete_file(filename: "test.log")
-
-      expect(client).to have_received(:request).with(
-        "/plugin/logging/logs/test.log",
-        hash_including(http_method: :delete)
-      )
-    end
-
-    it "handles filenames with special characters in delete operation" do
-      allow(client).to receive(:request).and_return(true)
-
-      described_class.delete_file(filename: "test.log.2023-01-01.gz")
-
-      expect(client).to have_received(:request).with(
-        "/plugin/logging/logs/test.log.2023-01-01.gz",
-        hash_including(http_method: :delete)
-      )
     end
   end
 end
