@@ -5,8 +5,9 @@ module Octoprint
   # Deserializable provides declarative deserialization configuration for API responses.
   #
   # This module allows classes to define how they should be deserialized from API response
-  # data using a clean, declarative DSL. It handles common patterns like key renaming,
-  # nested object conversion, array deserialization, and custom transformations.
+  # data using a clean, declarative DSL. It automatically handles common patterns like
+  # camelCase to snake_case conversion and unknown field collection, while supporting
+  # advanced features like nested object conversion, array deserialization, and custom transformations.
   #
   # @example Basic usage
   #   class User
@@ -55,6 +56,29 @@ module Octoprint
   #       end
   #     end
   #   end
+  #
+  # @example Automatic features (always enabled)
+  #   class ApiProfile
+  #     include Deserializable
+  #     include AutoInitializable
+  #
+  #     auto_attr :first_name, type: String
+  #     auto_attr :heated_bed, type: T::Boolean
+  #     auto_attr :phone_number, type: String
+  #     auto_attr :extra, type: Hash
+  #
+  #     auto_initialize!
+  #
+  #     # No configuration needed for common patterns!
+  #   end
+  #
+  #   # API response: { firstName: "John", heatedBed: true, phoneNumber: "123-456-7890", apiVersion: "1.2" }
+  #   # Automatic conversion: firstName -> first_name, heatedBed -> heated_bed, phoneNumber -> phone_number
+  #   # Unknown fields collected: apiVersion -> extra[:apiVersion]
+  #   profile = ApiProfile.deserialize(api_data)
+  #   profile.first_name  # => "John"
+  #   profile.heated_bed  # => true
+  #   profile.extra       # => { apiVersion: "1.2" }
   #
   # @example Manual deserialization (without DSL)
   #   class LegacyClass
@@ -134,6 +158,9 @@ module Octoprint
       def deserialize(data)
         config = deserialize_configuration
 
+        # Apply automatic camelCase to snake_case conversion (always enabled)
+        convert_camel_case_keys(data)
+
         if config
           # Apply nested object deserializations
           config.nested_objects.each do |field, klass|
@@ -152,10 +179,10 @@ module Octoprint
           config.transformations.each do |transformation|
             transformation.call(data)
           end
-
-          # Handle extras if configured
-          handle_extras(data) if config.handle_extras?
         end
+
+        # Handle extras (always enabled for forward compatibility)
+        handle_extras(data)
 
         T.unsafe(self).new(**data)
       end
@@ -255,17 +282,70 @@ module Octoprint
         data
       end
 
-      # Collects unknown fields into an :extra hash.
+      # Converts camelCase keys to snake_case keys in the data hash.
+      #
+      # Automatically converts API field names from camelCase to snake_case to match
+      # Ruby naming conventions. This eliminates the need for manual key renaming
+      # for common camelCase patterns.
+      #
+      # @param data [Hash<Symbol, Object>] The data hash to modify
+      # @return [Hash<Symbol, Object>] The modified data hash
+      #
+      # @example
+      #   data = { firstName: "John", lastName: "Doe", phoneNumber: "123-456-7890" }
+      #   convert_camel_case_keys(data)
+      #   # data is now { first_name: "John", last_name: "Doe", phone_number: "123-456-7890" }
+      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      def convert_camel_case_keys(data)
+        camel_case_keys = data.keys.select { |key| camel_case?(key) }
+
+        camel_case_keys.each do |camel_key|
+          snake_key = camel_to_snake(camel_key)
+          data[snake_key] = data.delete(camel_key)
+        end
+
+        data
+      end
+
+      private
+
+      # Checks if a symbol represents a camelCase identifier.
+      #
+      # @param key [Symbol] The key to check
+      # @return [Boolean] True if the key is in camelCase format
+      sig { params(key: Symbol).returns(T::Boolean) }
+      def camel_case?(key)
+        key_str = key.to_s
+        # Has lowercase letter followed by uppercase letter (e.g., firstName, heatedBed)
+        key_str.match?(/[a-z][A-Z]/)
+      end
+
+      # Converts a camelCase symbol to snake_case.
+      #
+      # @param camel_key [Symbol] The camelCase key to convert
+      # @return [Symbol] The snake_case equivalent
+      sig { params(camel_key: Symbol).returns(Symbol) }
+      def camel_to_snake(camel_key)
+        camel_key.to_s
+                 .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+                 .downcase
+                 .to_sym
+      end
+
+      public
+
+      # Collects unknown fields into an :extra hash if the class supports it.
       #
       # Moves any fields that aren't defined as auto_attrs into a separate :extra
       # hash to preserve API data that doesn't have corresponding Ruby attributes.
       # This is useful for maintaining forward compatibility with API changes.
+      # Only collects extras if the class has an :extra attribute defined.
       #
       # @param data [Hash<Symbol, Object>] The data hash to process
       # @return [void]
       #
       # @example
-      #   # Class has auto_attrs: [:name, :email]
+      #   # Class has auto_attrs: [:name, :email, :extra]
       #   data = { name: "John", email: "john@example.com", unknown_field: "value" }
       #   handle_extras(data)
       #   # data is now { name: "John", email: "john@example.com", extra: { unknown_field: "value" } }
@@ -278,11 +358,10 @@ module Octoprint
                        []
                      end
 
-        # Debug: let's see what's happening
-        # puts "Class: #{self.name}"
-        # puts "Valid keys: #{valid_keys}"
-        # puts "Data keys: #{data.keys}"
+        # Only collect extras if the class has an :extra attribute
+        return unless valid_keys.include?(:extra)
 
+        # Get extra keys (excluding :extra itself since that's where we'll store them)
         extra_keys = data.keys - valid_keys
 
         return unless extra_keys.any?
@@ -311,7 +390,6 @@ module Octoprint
         @array_objects = {}
         @key_mappings = {}
         @transformations = []
-        @handle_extras = false
       end
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for nested object conversion
@@ -405,27 +483,6 @@ module Octoprint
       sig { params(block: T.proc.params(data: T::Hash[Symbol, T.untyped]).void).void }
       def transform(&block)
         @transformations << block
-      end
-
-      # Enables collection of unknown fields into an :extra hash.
-      #
-      # Any fields in the API response that don't correspond to declared auto_attrs
-      # will be collected into an :extra hash field. This preserves data for forward
-      # compatibility with API changes.
-      #
-      # @example
-      #   collect_extras
-      #   # Unknown fields will be moved to data[:extra] = { unknown_field: "value" }
-      sig { void }
-      def collect_extras
-        @handle_extras = true
-      end
-
-      # @return [Boolean] Whether extra field collection is enabled
-      # @api private
-      sig { returns(T::Boolean) }
-      def handle_extras?
-        @handle_extras
       end
     end
 

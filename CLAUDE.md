@@ -27,6 +27,9 @@ Once the cassette is recorded successfully, remove the `:wip` tag so future test
   - `<HOST>` replaces the actual host
   - `<API_KEY>` replaces the API key
 - Cassettes are stored in `spec/cassettes/`
+- You may have to delete cassettes if they don't contain the appropriate response, in order to re-record them
+- You may have to use `curl` to prepare for the tests to run in the right conditions
+    - For example, if a test deletes a file on the server, you have to upload it first so it can be deleted.
 - The `:wip` tag configuration is in `spec/spec_helper.rb`
 
 ## Running Quality Gates
@@ -58,3 +61,5 @@ The coverage report excludes:
 - Vendor files (`/vendor/`)
 
 To view the coverage report, open `coverage/index.html` in your browser after running tests.
+
+** Important ** Always run the full test suite to get the actual code coverage.

@@ -33,10 +33,7 @@ module Octoprint
 
     auto_initialize!
 
-    deserialize_config do
-      # Collect any unknown fields for future compatibility
-      collect_extras
-    end
+    # No configuration needed - camelCase conversion and extras collection are automatic!
 
     # Retrieves information about the current user
     #

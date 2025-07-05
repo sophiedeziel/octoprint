@@ -46,6 +46,12 @@ Metrics/MethodLength:
     - 'lib/octoprint/deserializable.rb'
     - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
 
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/octoprint/auto_initializable.rb'
+    - 'lib/octoprint/deserializable.rb'
+    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+
 # Disable DocumentDynamicEvalDefinition for metaprogramming modules
 Style/DocumentDynamicEvalDefinition:
   Exclude:
