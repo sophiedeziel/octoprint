@@ -14,18 +14,18 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     its(:profiles) { are_expected.not_to be_empty }
 
     describe "default profile" do
-      subject { described_class.list.profiles["_default"] }
+      subject { described_class.list.profiles[:_default] }
 
       its(:id) { is_expected.to eq "_default" }
       its(:name) { is_expected.to be_a String }
       its(:model) { is_expected.to be_a String }
       its(:color) { is_expected.to be_a String }
-      its(:default) { is_expected.to be_a T::Boolean }
-      its(:current) { is_expected.to be_a T::Boolean }
+      its(:default) { is_expected.to be_truthy }
+      its(:current) { is_expected.to be_truthy }
       its(:resource) { is_expected.to include("/api/printerprofiles/_default") }
       its(:volume) { is_expected.to be_a Hash }
-      its(:heated_bed) { is_expected.to be_a T::Boolean }
-      its(:heated_chamber) { is_expected.to be_a T::Boolean }
+      its(:heated_bed) { is_expected.to be_truthy }
+      its(:heated_chamber) { is_expected.to be_falsey }
       its(:axes) { is_expected.to be_a Hash }
       its(:extruder) { is_expected.to be_a Hash }
     end
@@ -41,33 +41,33 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     its(:name) { is_expected.to be_a String }
     its(:model) { is_expected.to be_a String }
     its(:color) { is_expected.to be_a String }
-    its(:default) { is_expected.to be_a T::Boolean }
-    its(:current) { is_expected.to be_a T::Boolean }
+    its(:default) { is_expected.to be_truthy }
+    its(:current) { is_expected.to be_truthy }
     its(:resource) { is_expected.to include("/api/printerprofiles/_default") }
 
     describe "volume information" do
       subject { described_class.get(identifier: "_default").volume }
 
       it { is_expected.to be_a Hash }
-      it { is_expected.to have_key("width") }
-      it { is_expected.to have_key("depth") }
-      it { is_expected.to have_key("height") }
+      it { is_expected.to have_key(:width) }
+      it { is_expected.to have_key(:depth) }
+      it { is_expected.to have_key(:height) }
     end
 
     describe "axes information" do
       subject { described_class.get(identifier: "_default").axes }
 
       it { is_expected.to be_a Hash }
-      it { is_expected.to have_key("x") }
-      it { is_expected.to have_key("y") }
-      it { is_expected.to have_key("z") }
+      it { is_expected.to have_key(:x) }
+      it { is_expected.to have_key(:y) }
+      it { is_expected.to have_key(:z) }
     end
 
     describe "extruder information" do
       subject { described_class.get(identifier: "_default").extruder }
 
       it { is_expected.to be_a Hash }
-      it { is_expected.to have_key("count") }
+      it { is_expected.to have_key(:count) }
     end
   end
 
@@ -83,31 +83,11 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
       }
     end
 
-    before do
-      # Clean up any existing profile with the same ID
-      api_key = ENV.fetch("OCTOPRINT_API_KEY", nil)
-      host = ENV.fetch("OCTOPRINT_HOST", nil)
-      system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
-             "#{host}/api/printerprofiles/new_test_printer")
-      system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
-             "#{host}/api/printerprofiles/new_based_printer")
-    end
-
-    after do
-      # Clean up created profile
-      if create_profile&.id
-        api_key = ENV.fetch("OCTOPRINT_API_KEY", nil)
-        host = ENV.fetch("OCTOPRINT_HOST", nil)
-        system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
-               "#{host}/api/printerprofiles/#{create_profile.id}")
-      end
-    end
-
     it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
     its(:name) { is_expected.to eq "Test Printer" }
     its(:id) { is_expected.to eq "new_test_printer" }
 
-    context "when based on existing profile" do
+    context "when based on existing profile", vcr: { cassette_name: "printer_profiles/create_based_on" } do
       subject(:create_based_profile) do
         described_class.create(profile: { id: "new_based_printer", name: "Based Test Printer" }, based_on: "_default")
       end
@@ -139,11 +119,6 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     end
     let(:created_profile) { described_class.create(profile: original_profile_data) }
 
-    after do
-      # Clean up created profile
-      described_class.delete_profile(identifier: created_profile.id) if created_profile&.id
-    end
-
     it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
     its(:name) { is_expected.to eq "Updated Test Printer" }
     its(:model) { is_expected.to eq "Updated Model" }
@@ -169,7 +144,7 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
       expect { delete_profile }.not_to raise_error
     end
 
-    it "profile no longer exists after deletion" do
+    it "profile no longer exists after deletion", vcr: { cassette_name: "printer_profiles/delete_verification" } do
       delete_profile
 
       expect { described_class.get(identifier: created_profile.id) }
