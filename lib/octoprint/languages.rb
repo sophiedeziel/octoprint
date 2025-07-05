@@ -21,6 +21,13 @@ module Octoprint
   # @example Upload a new language pack
   #   result = Octoprint::Languages.upload("path/to/language-pack.zip")
   #   puts "Uploaded #{result.length} language packs"
+  #   result.each do |pack|
+  #     puts "- #{pack.display} (#{pack.identifier}): #{pack.languages.join(', ')}"
+  #   end
+  #
+  # @example Upload with specific locale
+  #   result = Octoprint::Languages.upload("french.zip", locale: "fr")
+  #   puts "Installed French translations for #{result.length} components"
   #
   # @example Remove a language pack
   #   Octoprint::Languages.delete_pack(locale: "fr", pack: "_core")
