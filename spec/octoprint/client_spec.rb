@@ -69,6 +69,39 @@ RSpec.describe Octoprint::Client do
 
       expect { client.request("/test") }.to raise_error(JSON::ParserError)
     end
+
+    it "returns the body as a hash" do
+      result = client.request("/test")
+      expect(result).to eq({ key: "value" })
+    end
+  end
+
+  describe "parse_response and transform_keys_recursively" do
+    let(:client) { described_class.new(host: host, api_key: api_key) }
+
+    it "transforms keys in hash responses" do
+      response = instance_double(Faraday::Response, body: '{"camelCase":"value"}')
+      result = client.send(:parse_response, response)
+      expect(result).to eq({ camel_case: "value" })
+    end
+
+    it "transforms keys in array responses" do
+      response = instance_double(Faraday::Response, body: '[{"camelCase":"value1"},{"anotherKey":"value2"}]')
+      result = client.send(:parse_response, response)
+      expect(result).to eq([{ camel_case: "value1" }, { another_key: "value2" }])
+    end
+
+    it "handles primitive values in arrays" do
+      response = instance_double(Faraday::Response, body: '["string", 123, true, null]')
+      result = client.send(:parse_response, response)
+      expect(result).to eq(["string", 123, true, nil])
+    end
+
+    it "handles nested structures" do
+      response = instance_double(Faraday::Response, body: '[{"camelCase":{"nestedKey":"value"}}]')
+      result = client.send(:parse_response, response)
+      expect(result).to eq([{ camel_case: { nested_key: "value" } }])
+    end
   end
 
   describe "private methods" do

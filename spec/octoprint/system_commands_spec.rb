@@ -115,4 +115,102 @@ RSpec.describe Octoprint::SystemCommands do
       expect(result.custom).to eq([])
     end
   end
+
+  describe ".list_by_source" do
+    let(:client) { instance_double(Octoprint::Client) }
+    let(:core_commands_response) do
+      [
+        { action: "shutdown", name: "Shutdown", source: "core",
+          resource: "http://example.com/api/system/commands/core/shutdown" },
+        { action: "restart", name: "Restart", source: "core",
+          resource: "http://example.com/api/system/commands/core/restart" }
+      ]
+    end
+    let(:custom_commands_response) do
+      [
+        { action: "custom1", name: "Custom Command", source: "custom",
+          resource: "http://example.com/api/system/commands/custom/custom1" }
+      ]
+    end
+
+    before do
+      allow(described_class).to receive(:client).and_return(client)
+    end
+
+    context "when requesting core commands" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/core",
+          http_method: :get
+        ).and_return(core_commands_response)
+      end
+
+      it "fetches core commands from the API" do
+        result = described_class.list_by_source("core")
+
+        expect(client).to have_received(:request).with(
+          "/api/system/commands/core",
+          http_method: :get
+        )
+        expect(result).to be_an(Array)
+        expect(result.size).to eq(2)
+      end
+
+      it "returns an array of Command objects" do
+        result = described_class.list_by_source("core")
+
+        expect(result).to all(be_a(Octoprint::SystemCommands::Command))
+        expect(result.first.action).to eq("shutdown")
+        expect(result.first.name).to eq("Shutdown")
+        expect(result.first.source).to eq("core")
+        expect(result.last.action).to eq("restart")
+        expect(result.last.name).to eq("Restart")
+        expect(result.last.source).to eq("core")
+      end
+    end
+
+    context "when requesting custom commands" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/custom",
+          http_method: :get
+        ).and_return(custom_commands_response)
+      end
+
+      it "fetches custom commands from the API" do
+        result = described_class.list_by_source("custom")
+
+        expect(client).to have_received(:request).with(
+          "/api/system/commands/custom",
+          http_method: :get
+        )
+        expect(result).to be_an(Array)
+        expect(result.size).to eq(1)
+      end
+
+      it "returns an array of Command objects" do
+        result = described_class.list_by_source("custom")
+
+        expect(result).to all(be_a(Octoprint::SystemCommands::Command))
+        expect(result.first.action).to eq("custom1")
+        expect(result.first.name).to eq("Custom Command")
+        expect(result.first.source).to eq("custom")
+      end
+    end
+
+    context "when requesting empty source" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/empty",
+          http_method: :get
+        ).and_return([])
+      end
+
+      it "returns an empty array" do
+        result = described_class.list_by_source("empty")
+
+        expect(result).to eq([])
+      end
+    end
+  end
 end
