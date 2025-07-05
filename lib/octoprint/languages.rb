@@ -1,11 +1,29 @@
 # typed: true
 # frozen_string_literal: true
 
-require "faraday"
-require "faraday/multipart"
-
 module Octoprint
-  # Language packs available on the server
+  # Language pack management for OctoPrint server internationalization
+  #
+  # This class provides methods to manage language packs on the OctoPrint server.
+  # Language packs enable OctoPrint's user interface to be displayed in different
+  # languages. The API supports listing installed packs, uploading new language
+  # pack archives, and removing existing language packs.
+  #
+  # Language packs are organized by identifier (e.g., "_core", plugin names) and
+  # contain translations for specific locales (e.g., "fr", "de", "es").
+  #
+  # @example List all available language packs
+  #   languages = Octoprint::Languages.list
+  #   languages.language_packs.each do |pack_id, pack|
+  #     puts "#{pack.display}: #{pack.languages.join(', ')}"
+  #   end
+  #
+  # @example Upload a new language pack
+  #   result = Octoprint::Languages.upload("path/to/language-pack.zip")
+  #   puts "Uploaded #{result.language_packs.length} language packs"
+  #
+  # @example Remove a language pack
+  #   Octoprint::Languages.delete_pack(locale: "fr", pack: "_core")
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/1.11.2/api/languages.html
   class Languages < BaseResource
@@ -75,7 +93,17 @@ module Octoprint
       delete(path: path)
     end
 
-    # Represents a single language pack
+    # Represents a single language pack available on the server
+    #
+    # A language pack contains translations for a specific component (like the core
+    # OctoPrint interface or a plugin) and includes information about which locales
+    # are available within that pack.
+    #
+    # @example Access language pack information
+    #   pack = languages.language_packs["_core"]
+    #   puts pack.display           # => "Core"
+    #   puts pack.identifier        # => "_core"
+    #   puts pack.languages         # => ["fr", "de", "es"]
     class LanguagePack
       extend T::Sig
       include Deserializable
@@ -93,7 +121,18 @@ module Octoprint
       end
     end
 
-    # Represents a list of language packs returned from upload
+    # Represents the response from uploading language pack archives
+    #
+    # When language packs are uploaded to the server, this class contains
+    # the list of language pack objects that were successfully installed.
+    # This allows you to see what translations are now available after
+    # an upload operation.
+    #
+    # @example Check upload results
+    #   result = Octoprint::Languages.upload("my-translation.zip")
+    #   result.language_packs.each do |pack|
+    #     puts "Installed: #{pack.display} (#{pack.identifier})"
+    #   end
     class LanguagePackList
       extend T::Sig
       include Deserializable
