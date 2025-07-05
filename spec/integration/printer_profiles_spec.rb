@@ -1,0 +1,227 @@
+# typed: true
+# frozen_string_literal: true
+
+RSpec.describe Octoprint::PrinterProfiles, type: :integration do
+  include_context "with default Octoprint config"
+
+  describe "List printer profiles", vcr: { cassette_name: "printer_profiles/list" } do
+    use_octoprint_server
+
+    subject { described_class.list }
+
+    it { is_expected.to be_a described_class }
+    its(:profiles) { are_expected.to be_a Hash }
+    its(:profiles) { are_expected.not_to be_empty }
+
+    describe "default profile" do
+      subject { described_class.list.profiles["_default"] }
+
+      its(:id) { is_expected.to eq "_default" }
+      its(:name) { is_expected.to be_a String }
+      its(:model) { is_expected.to be_a String }
+      its(:color) { is_expected.to be_a String }
+      its(:default) { is_expected.to be_a T::Boolean }
+      its(:current) { is_expected.to be_a T::Boolean }
+      its(:resource) { is_expected.to include("/api/printerprofiles/_default") }
+      its(:volume) { is_expected.to be_a Hash }
+      its(:heated_bed) { is_expected.to be_a T::Boolean }
+      its(:heated_chamber) { is_expected.to be_a T::Boolean }
+      its(:axes) { is_expected.to be_a Hash }
+      its(:extruder) { is_expected.to be_a Hash }
+    end
+  end
+
+  describe "Get a specific printer profile", vcr: { cassette_name: "printer_profiles/get_default" } do
+    use_octoprint_server
+
+    subject { described_class.get(identifier: "_default") }
+
+    it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
+    its(:id) { is_expected.to eq "_default" }
+    its(:name) { is_expected.to be_a String }
+    its(:model) { is_expected.to be_a String }
+    its(:color) { is_expected.to be_a String }
+    its(:default) { is_expected.to be_a T::Boolean }
+    its(:current) { is_expected.to be_a T::Boolean }
+    its(:resource) { is_expected.to include("/api/printerprofiles/_default") }
+
+    describe "volume information" do
+      subject { described_class.get(identifier: "_default").volume }
+
+      it { is_expected.to be_a Hash }
+      it { is_expected.to have_key("width") }
+      it { is_expected.to have_key("depth") }
+      it { is_expected.to have_key("height") }
+    end
+
+    describe "axes information" do
+      subject { described_class.get(identifier: "_default").axes }
+
+      it { is_expected.to be_a Hash }
+      it { is_expected.to have_key("x") }
+      it { is_expected.to have_key("y") }
+      it { is_expected.to have_key("z") }
+    end
+
+    describe "extruder information" do
+      subject { described_class.get(identifier: "_default").extruder }
+
+      it { is_expected.to be_a Hash }
+      it { is_expected.to have_key("count") }
+    end
+  end
+
+  describe "Create a new printer profile", vcr: { cassette_name: "printer_profiles/create" }, :wip do
+    use_octoprint_server
+
+    subject(:create_profile) { described_class.create(profile: profile_data) }
+
+    let(:profile_data) do
+      {
+        name: "Test Printer",
+        model: "Test Model",
+        color: "red",
+        volume: {
+          width: 220,
+          depth: 220,
+          height: 250
+        },
+        heated_bed: true,
+        heated_chamber: false,
+        axes: {
+          x: { speed: 6000, inverted: false },
+          y: { speed: 6000, inverted: false },
+          z: { speed: 200, inverted: false }
+        },
+        extruder: {
+          count: 1,
+          offsets: [{ x: 0, y: 0 }],
+          nozzle_diameter: 0.4,
+          shared_nozzle: false,
+          default_extrusion_length: 5
+        }
+      }
+    end
+
+    it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
+    its(:name) { is_expected.to eq "Test Printer" }
+    its(:model) { is_expected.to eq "Test Model" }
+    its(:color) { is_expected.to eq "red" }
+    its(:heated_bed) { is_expected.to be true }
+    its(:heated_chamber) { is_expected.to be false }
+
+    context "when based on existing profile" do
+      subject(:create_based_profile) do
+        described_class.create(profile: { name: "Based Test Printer" }, based_on: "_default")
+      end
+
+      its(:name) { is_expected.to eq "Based Test Printer" }
+    end
+
+    after do
+      # Clean up created profile
+      begin
+        described_class.delete_profile(identifier: create_profile.id) if create_profile&.id
+      rescue Octoprint::Exceptions::NotFoundError
+        # Profile already deleted or doesn't exist
+      end
+    end
+  end
+
+  describe "Update an existing printer profile", vcr: { cassette_name: "printer_profiles/update" }, :wip do
+    use_octoprint_server
+
+    let(:test_profile_id) { "test_update_profile" }
+    let(:original_profile_data) do
+      {
+        name: "Original Test Printer",
+        model: "Original Model",
+        color: "blue"
+      }
+    end
+    let(:update_data) do
+      {
+        name: "Updated Test Printer",
+        model: "Updated Model"
+      }
+    end
+
+    before do
+      # Create a test profile first
+      @created_profile = described_class.create(profile: original_profile_data)
+    end
+
+    after do
+      # Clean up created profile
+      begin
+        described_class.delete_profile(identifier: @created_profile.id) if @created_profile&.id
+      rescue Octoprint::Exceptions::NotFoundError
+        # Profile already deleted or doesn't exist
+      end
+    end
+
+    subject(:update_profile) do
+      described_class.update(identifier: @created_profile.id, profile: update_data)
+    end
+
+    it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
+    its(:name) { is_expected.to eq "Updated Test Printer" }
+    its(:model) { is_expected.to eq "Updated Model" }
+    its(:color) { is_expected.to eq "blue" } # Should retain original color
+  end
+
+  describe "Delete a printer profile", vcr: { cassette_name: "printer_profiles/delete" }, :wip do
+    use_octoprint_server
+
+    let(:profile_data) do
+      {
+        name: "Profile to Delete",
+        model: "Delete Model",
+        color: "green"
+      }
+    end
+
+    before do
+      # Create a test profile first
+      @created_profile = described_class.create(profile: profile_data)
+    end
+
+    subject(:delete_profile) { described_class.delete_profile(identifier: @created_profile.id) }
+
+    it "deletes the profile successfully" do
+      expect { delete_profile }.not_to raise_error
+    end
+
+    it "profile no longer exists after deletion" do
+      delete_profile
+
+      expect { described_class.get(identifier: @created_profile.id) }
+        .to raise_error(Octoprint::Exceptions::NotFoundError)
+    end
+  end
+
+  describe "Error handling" do
+    use_octoprint_server
+
+    it "raises NotFoundError for non-existent profile" do
+      allow(described_class).to receive(:fetch_resource).and_raise(
+        Octoprint::Exceptions::NotFoundError,
+        "The requested URL was not found on the server"
+      )
+
+      expect { described_class.get(identifier: "non_existent") }
+        .to raise_error(Octoprint::Exceptions::NotFoundError)
+    end
+
+    it "handles delete of current profile gracefully" do
+      # Attempting to delete the current profile should raise a conflict error
+      allow(described_class).to receive(:delete).and_raise(
+        Octoprint::Exceptions::ConflictError,
+        "Cannot delete current profile"
+      )
+
+      expect { described_class.delete_profile(identifier: "_default") }
+        .to raise_error(Octoprint::Exceptions::ConflictError)
+    end
+  end
+end
