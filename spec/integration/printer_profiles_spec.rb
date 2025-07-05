@@ -71,13 +71,14 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     end
   end
 
-  describe "Create a new printer profile", vcr: { cassette_name: "printer_profiles/create" }, :wip do
+  describe "Create a new printer profile", vcr: { cassette_name: "printer_profiles/create" } do
     use_octoprint_server
 
     subject(:create_profile) { described_class.create(profile: profile_data) }
 
     let(:profile_data) do
       {
+        id: "test_printer",
         name: "Test Printer",
         model: "Test Model",
         color: "red",
@@ -103,6 +104,11 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
       }
     end
 
+    after do
+      # Clean up created profile
+      described_class.delete_profile(identifier: create_profile.id) if create_profile&.id
+    end
+
     it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
     its(:name) { is_expected.to eq "Test Printer" }
     its(:model) { is_expected.to eq "Test Model" }
@@ -112,28 +118,23 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
 
     context "when based on existing profile" do
       subject(:create_based_profile) do
-        described_class.create(profile: { name: "Based Test Printer" }, based_on: "_default")
+        described_class.create(profile: { id: "based_printer", name: "Based Test Printer" }, based_on: "_default")
       end
 
       its(:name) { is_expected.to eq "Based Test Printer" }
     end
-
-    after do
-      # Clean up created profile
-      begin
-        described_class.delete_profile(identifier: create_profile.id) if create_profile&.id
-      rescue Octoprint::Exceptions::NotFoundError
-        # Profile already deleted or doesn't exist
-      end
-    end
   end
 
-  describe "Update an existing printer profile", vcr: { cassette_name: "printer_profiles/update" }, :wip do
+  describe "Update an existing printer profile", vcr: { cassette_name: "printer_profiles/update" } do
     use_octoprint_server
 
-    let(:test_profile_id) { "test_update_profile" }
+    subject(:update_profile) do
+      described_class.update(identifier: created_profile.id, profile: update_data)
+    end
+
     let(:original_profile_data) do
       {
+        id: "update_test",
         name: "Original Test Printer",
         model: "Original Model",
         color: "blue"
@@ -145,23 +146,11 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
         model: "Updated Model"
       }
     end
-
-    before do
-      # Create a test profile first
-      @created_profile = described_class.create(profile: original_profile_data)
-    end
+    let(:created_profile) { described_class.create(profile: original_profile_data) }
 
     after do
       # Clean up created profile
-      begin
-        described_class.delete_profile(identifier: @created_profile.id) if @created_profile&.id
-      rescue Octoprint::Exceptions::NotFoundError
-        # Profile already deleted or doesn't exist
-      end
-    end
-
-    subject(:update_profile) do
-      described_class.update(identifier: @created_profile.id, profile: update_data)
+      described_class.delete_profile(identifier: created_profile.id) if created_profile&.id
     end
 
     it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
@@ -170,23 +159,20 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     its(:color) { is_expected.to eq "blue" } # Should retain original color
   end
 
-  describe "Delete a printer profile", vcr: { cassette_name: "printer_profiles/delete" }, :wip do
+  describe "Delete a printer profile", vcr: { cassette_name: "printer_profiles/delete" } do
     use_octoprint_server
+
+    subject(:delete_profile) { described_class.delete_profile(identifier: created_profile.id) }
 
     let(:profile_data) do
       {
+        id: "delete_test",
         name: "Profile to Delete",
         model: "Delete Model",
         color: "green"
       }
     end
-
-    before do
-      # Create a test profile first
-      @created_profile = described_class.create(profile: profile_data)
-    end
-
-    subject(:delete_profile) { described_class.delete_profile(identifier: @created_profile.id) }
+    let(:created_profile) { described_class.create(profile: profile_data) }
 
     it "deletes the profile successfully" do
       expect { delete_profile }.not_to raise_error
@@ -195,7 +181,7 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
     it "profile no longer exists after deletion" do
       delete_profile
 
-      expect { described_class.get(identifier: @created_profile.id) }
+      expect { described_class.get(identifier: created_profile.id) }
         .to raise_error(Octoprint::Exceptions::NotFoundError)
     end
   end
