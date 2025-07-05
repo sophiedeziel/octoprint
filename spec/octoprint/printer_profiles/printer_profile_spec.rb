@@ -22,7 +22,7 @@ RSpec.describe Octoprint::PrinterProfiles::PrinterProfile do
       }
     end
 
-    it "initializes with all required attributes" do
+    it "initializes with basic attributes" do
       profile = described_class.new(**profile_data)
 
       expect(profile.id).to eq("_default")
@@ -31,6 +31,11 @@ RSpec.describe Octoprint::PrinterProfiles::PrinterProfile do
       expect(profile.model).to eq("Generic RepRap Printer")
       expect(profile.default).to be true
       expect(profile.current).to be true
+    end
+
+    it "initializes with configuration attributes" do
+      profile = described_class.new(**profile_data)
+
       expect(profile.resource).to eq("http://example.com/api/printerprofiles/_default")
       expect(profile.volume).to eq({ width: 200, depth: 200, height: 180 })
       expect(profile.heated_bed).to be false
@@ -39,9 +44,9 @@ RSpec.describe Octoprint::PrinterProfiles::PrinterProfile do
       expect(profile.extruder).to eq({ count: 1 })
     end
 
-    it "handles extra attributes" do
+    it "handles extra attributes via deserialize" do
       extra_data = profile_data.merge(custom_field: "custom_value")
-      profile = described_class.new(**extra_data)
+      profile = described_class.deserialize(extra_data)
 
       expect(profile.extra).to eq({ custom_field: "custom_value" })
     end
@@ -50,22 +55,22 @@ RSpec.describe Octoprint::PrinterProfiles::PrinterProfile do
   describe ".deserialize" do
     let(:serialized_data) do
       {
-        "id" => "_default",
-        "name" => "Default",
-        "color" => "default",
-        "model" => "Generic RepRap Printer",
-        "default" => true,
-        "current" => true,
-        "resource" => "http://example.com/api/printerprofiles/_default",
-        "volume" => { "width" => 200, "depth" => 200, "height" => 180 },
-        "heated_bed" => false,
-        "heated_chamber" => false,
-        "axes" => { "x" => { "speed" => 6000 }, "y" => { "speed" => 6000 }, "z" => { "speed" => 200 } },
-        "extruder" => { "count" => 1 }
+        id: "_default",
+        name: "Default",
+        color: "default",
+        model: "Generic RepRap Printer",
+        default: true,
+        current: true,
+        resource: "http://example.com/api/printerprofiles/_default",
+        volume: { width: 200, depth: 200, height: 180 },
+        heated_bed: false,
+        heated_chamber: false,
+        axes: { x: { speed: 6000 }, y: { speed: 6000 }, z: { speed: 200 } },
+        extruder: { count: 1 }
       }
     end
 
-    it "deserializes from hash with string keys" do
+    it "deserializes from hash with symbol keys" do
       profile = described_class.deserialize(serialized_data)
 
       expect(profile).to be_a(described_class)
@@ -79,9 +84,9 @@ RSpec.describe Octoprint::PrinterProfiles::PrinterProfile do
     it "handles complex nested structures" do
       profile = described_class.deserialize(serialized_data)
 
-      expect(profile.volume).to eq({ "width" => 200, "depth" => 200, "height" => 180 })
-      expect(profile.axes).to eq({ "x" => { "speed" => 6000 }, "y" => { "speed" => 6000 }, "z" => { "speed" => 200 } })
-      expect(profile.extruder).to eq({ "count" => 1 })
+      expect(profile.volume).to eq({ width: 200, depth: 200, height: 180 })
+      expect(profile.axes).to eq({ x: { speed: 6000 }, y: { speed: 6000 }, z: { speed: 200 } })
+      expect(profile.extruder).to eq({ count: 1 })
     end
   end
 
