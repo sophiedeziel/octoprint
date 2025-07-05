@@ -38,16 +38,16 @@ RSpec.describe Octoprint::Languages, type: :integration do
     let(:file_path) { "spec/files/french_language_pack.zip" }
     let(:params) { {} }
 
-    it { is_expected.to be_a Octoprint::Languages::LanguagePackList }
+    it { is_expected.to be_an Array }
 
-    it "has language_packs attribute" do
-      expect(upload).to respond_to(:language_packs)
+    it "contains LanguagePack objects" do
+      expect(upload).to all(be_a(Octoprint::Languages::LanguagePack))
     end
 
     context "when specifying a locale", vcr: { cassette_name: "languages/upload_with_locale" } do
       let(:params) { { locale: "en" } }
 
-      it { is_expected.to be_a Octoprint::Languages::LanguagePackList }
+      it { is_expected.to be_an Array }
     end
 
     context "when upload fails due to invalid file", vcr: { cassette_name: "languages/upload_invalid" } do

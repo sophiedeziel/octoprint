@@ -20,7 +20,7 @@ module Octoprint
   #
   # @example Upload a new language pack
   #   result = Octoprint::Languages.upload("path/to/language-pack.zip")
-  #   puts "Uploaded #{result.language_packs.length} language packs"
+  #   puts "Uploaded #{result.length} language packs"
   #
   # @example Remove a language pack
   #   Octoprint::Languages.delete_pack(locale: "fr", pack: "_core")
@@ -63,10 +63,10 @@ module Octoprint
     # @param [String] file_path     The path to the language pack archive to upload
     # @param [String] locale        Optional. If provided, forces the locale the pack will be installed under
     #
-    # @return [LanguagePackList] List of installed language packs
+    # @return [Array<LanguagePack>] List of installed language packs
     sig do
       params(file_path: String, locale: T.nilable(String))
-        .returns(LanguagePackList)
+        .returns(T::Array[LanguagePack])
     end
     def self.upload(file_path, locale: nil)
       params = {
@@ -75,7 +75,8 @@ module Octoprint
       params[:locale] = locale if locale
 
       result = post(params: params)
-      LanguagePackList.deserialize(result)
+      # Handle nested hash structure: {language_packs: {pack_id: pack_info}}
+      result[:language_packs].values.map { |pack| LanguagePack.deserialize(pack) }
     end
 
     # Deletes a language pack

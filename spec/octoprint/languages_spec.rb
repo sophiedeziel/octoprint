@@ -89,7 +89,7 @@ RSpec.describe Octoprint::Languages do
     let(:test_file) { "spec/files/test_language_pack.zip" }
 
     before do
-      allow(described_class).to receive_messages(client: client, post: { language_packs: [] })
+      allow(described_class).to receive_messages(client: client, post: { language_packs: {} })
       allow(File).to receive(:exist?).with(test_file).and_return(true)
     end
 
@@ -102,7 +102,7 @@ RSpec.describe Octoprint::Languages do
       expect(described_class).to have_received(:post).with(
         params: { file: "mock_upload_io" }
       )
-      expect(result).to be_a(Octoprint::Languages::LanguagePackList)
+      expect(result).to be_an(Array)
     end
 
     it "uploads a language pack with locale" do
@@ -113,7 +113,7 @@ RSpec.describe Octoprint::Languages do
       expect(described_class).to have_received(:post).with(
         params: { file: "mock_upload_io", locale: "en" }
       )
-      expect(result).to be_a(Octoprint::Languages::LanguagePackList)
+      expect(result).to be_an(Array)
     end
   end
 
@@ -172,58 +172,6 @@ RSpec.describe Octoprint::Languages do
         expect(pack.identifier).to eq("test")
         expect(pack.display).to eq("Test")
         expect(pack.languages).to eq(["en"])
-      end
-    end
-  end
-
-  describe Octoprint::Languages::LanguagePackList do
-    describe "#initialize" do
-      let(:pack_data) do
-        [
-          { identifier: "_core", display: "Core", languages: [] },
-          { identifier: "plugin", display: "Plugin", languages: ["en"] }
-        ]
-      end
-
-      it "creates LanguagePack objects from array data" do
-        list = described_class.new(language_packs: pack_data)
-
-        expect(list.language_packs).to be_an(Array)
-        expect(list.language_packs.length).to eq(2)
-        expect(list.language_packs.first).to be_a(Octoprint::Languages::LanguagePack)
-        expect(list.language_packs.first.identifier).to eq("_core")
-        expect(list.language_packs.last.identifier).to eq("plugin")
-      end
-
-      it "handles empty array" do
-        list = described_class.new(language_packs: [])
-
-        expect(list.language_packs).to eq([])
-      end
-    end
-
-    describe "deserialization" do
-      it "includes Deserializable" do
-        expect(described_class).to include(Octoprint::Deserializable)
-      end
-
-      it "includes AutoInitializable" do
-        expect(described_class).to include(Octoprint::AutoInitializable)
-      end
-
-      it "deserializes from hash with language_packs array" do
-        data = {
-          language_packs: [
-            { identifier: "test1", display: "Test 1", languages: [] },
-            { identifier: "test2", display: "Test 2", languages: %w[en de] }
-          ]
-        }
-        list = described_class.deserialize(data)
-
-        expect(list.language_packs).to be_an(Array)
-        expect(list.language_packs.length).to eq(2)
-        expect(list.language_packs.first.identifier).to eq("test1")
-        expect(list.language_packs.last.identifier).to eq("test2")
       end
     end
   end
