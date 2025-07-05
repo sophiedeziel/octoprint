@@ -334,7 +334,7 @@ RSpec.describe Octoprint::Deserializable do
       # This test covers lines 303-304 and 329 in deserializable.rb
       data = {
         firstName: "John",
-        lastName: "Doe", 
+        lastName: "Doe",
         heatedBed: true,
         phoneNumber: "123-456-7890"
       }
@@ -349,7 +349,7 @@ RSpec.describe Octoprint::Deserializable do
     it "handles mixed camelCase and snake_case keys" do
       data = {
         firstName: "Jane",
-        last_name: "Smith",  # Already snake_case
+        last_name: "Smith", # Already snake_case
         heatedBed: false
       }
       instance = test_class.deserialize(data)
@@ -361,7 +361,7 @@ RSpec.describe Octoprint::Deserializable do
 
     it "leaves non-camelCase keys unchanged" do
       data = {
-        first_name: "Bob",  # Already snake_case
+        first_name: "Bob", # Already snake_case
         last_name: "Wilson"
       }
       instance = test_class.deserialize(data)
