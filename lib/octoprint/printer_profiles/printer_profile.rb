@@ -35,9 +35,7 @@ module Octoprint
 
       auto_initialize!
 
-      deserialize_config do
-        collect_extras
-      end
+      # No configuration needed - camelCase conversion and extras collection are automatic!
     end
   end
 end

@@ -5,8 +5,9 @@ module Octoprint
   # Deserializable provides declarative deserialization configuration for API responses.
   #
   # This module allows classes to define how they should be deserialized from API response
-  # data using a clean, declarative DSL. It handles common patterns like key renaming,
-  # nested object conversion, array deserialization, and custom transformations.
+  # data using a clean, declarative DSL. It automatically handles common patterns like
+  # camelCase to snake_case conversion and unknown field collection, while supporting
+  # advanced features like nested object conversion, array deserialization, and custom transformations.
   #
   # @example Basic usage
   #   class User
@@ -56,7 +57,7 @@ module Octoprint
   #     end
   #   end
   #
-  # @example Automatic camelCase to snake_case conversion (always enabled)
+  # @example Automatic features (always enabled)
   #   class ApiProfile
   #     include Deserializable
   #     include AutoInitializable
@@ -64,19 +65,20 @@ module Octoprint
   #     auto_attr :first_name, type: String
   #     auto_attr :heated_bed, type: T::Boolean
   #     auto_attr :phone_number, type: String
+  #     auto_attr :extra, type: Hash
   #
   #     auto_initialize!
   #
-  #     deserialize_config do
-  #       collect_extras
-  #     end
+  #     # No configuration needed for common patterns!
   #   end
   #
-  #   # API response: { firstName: "John", heatedBed: true, phoneNumber: "123-456-7890" }
+  #   # API response: { firstName: "John", heatedBed: true, phoneNumber: "123-456-7890", apiVersion: "1.2" }
   #   # Automatic conversion: firstName -> first_name, heatedBed -> heated_bed, phoneNumber -> phone_number
+  #   # Unknown fields collected: apiVersion -> extra[:apiVersion]
   #   profile = ApiProfile.deserialize(api_data)
   #   profile.first_name  # => "John"
   #   profile.heated_bed  # => true
+  #   profile.extra       # => { apiVersion: "1.2" }
   #
   # @example Manual deserialization (without DSL)
   #   class LegacyClass
@@ -177,10 +179,10 @@ module Octoprint
           config.transformations.each do |transformation|
             transformation.call(data)
           end
-
-          # Handle extras if configured
-          handle_extras(data) if config.handle_extras?
         end
+
+        # Handle extras (always enabled for forward compatibility)
+        handle_extras(data)
 
         T.unsafe(self).new(**data)
       end
@@ -332,17 +334,18 @@ module Octoprint
 
       public
 
-      # Collects unknown fields into an :extra hash.
+      # Collects unknown fields into an :extra hash if the class supports it.
       #
       # Moves any fields that aren't defined as auto_attrs into a separate :extra
       # hash to preserve API data that doesn't have corresponding Ruby attributes.
       # This is useful for maintaining forward compatibility with API changes.
+      # Only collects extras if the class has an :extra attribute defined.
       #
       # @param data [Hash<Symbol, Object>] The data hash to process
       # @return [void]
       #
       # @example
-      #   # Class has auto_attrs: [:name, :email]
+      #   # Class has auto_attrs: [:name, :email, :extra]
       #   data = { name: "John", email: "john@example.com", unknown_field: "value" }
       #   handle_extras(data)
       #   # data is now { name: "John", email: "john@example.com", extra: { unknown_field: "value" } }
@@ -355,11 +358,10 @@ module Octoprint
                        []
                      end
 
-        # Debug: let's see what's happening
-        # puts "Class: #{self.name}"
-        # puts "Valid keys: #{valid_keys}"
-        # puts "Data keys: #{data.keys}"
+        # Only collect extras if the class has an :extra attribute
+        return unless valid_keys.include?(:extra)
 
+        # Get extra keys (excluding :extra itself since that's where we'll store them)
         extra_keys = data.keys - valid_keys
 
         return unless extra_keys.any?
@@ -388,7 +390,6 @@ module Octoprint
         @array_objects = {}
         @key_mappings = {}
         @transformations = []
-        @handle_extras = false
       end
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for nested object conversion
@@ -486,23 +487,13 @@ module Octoprint
 
       # Enables collection of unknown fields into an :extra hash.
       #
-      # Any fields in the API response that don't correspond to declared auto_attrs
-      # will be collected into an :extra hash field. This preserves data for forward
-      # compatibility with API changes.
+      # NOTE: This method is now a no-op as extras collection is automatic
+      # when a class has an :extra attribute. Kept for backward compatibility.
       #
-      # @example
-      #   collect_extras
-      #   # Unknown fields will be moved to data[:extra] = { unknown_field: "value" }
+      # @deprecated Extras collection is now automatic when class has :extra attribute
       sig { void }
       def collect_extras
-        @handle_extras = true
-      end
-
-      # @return [Boolean] Whether extra field collection is enabled
-      # @api private
-      sig { returns(T::Boolean) }
-      def handle_extras?
-        @handle_extras
+        # No-op - extras collection is now automatic
       end
     end
 

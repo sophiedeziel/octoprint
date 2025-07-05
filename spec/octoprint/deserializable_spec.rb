@@ -282,7 +282,6 @@ RSpec.describe Octoprint::Deserializable do
       expect(config.array_objects).to eq({})
       expect(config.key_mappings).to eq({})
       expect(config.transformations).to eq([])
-      expect(config.handle_extras?).to be(false)
     end
 
     it "stores nested configuration" do
@@ -306,9 +305,9 @@ RSpec.describe Octoprint::Deserializable do
       expect(config.transformations).to include(transform_proc)
     end
 
-    it "enables extras collection" do
-      config.collect_extras
-      expect(config.handle_extras?).to be(true)
+    it "supports collect_extras for backward compatibility" do
+      # collect_extras is now a no-op but should not raise errors
+      expect { config.collect_extras }.not_to raise_error
     end
   end
 
@@ -452,29 +451,23 @@ RSpec.describe Octoprint::Deserializable do
       expect(result.items.last.name).to eq("item2")
     end
 
-    it "handles classes without auto_attrs when collecting extras" do
+    it "handles classes without auto_attrs gracefully" do
       # Create a class that doesn't respond to auto_attrs
       test_class_without_auto_attrs = Class.new do
         include Octoprint::Deserializable
-        attr_reader :name, :extra
+        attr_reader :name
 
         def initialize(**kwargs)
           @name = kwargs[:name]
-          @extra = kwargs[:extra] || {}
-        end
-
-        deserialize_config do
-          collect_extras
         end
       end
 
       data = { name: "test", unknown_field: "value" }
       result = test_class_without_auto_attrs.deserialize(data)
 
-      # Since class doesn't respond to auto_attrs, valid_keys should be empty (line 279)
-      # So all fields should be moved to extra
-      expect(result.name).to be_nil
-      expect(result.extra).to eq({ name: "test", unknown_field: "value" })
+      # With automatic extras collection, classes without :extra attribute
+      # simply ignore unknown fields (no extras collection happens)
+      expect(result.name).to eq("test")
     end
   end
 end

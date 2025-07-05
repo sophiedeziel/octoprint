@@ -40,7 +40,6 @@ module Octoprint
         nested :origin, Location
         array :children, File
         rename display: :display_name, hash: :md5_hash, date: :date_timestamp
-        collect_extras
       end
 
       # Convert Unix timestamp to Time object

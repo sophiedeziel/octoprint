@@ -54,7 +54,6 @@ module Octoprint
           end
         end
       end
-      collect_extras
     end
 
     # Fetches the list of available language packs
