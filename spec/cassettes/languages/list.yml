@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/languages"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=51
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "language_packs": {
+            "_core": {
+              "display": "Core",
+              "identifier": "_core",
+              "languages": [
+                {
+                  "last_update": 1628551500.0,
+                  "locale": "fr",
+                  "locale_display": "fran\u00e7ais",
+                  "locale_english": "French"
+                }
+              ]
+            }
+          }
+        }
+  recorded_at: Sat, 05 Jul 2025 03:49:48 GMT
+recorded_with: VCR 6.3.1

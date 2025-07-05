@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/languages"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-52f57dd619a6f4271894e6b73aa99d2b\r\nContent-Disposition:
+        form-data; name=\"file\"; filename=\"invalid.txt\"\r\nContent-Length: 25\r\nContent-Type:
+        application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\nnot a
+        valid language pack\r\n-------------RubyMultipartPost-52f57dd619a6f4271894e6b73aa99d2b--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-52f57dd619a6f4271894e6b73aa99d2b
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Length:
+      - '325'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: BAD REQUEST
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '81'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=23
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "File doesn't have a valid extension for a language pack archive"
+        }
+  recorded_at: Sat, 05 Jul 2025 03:49:17 GMT
+recorded_with: VCR 6.3.1
