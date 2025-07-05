@@ -83,5 +83,29 @@ module Octoprint
       response = fetch_resource(source, deserialize: false)
       response.map { |command_data| Command.deserialize(command_data) }
     end
+
+    # Executes a registered system command on the OctoPrint server.
+    #
+    # This method sends a POST request to execute a specific system command.
+    # The command must be pre-registered on the server and available in the specified source.
+    #
+    # @example Execute core restart command
+    #   Octoprint::SystemCommands.execute("core", "restart")
+    #
+    # @example Execute core reboot command
+    #   Octoprint::SystemCommands.execute("core", "reboot")
+    #
+    # @example Execute custom command
+    #   Octoprint::SystemCommands.execute("custom", "my_custom_command")
+    #
+    # @param source [String] The source of the command (e.g., "core", "custom")
+    # @param action [String] The action/identifier of the command to execute
+    # @return [Boolean] true if the command was executed successfully
+    # @raise [Octoprint::Exceptions::Error] if the request fails or command is not found
+    sig { params(source: String, action: String).returns(T::Boolean) }
+    def self.execute(source, action) # rubocop:disable Naming/PredicateMethod
+      post(path: "/api/system/commands/#{source}/#{action}")
+      true
+    end
   end
 end

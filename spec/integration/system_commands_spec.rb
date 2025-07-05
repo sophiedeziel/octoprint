@@ -104,4 +104,26 @@ RSpec.describe Octoprint::SystemCommands, type: :integration do
       end
     end
   end
+
+  describe ".execute", vcr: { cassette_name: "system_commands/execute_reboot" } do
+    use_octoprint_server
+
+    context "when executing reboot command" do
+      it "executes core reboot command successfully" do
+        result = described_class.execute("core", "reboot")
+        expect(result).to be true
+      end
+    end
+  end
+
+  describe ".execute restart", vcr: { cassette_name: "system_commands/execute_restart" } do
+    use_octoprint_server
+
+    context "when executing restart command" do
+      it "executes core restart command successfully" do
+        result = described_class.execute("core", "restart")
+        expect(result).to be true
+      end
+    end
+  end
 end

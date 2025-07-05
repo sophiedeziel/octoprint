@@ -213,4 +213,87 @@ RSpec.describe Octoprint::SystemCommands do
       end
     end
   end
+
+  describe ".execute" do
+    let(:client) { instance_double(Octoprint::Client) }
+
+    before do
+      allow(described_class).to receive(:client).and_return(client)
+    end
+
+    context "when executing core commands" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/core/restart",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        ).and_return(true)
+      end
+
+      it "executes core restart command" do
+        result = described_class.execute("core", "restart")
+
+        expect(client).to have_received(:request).with(
+          "/api/system/commands/core/restart",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        )
+        expect(result).to be true
+      end
+    end
+
+    context "when executing custom commands" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/custom/my_command",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        ).and_return(true)
+      end
+
+      it "executes custom command" do
+        result = described_class.execute("custom", "my_command")
+
+        expect(client).to have_received(:request).with(
+          "/api/system/commands/custom/my_command",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        )
+        expect(result).to be true
+      end
+    end
+
+    context "when executing reboot command" do
+      before do
+        allow(client).to receive(:request).with(
+          "/api/system/commands/core/reboot",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        ).and_return(true)
+      end
+
+      it "executes core reboot command" do
+        result = described_class.execute("core", "reboot")
+
+        expect(client).to have_received(:request).with(
+          "/api/system/commands/core/reboot",
+          http_method: :post,
+          body: {},
+          headers: {},
+          options: {}
+        )
+        expect(result).to be true
+      end
+    end
+  end
 end
