@@ -79,21 +79,22 @@ module Octoprint
         content_type_blacklist: T.nilable(String)
       ).returns(Util)
     end
+    # rubocop:disable Metrics/ParameterLists
     def self.test_url(url:, method: nil, timeout: nil, status: nil, auth_user: nil, auth_pass: nil,
                       auth_digest: nil, auth_bearer: nil, content_type_whitelist: nil, content_type_blacklist: nil)
-      params = { command: "url", url: url }
-      params[:method] = method if method
-      params[:timeout] = timeout if timeout
-      params[:status] = status if status
-      params[:auth_user] = auth_user if auth_user
-      params[:auth_pass] = auth_pass if auth_pass
-      params[:auth_digest] = auth_digest if auth_digest
-      params[:auth_bearer] = auth_bearer if auth_bearer
-      params[:content_type_whitelist] = content_type_whitelist if content_type_whitelist
-      params[:content_type_blacklist] = content_type_blacklist if content_type_blacklist
-
+      # rubocop:enable Metrics/ParameterLists
+      options = {
+        method: method, timeout: timeout, status: status,
+        auth_user: auth_user, auth_pass: auth_pass, auth_digest: auth_digest, auth_bearer: auth_bearer,
+        content_type_whitelist: content_type_whitelist, content_type_blacklist: content_type_blacklist
+      }.compact
+      params = build_url_test_params(url, options)
       response = post(path: "#{@path}/test", params: params)
       deserialize(response)
+    end
+
+    private_class_method def self.build_url_test_params(url, options)
+      { command: "url", url: url }.merge(options.compact)
     end
 
     # Test server connectivity
