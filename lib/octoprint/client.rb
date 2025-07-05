@@ -67,9 +67,19 @@ module Octoprint
     end
 
     def parse_response(response)
-      JSON
-        .parse(response.body)
-        .deep_transform_keys { |key| key.underscore.to_sym }
+      parsed_json = JSON.parse(response.body)
+      transform_keys_recursively(parsed_json)
+    end
+
+    def transform_keys_recursively(obj)
+      case obj
+      when Hash
+        obj.deep_transform_keys { |key| key.underscore.to_sym }
+      when Array
+        obj.map { |item| transform_keys_recursively(item) }
+      else
+        obj
+      end
     end
 
     def request_with_client(http_method, path, body, headers, force_multipart: false)
