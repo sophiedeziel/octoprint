@@ -7,7 +7,7 @@ RSpec.describe Octoprint::Logs::LogFile do
       {
         name: "octoprint.log",
         size: 1024,
-        date: 1640995200,
+        date: 1_640_995_200,
         refs: { resource: "http://test.local/logs/octoprint.log", download: "http://test.local/logs/octoprint.log/download" }
       }
     end
@@ -17,19 +17,19 @@ RSpec.describe Octoprint::Logs::LogFile do
 
       expect(log_file.name).to eq("octoprint.log")
       expect(log_file.size).to eq(1024)
-      expect(log_file.date).to eq(1640995200)
+      expect(log_file.date).to eq(1_640_995_200)
       expect(log_file.refs).to be_a(Octoprint::Logs::References)
       expect(log_file.refs.resource).to eq("http://test.local/logs/octoprint.log")
       expect(log_file.refs.download).to eq("http://test.local/logs/octoprint.log/download")
     end
 
     it "initializes with minimal required attributes" do
-      minimal_data = { name: "test.log", size: 512, date: 1640995200 }
+      minimal_data = { name: "test.log", size: 512, date: 1_640_995_200 }
       log_file = described_class.new(**minimal_data)
 
       expect(log_file.name).to eq("test.log")
       expect(log_file.size).to eq(512)
-      expect(log_file.date).to eq(1640995200)
+      expect(log_file.date).to eq(1_640_995_200)
       expect(log_file.refs).to be_nil
     end
   end
@@ -46,7 +46,7 @@ RSpec.describe Octoprint::Logs::LogFile do
 
   describe "#to_s" do
     it "returns a human-readable string representation" do
-      log_file = described_class.new(name: "octoprint.log", size: 1024, date: 1640995200)
+      log_file = described_class.new(name: "octoprint.log", size: 1024, date: 1_640_995_200)
 
       result = log_file.to_s
 
@@ -56,7 +56,7 @@ RSpec.describe Octoprint::Logs::LogFile do
     end
 
     it "handles different file sizes" do
-      log_file = described_class.new(name: "large.log", size: 1048576, date: 1640995200)
+      log_file = described_class.new(name: "large.log", size: 1_048_576, date: 1_640_995_200)
 
       result = log_file.to_s
 
@@ -66,7 +66,7 @@ RSpec.describe Octoprint::Logs::LogFile do
 
   describe "#modification_time" do
     it "converts Unix timestamp to Time object" do
-      timestamp = 1640995200
+      timestamp = 1_640_995_200
       log_file = described_class.new(name: "test.log", size: 100, date: timestamp)
 
       time = log_file.modification_time
@@ -76,7 +76,7 @@ RSpec.describe Octoprint::Logs::LogFile do
     end
 
     it "handles different timestamps correctly" do
-      timestamp = 1609459200 # 2021-01-01 00:00:00 UTC
+      timestamp = 1_609_459_200 # 2021-01-01 00:00:00 UTC
       log_file = described_class.new(name: "test.log", size: 100, date: timestamp)
 
       time = log_file.modification_time
@@ -108,7 +108,7 @@ RSpec.describe Octoprint::Logs::LogFile do
       {
         name: "test.log",
         size: 2048,
-        date: 1640995200,
+        date: 1_640_995_200,
         refs: { resource: "http://test.local/logs/test.log" }
       }
     end
@@ -118,7 +118,7 @@ RSpec.describe Octoprint::Logs::LogFile do
 
       expect(log_file.name).to eq("test.log")
       expect(log_file.size).to eq(2048)
-      expect(log_file.date).to eq(1640995200)
+      expect(log_file.date).to eq(1_640_995_200)
       expect(log_file.refs).to be_a(Octoprint::Logs::References)
       expect(log_file.refs.resource).to eq("http://test.local/logs/test.log")
     end

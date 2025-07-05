@@ -45,7 +45,7 @@ module Octoprint
       # @return [String]
       sig { returns(String) }
       def to_s
-        "#{self.class.name} (#{size} bytes, modified: #{Time.at(date)})"
+        "#{name} (#{size} bytes, modified: #{Time.at(date)})"
       end
 
       # Convert Unix timestamp to Time object

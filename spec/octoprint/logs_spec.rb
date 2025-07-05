@@ -7,13 +7,14 @@ RSpec.describe Octoprint::Logs do
   describe "#initialize" do
     let(:log_data) do
       [
-        { name: "octoprint.log", size: 1024, date: 1640995200, refs: { resource: "http://test.local/logs/octoprint.log" } },
-        { name: "octoprint.log.1", size: 2048, date: 1640908800, refs: { resource: "http://test.local/logs/octoprint.log.1" } }
+        { name: "octoprint.log", size: 1024, date: 1_640_995_200,
+          refs: { resource: "http://test.local/logs/octoprint.log" } },
+        { name: "octoprint.log.1", size: 2048, date: 1_640_908_800, refs: { resource: "http://test.local/logs/octoprint.log.1" } }
       ]
     end
 
     it "creates LogFile objects from log data" do
-      logs = described_class.new(files: log_data, free: 1000000)
+      logs = described_class.new(files: log_data, free: 1_000_000)
 
       expect(logs.files).to be_an(Array)
       expect(logs.files.length).to eq(2)
@@ -21,7 +22,7 @@ RSpec.describe Octoprint::Logs do
       expect(logs.files.first.name).to eq("octoprint.log")
       expect(logs.files.first.size).to eq(1024)
       expect(logs.files.last.name).to eq("octoprint.log.1")
-      expect(logs.free).to eq(1000000)
+      expect(logs.free).to eq(1_000_000)
     end
 
     it "handles optional free parameter" do

@@ -16,9 +16,9 @@ RSpec.describe Octoprint::Logs, type: :integration do
 
     context "when server has log files" do
       it "returns log files with proper attributes" do
-        logs = subject
-        unless logs.files.empty?
-          first_log = logs.files.first
+        logs_response = described_class.list
+        unless logs_response.files.empty?
+          first_log = logs_response.files.first
           expect(first_log.name).to be_a(String)
           expect(first_log.size).to be_a(Integer)
           expect(first_log.date).to be_a(Integer)
@@ -30,8 +30,8 @@ RSpec.describe Octoprint::Logs, type: :integration do
     context "when server has no log files" do
       it "returns empty files array" do
         # This could happen on a fresh installation
-        logs = subject
-        expect(logs.files).to eq([]) if logs.files.empty?
+        logs_response = described_class.list
+        expect(logs_response.files).to eq([]) if logs_response.files.empty?
       end
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe Octoprint::Logs, type: :integration do
       rescue Octoprint::Exceptions::NotFoundError
         # This is acceptable - the logging plugin may not be available
         # or the specific endpoint may not exist on this OctoPrint instance
-        expect(true).to be true
+        pending "Logging plugin endpoint not available on this OctoPrint instance"
       end
     end
 
@@ -71,11 +71,15 @@ RSpec.describe Octoprint::Logs, type: :integration do
     use_octoprint_server
 
     describe "list operation", vcr: { cassette_name: "logs/list_detailed" } do
-      it "returns properly structured data" do
+      it "returns properly structured response" do
         logs = described_class.list
 
         expect(logs).to be_a(described_class)
         expect(logs.files).to be_an(Array)
+      end
+
+      it "returns valid log file objects" do
+        logs = described_class.list
 
         # Verify each log file has required attributes
         logs.files.each do |log_file|
@@ -88,6 +92,10 @@ RSpec.describe Octoprint::Logs, type: :integration do
           expect(log_file.date).to be > 0
           expect(log_file.modification_time).to be_a(Time)
         end
+      end
+
+      it "provides valid free space information when available" do
+        logs = described_class.list
 
         # Verify free space information if provided
         if logs.free
@@ -116,12 +124,19 @@ RSpec.describe Octoprint::Logs, type: :integration do
   describe "Error handling" do
     use_octoprint_server
 
+    let(:mock_client) { instance_double(Octoprint::Client) }
+
+    before do
+      # Stub the private client method to return a mock client instance
+      allow(described_class).to receive(:client).and_return(mock_client)
+    end
+
     describe "when server returns unexpected data structure" do
       before do
-        allow_any_instance_of(Octoprint::Client).to receive(:request).and_return({
-                                                                                   files: nil,
-                                                                                   free: nil
-                                                                                 })
+        allow(mock_client).to receive(:request).and_return({
+                                                             files: nil,
+                                                             free: nil
+                                                           })
       end
 
       it "handles nil files gracefully" do
@@ -131,7 +146,7 @@ RSpec.describe Octoprint::Logs, type: :integration do
 
     describe "when network issues occur" do
       before do
-        allow_any_instance_of(Octoprint::Client).to receive(:request)
+        allow(mock_client).to receive(:request)
           .and_raise(Octoprint::Exceptions::InternalServerError, "Server error")
       end
 
