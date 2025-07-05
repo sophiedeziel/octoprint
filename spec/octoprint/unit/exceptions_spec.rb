@@ -136,11 +136,9 @@ RSpec.describe Octoprint::Exceptions do
         described_class::NotFoundError
       ].each do |exception_class|
         expect do
-          begin
-            raise exception_class, "test"
-          rescue described_class::Error
-            # Successfully caught as base Error type
-          end
+          raise exception_class, "test"
+        rescue described_class::Error
+          # Successfully caught as base Error type
         end.not_to raise_error
       end
     end

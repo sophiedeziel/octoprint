@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Connection do
+RSpec.describe Octoprint::Connection, type: :integration do
   include_context "with default Octoprint config"
 
   let(:connection_params) do

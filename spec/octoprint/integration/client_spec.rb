@@ -14,6 +14,5 @@ RSpec.describe Octoprint::Client do
 
       expect(result).to be_a Hash
     end
-
   end
 end

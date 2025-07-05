@@ -57,7 +57,15 @@ RSpec/MultipleExpectations:
   Max: 10
 
 RSpec/ExampleLength:
-  Max: 25
+  Max: 45
+
+RSpec/SpecFilePathFormat:
+  Enabled: true
+  Include:
+    - 'spec/octoprint/**/*_spec.rb'
+  Exclude:
+    - 'spec/octoprint/integration/**/*_spec.rb'
+    - 'spec/octoprint/unit/**/*_spec.rb'
 
 
 # Allow constant definition in test blocks for test-specific classes

@@ -97,7 +97,6 @@ RSpec.describe Octoprint::Files do
       its(:origin) { is_expected.to eq Octoprint::Location::SDCard }
     end
 
-
     context "when the filename is a folder", vcr: { cassette_name: "files/get_folder" } do
       let(:params) { { location: Octoprint::Location::Local, filename: "parent" } }
 
@@ -173,7 +172,6 @@ RSpec.describe Octoprint::Files do
       its(:effective_select) { is_expected.to be false }
     end
 
-
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
       let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
 
@@ -235,7 +233,6 @@ RSpec.describe Octoprint::Files do
 
       it { is_expected.to eq("#{host}/api/files/local/test/new_folder") }
     end
-
   end
 
   # Test Coverage Note: Happy path testing is covered by the following:
@@ -280,7 +277,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-
   describe "Unselect file" do
     subject(:unselect_file) { described_class.unselect(**params) }
 
@@ -322,7 +318,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-
   describe "Move file", vcr: { cassette_name: "files/move" } do
     use_octoprint_server
     subject(:move_file) { described_class.move(**params) }
@@ -340,7 +335,6 @@ RSpec.describe Octoprint::Files do
       expect(result).to be_a(Hash)
     end
   end
-
 
   describe "Issue command" do
     use_octoprint_server
@@ -367,7 +361,6 @@ RSpec.describe Octoprint::Files do
       )
     end
   end
-
 
   describe "Delete file successfully" do
     use_octoprint_server
@@ -398,5 +391,4 @@ RSpec.describe Octoprint::Files do
         .to raise_error(Octoprint::Exceptions::NotFoundError)
     end
   end
-
 end

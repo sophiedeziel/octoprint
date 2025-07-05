@@ -12,6 +12,5 @@ RSpec.describe Octoprint::User do
       expect(user).to be_a(described_class)
       expect(user.name).to be_a(String)
     end
-
   end
 end
