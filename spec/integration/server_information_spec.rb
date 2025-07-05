@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::ServerInformation do
+RSpec.describe Octoprint::ServerInformation, type: :integration do
   include_context "with default Octoprint config"
 
   describe "The version object" do

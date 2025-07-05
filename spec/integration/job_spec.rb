@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Job do
+RSpec.describe Octoprint::Job, type: :integration do
   include_context "with default Octoprint config"
 
   let(:job_params) do

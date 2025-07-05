@@ -1,6 +1,19 @@
 # typed: true
 # frozen_string_literal: true
 
+require "simplecov"
+SimpleCov.start do
+  add_filter "/spec/"
+  add_filter "/vendor/"
+
+  add_group "Libraries", "lib"
+  add_group "Core", "lib/octoprint.rb"
+  add_group "Resources", "lib/octoprint/*"
+  add_group "Files", "lib/octoprint/files"
+
+  minimum_coverage 100
+end
+
 require "octoprint"
 require "vcr"
 require "rspec/its"
