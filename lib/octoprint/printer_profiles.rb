@@ -95,7 +95,9 @@ module Octoprint
       params[:basedOn] = based_on if based_on
 
       result = post(params: params)
-      PrinterProfile.deserialize(result)
+      # API returns the profile nested under :profile key
+      profile_data = result[:profile] || result
+      PrinterProfile.deserialize(profile_data)
     end
 
     # Updates an existing printer profile
@@ -111,7 +113,9 @@ module Octoprint
     def self.update(identifier:, profile:)
       path = [@path, identifier].compact.join("/")
       result = patch(path: path, params: { profile: profile })
-      PrinterProfile.deserialize(result)
+      # API returns the profile nested under :profile key
+      profile_data = result[:profile] || result
+      PrinterProfile.deserialize(profile_data)
     end
 
     # Deletes a printer profile

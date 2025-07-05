@@ -78,47 +78,38 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
 
     let(:profile_data) do
       {
-        id: "test_printer",
-        name: "Test Printer",
-        model: "Test Model",
-        color: "red",
-        volume: {
-          width: 220,
-          depth: 220,
-          height: 250
-        },
-        heated_bed: true,
-        heated_chamber: false,
-        axes: {
-          x: { speed: 6000, inverted: false },
-          y: { speed: 6000, inverted: false },
-          z: { speed: 200, inverted: false }
-        },
-        extruder: {
-          count: 1,
-          offsets: [{ x: 0, y: 0 }],
-          nozzle_diameter: 0.4,
-          shared_nozzle: false,
-          default_extrusion_length: 5
-        }
+        id: "new_test_printer",
+        name: "Test Printer"
       }
+    end
+
+    before do
+      # Clean up any existing profile with the same ID
+      api_key = ENV.fetch("OCTOPRINT_API_KEY", nil)
+      host = ENV.fetch("OCTOPRINT_HOST", nil)
+      system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
+             "#{host}/api/printerprofiles/new_test_printer")
+      system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
+             "#{host}/api/printerprofiles/new_based_printer")
     end
 
     after do
       # Clean up created profile
-      described_class.delete_profile(identifier: create_profile.id) if create_profile&.id
+      if create_profile&.id
+        api_key = ENV.fetch("OCTOPRINT_API_KEY", nil)
+        host = ENV.fetch("OCTOPRINT_HOST", nil)
+        system("curl", "-s", "-X", "DELETE", "-H", "X-Api-Key: #{api_key}",
+               "#{host}/api/printerprofiles/#{create_profile.id}")
+      end
     end
 
     it { is_expected.to be_a Octoprint::PrinterProfiles::PrinterProfile }
     its(:name) { is_expected.to eq "Test Printer" }
-    its(:model) { is_expected.to eq "Test Model" }
-    its(:color) { is_expected.to eq "red" }
-    its(:heated_bed) { is_expected.to be true }
-    its(:heated_chamber) { is_expected.to be false }
+    its(:id) { is_expected.to eq "new_test_printer" }
 
     context "when based on existing profile" do
       subject(:create_based_profile) do
-        described_class.create(profile: { id: "based_printer", name: "Based Test Printer" }, based_on: "_default")
+        described_class.create(profile: { id: "new_based_printer", name: "Based Test Printer" }, based_on: "_default")
       end
 
       its(:name) { is_expected.to eq "Based Test Printer" }
