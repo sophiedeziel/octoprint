@@ -1,0 +1,79 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/system/commands"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=56
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "core": [
+            {
+              "action": "shutdown",
+              "confirm": "<strong>You are about to shutdown the system.</strong></p><p>This action may disrupt any ongoing print jobs (depending on your printer's controller and general setup that might also apply to prints run directly from your printer's internal storage).",
+              "name": "Shutdown system",
+              "resource": "<HOST>/api/system/commands/core/shutdown",
+              "source": "core"
+            },
+            {
+              "action": "reboot",
+              "confirm": "<strong>You are about to reboot the system.</strong></p><p>This action may disrupt any ongoing print jobs (depending on your printer's controller and general setup that might also apply to prints run directly from your printer's internal storage).",
+              "name": "Reboot system",
+              "resource": "<HOST>/api/system/commands/core/reboot",
+              "source": "core"
+            },
+            {
+              "action": "restart",
+              "confirm": "<strong>You are about to restart the OctoPrint server.</strong></p><p>This action may disrupt any ongoing print jobs (depending on your printer's controller and general setup that might also apply to prints run directly from your printer's internal storage).",
+              "name": "Restart OctoPrint",
+              "resource": "<HOST>/api/system/commands/core/restart",
+              "source": "core"
+            },
+            {
+              "action": "restart_safe",
+              "confirm": "<strong>You are about to restart the OctoPrint server in safe mode.</strong></p><p>This action may disrupt any ongoing print jobs (depending on your printer's controller and general setup that might also apply to prints run directly from your printer's internal storage).",
+              "name": "Restart OctoPrint in safe mode",
+              "resource": "<HOST>/api/system/commands/core/restart_safe",
+              "source": "core"
+            }
+          ],
+          "custom": [],
+          "plugin": []
+        }
+  recorded_at: Sat, 05 Jul 2025 21:31:06 GMT
+recorded_with: VCR 6.3.1
