@@ -10,7 +10,7 @@ module Tapioca
       # for classes that include the AutoInitializable module, replacing the
       # need for dynamic code generation at runtime.
       class AutoInitializable < Tapioca::Dsl::Compiler
-        ConstantType = type_member(fixed: T.class_of(T.anything))
+        ConstantType = type_member { { upper: Module } }
 
         # Gather all classes that include AutoInitializable module.
         sig { override.returns(T::Enumerable[Module]) }
