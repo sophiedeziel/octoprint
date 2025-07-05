@@ -137,6 +137,7 @@ RSpec.describe Octoprint::Util, type: :integration do
     subject(:test_result) { described_class.test_address }
 
     it { is_expected.to be_a described_class }
+
     it "returns a result (may be nil for address test)" do
       expect(test_result.result).to be_a(String).or be_nil
     end
