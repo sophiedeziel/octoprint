@@ -56,6 +56,28 @@ module Octoprint
   #     end
   #   end
   #
+  # @example Automatic camelCase to snake_case conversion (always enabled)
+  #   class ApiProfile
+  #     include Deserializable
+  #     include AutoInitializable
+  #
+  #     auto_attr :first_name, type: String
+  #     auto_attr :heated_bed, type: T::Boolean
+  #     auto_attr :phone_number, type: String
+  #
+  #     auto_initialize!
+  #
+  #     deserialize_config do
+  #       collect_extras
+  #     end
+  #   end
+  #
+  #   # API response: { firstName: "John", heatedBed: true, phoneNumber: "123-456-7890" }
+  #   # Automatic conversion: firstName -> first_name, heatedBed -> heated_bed, phoneNumber -> phone_number
+  #   profile = ApiProfile.deserialize(api_data)
+  #   profile.first_name  # => "John"
+  #   profile.heated_bed  # => true
+  #
   # @example Manual deserialization (without DSL)
   #   class LegacyClass
   #     include Deserializable
@@ -133,6 +155,9 @@ module Octoprint
       sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
       def deserialize(data)
         config = deserialize_configuration
+
+        # Apply automatic camelCase to snake_case conversion (always enabled)
+        convert_camel_case_keys(data)
 
         if config
           # Apply nested object deserializations
@@ -254,6 +279,58 @@ module Octoprint
         end
         data
       end
+
+      # Converts camelCase keys to snake_case keys in the data hash.
+      #
+      # Automatically converts API field names from camelCase to snake_case to match
+      # Ruby naming conventions. This eliminates the need for manual key renaming
+      # for common camelCase patterns.
+      #
+      # @param data [Hash<Symbol, Object>] The data hash to modify
+      # @return [Hash<Symbol, Object>] The modified data hash
+      #
+      # @example
+      #   data = { firstName: "John", lastName: "Doe", phoneNumber: "123-456-7890" }
+      #   convert_camel_case_keys(data)
+      #   # data is now { first_name: "John", last_name: "Doe", phone_number: "123-456-7890" }
+      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      def convert_camel_case_keys(data)
+        camel_case_keys = data.keys.select { |key| camel_case?(key) }
+
+        camel_case_keys.each do |camel_key|
+          snake_key = camel_to_snake(camel_key)
+          data[snake_key] = data.delete(camel_key)
+        end
+
+        data
+      end
+
+      private
+
+      # Checks if a symbol represents a camelCase identifier.
+      #
+      # @param key [Symbol] The key to check
+      # @return [Boolean] True if the key is in camelCase format
+      sig { params(key: Symbol).returns(T::Boolean) }
+      def camel_case?(key)
+        key_str = key.to_s
+        # Has lowercase letter followed by uppercase letter (e.g., firstName, heatedBed)
+        key_str.match?(/[a-z][A-Z]/)
+      end
+
+      # Converts a camelCase symbol to snake_case.
+      #
+      # @param camel_key [Symbol] The camelCase key to convert
+      # @return [Symbol] The snake_case equivalent
+      sig { params(camel_key: Symbol).returns(Symbol) }
+      def camel_to_snake(camel_key)
+        camel_key.to_s
+                 .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+                 .downcase
+                 .to_sym
+      end
+
+      public
 
       # Collects unknown fields into an :extra hash.
       #

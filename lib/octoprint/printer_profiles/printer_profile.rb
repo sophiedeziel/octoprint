@@ -36,11 +36,6 @@ module Octoprint
       auto_initialize!
 
       deserialize_config do
-        transform do |data|
-          # Map camelCase API fields to snake_case Ruby fields
-          data[:heated_bed] = data.delete(:heatedBed) if data.key?(:heatedBed)
-          data[:heated_chamber] = data.delete(:heatedChamber) if data.key?(:heatedChamber)
-        end
         collect_extras
       end
     end
