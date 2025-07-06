@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Permissions do
+RSpec.describe Octoprint::Access::Permissions do
   let(:client) { instance_double(Octoprint::Client) }
 
   before do
@@ -41,7 +41,7 @@ RSpec.describe Octoprint::Resources::Access::Permissions do
       expect(permissions.length).to eq(2)
 
       admin_permission = permissions.first
-      expect(admin_permission).to be_a(Octoprint::Resources::Access::Permission)
+      expect(admin_permission).to be_a(Octoprint::Access::Permission)
       expect(admin_permission.key).to eq("ADMIN")
       expect(admin_permission.name).to eq("Admin")
       expect(admin_permission.dangerous).to be(true)

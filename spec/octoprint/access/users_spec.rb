@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Users do
+RSpec.describe Octoprint::Access::Users do
   let(:client) { instance_double(Octoprint::Client) }
 
   before do
@@ -45,7 +45,7 @@ RSpec.describe Octoprint::Resources::Access::Users do
       expect(users.length).to eq(2)
 
       admin_user = users.first
-      expect(admin_user).to be_a(Octoprint::Resources::Access::User)
+      expect(admin_user).to be_a(Octoprint::Access::User)
       expect(admin_user.name).to eq("admin")
       expect(admin_user.active).to be(true)
       expect(admin_user.admin).to be(true)
@@ -97,7 +97,7 @@ RSpec.describe Octoprint::Resources::Access::Users do
         permissions: ["MONITOR"]
       )
 
-      expect(user).to be_a(Octoprint::Resources::Access::User)
+      expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq("jane_doe")
       expect(user.active).to be(true)
       expect(user.admin).to be(false)
@@ -136,7 +136,7 @@ RSpec.describe Octoprint::Resources::Access::Users do
         admin: true
       )
 
-      expect(user).to be_a(Octoprint::Resources::Access::User)
+      expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq("test_user")
       expect(user.active).to be(false)
       expect(user.admin).to be(true)
@@ -162,7 +162,7 @@ RSpec.describe Octoprint::Resources::Access::Users do
 
       user = described_class.get(username: "john_doe")
 
-      expect(user).to be_a(Octoprint::Resources::Access::User)
+      expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq("john_doe")
       expect(user.active).to be(true)
       expect(user.groups).to eq(["operators"])
@@ -200,7 +200,7 @@ RSpec.describe Octoprint::Resources::Access::Users do
         }
       )
 
-      expect(user).to be_a(Octoprint::Resources::Access::User)
+      expect(user).to be_a(Octoprint::Access::User)
       expect(user.active).to be(false)
       expect(user.groups).to eq(%w[operators users])
     end

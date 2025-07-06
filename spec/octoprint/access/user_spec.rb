@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::User do
+RSpec.describe Octoprint::Access::User do
   describe "#initialize" do
     it "creates a user with all attributes" do
       user = described_class.new(

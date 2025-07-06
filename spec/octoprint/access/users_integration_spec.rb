@@ -3,14 +3,14 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Users, vcr: { cassette_name: "access/users" } do
+RSpec.describe Octoprint::Access::Users, vcr: { cassette_name: "access/users" } do
   describe ".list" do
     it "fetches users from the API" do
       users = described_class.list
 
       expect(users).to be_an(Array)
       expect(users).not_to be_empty
-      expect(users.first).to be_a(Octoprint::Resources::Access::User)
+      expect(users.first).to be_a(Octoprint::Access::User)
 
       # Verify structure of a user
       user = users.first
@@ -33,7 +33,7 @@ RSpec.describe Octoprint::Resources::Access::Users, vcr: { cassette_name: "acces
 
       user = described_class.get(username: username)
 
-      expect(user).to be_a(Octoprint::Resources::Access::User)
+      expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq(username)
       expect(user.active).to be_in([true, false])
       expect(user.admin).to be_in([true, false])
@@ -58,7 +58,7 @@ RSpec.describe Octoprint::Resources::Access::Users, vcr: { cassette_name: "acces
         permissions: ["MONITOR"]
       )
 
-      expect(created_user).to be_a(Octoprint::Resources::Access::User)
+      expect(created_user).to be_a(Octoprint::Access::User)
       expect(created_user.name).to eq(test_username)
       expect(created_user.active).to be(true)
       expect(created_user.admin).to be(false)
@@ -74,7 +74,7 @@ RSpec.describe Octoprint::Resources::Access::Users, vcr: { cassette_name: "acces
         }
       )
 
-      expect(updated_user).to be_a(Octoprint::Resources::Access::User)
+      expect(updated_user).to be_a(Octoprint::Access::User)
       expect(updated_user.name).to eq(test_username)
       expect(updated_user.active).to be(false)
       expect(updated_user.groups).to include("users", "operators")

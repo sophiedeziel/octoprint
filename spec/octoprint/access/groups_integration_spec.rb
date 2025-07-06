@@ -3,14 +3,14 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Groups, vcr: { cassette_name: "access/groups" } do
+RSpec.describe Octoprint::Access::Groups, vcr: { cassette_name: "access/groups" } do
   describe ".list" do
     it "fetches groups from the API" do
       groups = described_class.list
 
       expect(groups).to be_an(Array)
       expect(groups).not_to be_empty
-      expect(groups.first).to be_a(Octoprint::Resources::Access::Group)
+      expect(groups.first).to be_a(Octoprint::Access::Group)
 
       # Check for common groups
       group_keys = groups.map(&:key)
@@ -35,7 +35,7 @@ RSpec.describe Octoprint::Resources::Access::Groups, vcr: { cassette_name: "acce
     it "fetches a specific group" do
       group = described_class.get(key: "admins")
 
-      expect(group).to be_a(Octoprint::Resources::Access::Group)
+      expect(group).to be_a(Octoprint::Access::Group)
       expect(group.key).to eq("admins")
       expect(group.name).to be_a(String)
       expect(group.description).to be_a(String)
@@ -63,7 +63,7 @@ RSpec.describe Octoprint::Resources::Access::Groups, vcr: { cassette_name: "acce
         default: false
       )
 
-      expect(created_group).to be_a(Octoprint::Resources::Access::Group)
+      expect(created_group).to be_a(Octoprint::Access::Group)
       expect(created_group.key).to eq(test_group_key)
       expect(created_group.name).to eq("Test Group")
       expect(created_group.description).to eq("A test group for integration testing")
@@ -78,7 +78,7 @@ RSpec.describe Octoprint::Resources::Access::Groups, vcr: { cassette_name: "acce
         }
       )
 
-      expect(updated_group).to be_a(Octoprint::Resources::Access::Group)
+      expect(updated_group).to be_a(Octoprint::Access::Group)
       expect(updated_group.key).to eq(test_group_key)
       expect(updated_group.description).to eq("Updated test group description")
       expect(updated_group.permissions).to include("MONITOR", "FILES_LIST")

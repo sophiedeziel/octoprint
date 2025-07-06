@@ -3,14 +3,14 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Permissions, vcr: { cassette_name: "access/permissions" } do
+RSpec.describe Octoprint::Access::Permissions, vcr: { cassette_name: "access/permissions" } do
   describe ".list" do
     it "fetches permissions from the API" do
       permissions = described_class.list
 
       expect(permissions).to be_an(Array)
       expect(permissions).not_to be_empty
-      expect(permissions.first).to be_a(Octoprint::Resources::Access::Permission)
+      expect(permissions.first).to be_a(Octoprint::Access::Permission)
 
       # Check for common permissions
       permission_keys = permissions.map(&:key)

@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Permission do
+RSpec.describe Octoprint::Access::Permission do
   describe "#initialize" do
     it "creates a permission with all attributes" do
       permission = described_class.new(

@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Group do
+RSpec.describe Octoprint::Access::Group do
   describe "#initialize" do
     it "creates a group with all attributes" do
       group = described_class.new(

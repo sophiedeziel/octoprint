@@ -3,7 +3,7 @@
 
 require "spec_helper"
 
-RSpec.describe Octoprint::Resources::Access::Groups do
+RSpec.describe Octoprint::Access::Groups do
   let(:client) { instance_double(Octoprint::Client) }
 
   before do
@@ -49,7 +49,7 @@ RSpec.describe Octoprint::Resources::Access::Groups do
       expect(groups.length).to eq(2)
 
       admin_group = groups.first
-      expect(admin_group).to be_a(Octoprint::Resources::Access::Group)
+      expect(admin_group).to be_a(Octoprint::Access::Group)
       expect(admin_group.key).to eq("admins")
       expect(admin_group.name).to eq("Administrators")
       expect(admin_group.default).to be(true)
@@ -101,7 +101,7 @@ RSpec.describe Octoprint::Resources::Access::Groups do
         default: false
       )
 
-      expect(group).to be_a(Octoprint::Resources::Access::Group)
+      expect(group).to be_a(Octoprint::Access::Group)
       expect(group.key).to eq("testers")
       expect(group.name).to eq("Testers")
       expect(group.description).to eq("Test group")
@@ -130,7 +130,7 @@ RSpec.describe Octoprint::Resources::Access::Groups do
 
       group = described_class.get(key: "operators")
 
-      expect(group).to be_a(Octoprint::Resources::Access::Group)
+      expect(group).to be_a(Octoprint::Access::Group)
       expect(group.key).to eq("operators")
       expect(group.name).to eq("Operators")
     end
@@ -169,7 +169,7 @@ RSpec.describe Octoprint::Resources::Access::Groups do
         }
       )
 
-      expect(group).to be_a(Octoprint::Resources::Access::Group)
+      expect(group).to be_a(Octoprint::Access::Group)
       expect(group.description).to eq("Updated description")
       expect(group.permissions).to eq(%w[CONTROL MONITOR FILES_LIST])
     end
