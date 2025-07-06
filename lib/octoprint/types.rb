@@ -55,5 +55,13 @@ module Octoprint
     # A nullable string array (can be Array<String> or nil)
     # @example ["tag1", "tag2"] or nil
     NilableStringArray = T.nilable(T::Array[String])
+
+    # A boolean type (true or false)
+    # @example true or false
+    Boolean = T.any(TrueClass, FalseClass)
+
+    # A nullable boolean (can be Boolean or nil)
+    # @example true, false, or nil
+    NilableBoolean = T.nilable(T.any(TrueClass, FalseClass))
   end
 end
