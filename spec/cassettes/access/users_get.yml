@@ -1,0 +1,251 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/access/users"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=20
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNyksOhCAQBcC7vLUx-BlRLkOIdoaO2BLBBZl4d42rWVf9MB-0kGR2IdlEJDCN_rSq0Xoc6m5Sqq_A78ildmf2NpdIMHKG8Ce8wCDt0TOhQti_LHaj2TvhtD3kIq9UcN1l9iaS.aG2reg.K0cuTxp7jCOLCACy4faD5ecgQY4;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "users": [
+            {
+              "active": true,
+              "admin": true,
+              "apikey": null,
+              "groups": [
+                "users",
+                "admins"
+              ],
+              "name": "sophie",
+              "needs": {
+                "group": [
+                  "admins",
+                  "users"
+                ],
+                "role": [
+                  "plugin_file_check_run",
+                  "timelapse_list",
+                  "gcodeviewer",
+                  "print",
+                  "timelapse_manage_unrendered",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "files_list",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "files_delete",
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_appkeys_admin",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_softwareupdate_update",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "plugin_pluginmanager_manage",
+                  "monitor_terminal",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "settings_read",
+                  "timelapse_delete",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [],
+              "roles": [
+                "user",
+                "admin"
+              ],
+              "settings": {
+                "interface": {
+                  "language": "_default"
+                }
+              },
+              "user": true
+            }
+          ]
+        }
+  recorded_at: Tue, 08 Jul 2025 23:36:26 GMT
+- request:
+    method: get
+    uri: "<HOST>/api/access/users/sophie"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=22
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEOgyAQBdC7_LUxQqi0XIYQnchEHEjBBWl69xpXXb_3wfKmlaRxSNVXIoFT9qEnZe1zHo15aa0G8F1aH8PZom-9EJycKf0Jr3CouUQmDEh5Y_EHLTEI1-OiUHinju8PgUQmyA.aG2reg.a4iHdMW4E7oIfo1m7mOYig_er_Y;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "active": true,
+          "admin": true,
+          "apikey": null,
+          "groups": [
+            "users",
+            "admins"
+          ],
+          "name": "sophie",
+          "needs": {
+            "group": [
+              "admins",
+              "users"
+            ],
+            "role": [
+              "plugin_file_check_run",
+              "timelapse_list",
+              "gcodeviewer",
+              "print",
+              "timelapse_manage_unrendered",
+              "plugin_prusaslicerthumbnails_admin",
+              "plugin_softwareupdate_configure",
+              "plugin_action_command_prompt_interact",
+              "plugin_firmware_check_display",
+              "plugin_action_command_notification_clear",
+              "settings",
+              "files_list",
+              "files_upload",
+              "plugin_dashboard_admin",
+              "files_delete",
+              "plugin_appkeys_user",
+              "files_download",
+              "webcam",
+              "plugin_logging_manage",
+              "connection",
+              "timelapse_download",
+              "timelapse_admin",
+              "plugin_appkeys_admin",
+              "plugin_PrintJobHistory_print_operator",
+              "plugin_health_check_check",
+              "plugin_softwareupdate_update",
+              "plugin_backup_create",
+              "plugin_softwareupdate_check",
+              "status",
+              "plugin_achievements_reset",
+              "plugin_pluginmanager_list",
+              "plugin_pluginmanager_manage",
+              "monitor_terminal",
+              "admin",
+              "slice",
+              "plugin_pluginmanager_install",
+              "plugin_achievements_view",
+              "settings_read",
+              "timelapse_delete",
+              "system",
+              "plugin_pi_support_check",
+              "plugin_action_command_notification_show",
+              "control",
+              "files_select",
+              "plugin_announcements_manage",
+              "plugin_announcements_read"
+            ]
+          },
+          "permissions": [],
+          "roles": [
+            "user",
+            "admin"
+          ],
+          "settings": {
+            "interface": {
+              "language": "_default"
+            }
+          },
+          "user": true
+        }
+  recorded_at: Tue, 08 Jul 2025 23:36:26 GMT
+recorded_with: VCR 6.3.1

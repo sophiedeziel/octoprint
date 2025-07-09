@@ -50,6 +50,58 @@ module Octoprint
         )
       end
 
+      # Sends a PUT request to the resource's endpoint.
+      #
+      # @param [String] path      the path of the put request
+      # @param [Hash] params      parameters to the request
+      # @param [Hash] headers     headers to the request
+      # @param [Hash] options     options
+      # @return [Object]
+      sig do
+        params(
+          path: String,
+          params: T::Hash[Symbol, T.untyped],
+          headers: T::Hash[Symbol, T.untyped],
+          options: T::Hash[Symbol, T.untyped]
+        )
+          .returns(T.untyped)
+      end
+      def put(path: @path, params: {}, headers: {}, options: {})
+        client.request(
+          path,
+          http_method: :put,
+          body: params,
+          headers: headers,
+          options: options
+        )
+      end
+
+      # Sends a PATCH request to the resource's endpoint.
+      #
+      # @param [String] path      the path of the patch request
+      # @param [Hash] params      parameters to the request
+      # @param [Hash] headers     headers to the request
+      # @param [Hash] options     options
+      # @return [Object]
+      sig do
+        params(
+          path: String,
+          params: T::Hash[Symbol, T.untyped],
+          headers: T::Hash[Symbol, T.untyped],
+          options: T::Hash[Symbol, T.untyped]
+        )
+          .returns(T.untyped)
+      end
+      def patch(path: @path, params: {}, headers: {}, options: {})
+        client.request(
+          path,
+          http_method: :patch,
+          body: params,
+          headers: headers,
+          options: options
+        )
+      end
+
       # Sends a DELETE request to the resource's endpoint.
       #
       # @param [String] path      the path of the delete request

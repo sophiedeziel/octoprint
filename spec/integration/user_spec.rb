@@ -11,6 +11,8 @@ RSpec.describe Octoprint::User, type: :integration do
 
       expect(user).to be_a(described_class)
       expect(user.name).to be_a(String)
+      expect(user.groups).to be_an(Array)
+      expect(user.permissions).to be_an(Array)
     end
   end
 end
