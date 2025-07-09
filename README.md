@@ -7,7 +7,7 @@ A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbe
 - **🛡️ Type Safety**: Full Sorbet type annotations with compile-time error checking
 - **🔥 Smart Error Handling**: HTTP status codes mapped to specific exception types
 - **📦 Comprehensive API Coverage**: Support for Files, Jobs, Printer Profiles, Connections, Logs, and more
-- **🧪 Exceptional Quality**: 100% test coverage with 464 test examples and 0 failures
+- **🧪 Exceptional Quality**: 100% test coverage with 556 test examples and 0 failures
 - **🎯 Multi-Printer Support**: Manage multiple OctoPrint instances with thread-safe clients
 - **⚡ Modern Ruby**: Built for Ruby 3.2+ with Zeitwerk autoloading and ActiveSupport integration
 
@@ -179,7 +179,7 @@ end
 This gem maintains exceptional quality standards:
 
 ### Test Coverage
-- **100% Line Coverage**: 718/718 lines covered
+- **100% Line Coverage**: 966/966 lines covered
 - **VCR Integration**: Real API interactions recorded and replayed, ensuring tests ran in real conditions
 - **Sensitive Data Protection**: Automatically filters hosts and API keys
 

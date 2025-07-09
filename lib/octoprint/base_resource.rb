@@ -6,14 +6,14 @@ module Octoprint
   class BaseResource
     class << self
       extend T::Sig
-      # Defines the path for the resource's enpoint
+      # Defines the path for the resource's endpoint
       #
-      # @param [String] path      The API's endopoint path
+      # @param [String] path      The API's endpoint path
       def resource_path(path)
         @path = path
       end
 
-      # Gets a single resource and instanciates the object.
+      # Gets a single resource and instantiates the object.
       #
       # @return [BaseResource]
       def fetch_resource(path = nil, deserialize: true, options: {})
@@ -128,7 +128,7 @@ module Octoprint
         )
       end
 
-      # Instanciates an object from a hash. Can be overriden by child classes
+      # Instantiates an object from a hash. Can be overridden by child classes
       #
       # @param [Hash] attrs      the object's attributes
       # @return [BaseResource]
