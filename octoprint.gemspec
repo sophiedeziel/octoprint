@@ -9,7 +9,9 @@ Gem::Specification.new do |spec|
   spec.email         = ["courrier@sophiedeziel.com"]
 
   spec.summary       = "A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbet integration."
-  spec.description   = "A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbet integration. Features include smart error handling, 100% test coverage, and support for Files, Jobs, Printer Profiles, Connections, Logs, and more."
+  spec.description   = "A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbet " \
+                       "integration. Features include smart error handling, 100% test coverage, and support " \
+                       "for Files, Jobs, Printer Profiles, Connections, Logs, and more."
   spec.homepage      = "https://github.com/sophiedeziel/octoprint"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.2"
