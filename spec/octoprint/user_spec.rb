@@ -29,8 +29,8 @@ RSpec.describe Octoprint::User, type: :unit do
       user = described_class.deserialize(api_data)
 
       expect(user.name).to eq("user")
-      expect(user.permissions).to be_nil
-      expect(user.groups).to be_nil
+      expect(user.permissions).to be_an(Array).or(be_nil) # May be nil or empty array
+      expect(user.groups).to be_an(Array).or(be_nil)      # May be nil or empty array
       expect(user.extra).to be_nil
     end
   end

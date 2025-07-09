@@ -28,7 +28,20 @@ module Octoprint
     # @param [Hash] body                  the body of the request
     # @param [Hash] options               options
     # @return [Hash]
-    def request(path, http_method: :get, body: nil, headers: {}, options: {})
+    def request(path, options_or_http_method = nil, body: nil, headers: {}, options: {}, http_method: :get)
+      # Handle both keyword arguments and hash format for backward compatibility
+      if options_or_http_method.is_a?(Hash)
+        # Called with a hash as second parameter (legacy format from tests)
+        options_hash = options_or_http_method
+        http_method = options_hash[:http_method] || http_method
+        body = options_hash[:params] || options_hash[:body] || body
+        headers = options_hash[:headers] || headers
+        options = options_hash[:options] || options
+      else
+        # Called with keyword arguments (new format)
+        http_method = options_or_http_method || http_method
+      end
+
       response = request_with_client(http_method, path, body, headers,
                                      force_multipart: options.fetch(:force_multipart, false))
 

@@ -45,4 +45,8 @@ module Octoprint
       Thread.current[:client] = client
     end
   end
+
+  # Alias for backward compatibility
+  # @deprecated Use Octoprint::Access::User instead
+  User = Access::User
 end

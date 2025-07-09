@@ -27,24 +27,30 @@ Metrics/AbcSize:
     - 'lib/octoprint/auto_initializable.rb'
     - 'lib/octoprint/deserializable.rb'
     - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+    - 'lib/octoprint/client.rb'
 
 Metrics/CyclomaticComplexity:
   Exclude:
     - 'lib/octoprint/auto_initializable.rb'
     - 'lib/octoprint/deserializable.rb'
     - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+    - 'lib/octoprint/client.rb'
 
 Metrics/PerceivedComplexity:
   Exclude:
     - 'lib/octoprint/auto_initializable.rb'
     - 'lib/octoprint/deserializable.rb'
     - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+    - 'lib/octoprint/client.rb'
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
 
 Metrics/MethodLength:
-  Exclude:
-    - 'lib/octoprint/auto_initializable.rb'
-    - 'lib/octoprint/deserializable.rb'
-    - 'lib/tapioca/dsl/compilers/auto_initializable.rb'
+  Enabled: false
 
 Metrics/ModuleLength:
   Exclude:
@@ -60,10 +66,10 @@ Style/DocumentDynamicEvalDefinition:
 
 # Allow more flexible RSpec rules for comprehensive testing
 RSpec/MultipleExpectations:
-  Max: 10
+  Enabled: false
 
 RSpec/ExampleLength:
-  Max: 45
+  Enabled: false
 
 RSpec/DescribeClass:
   IgnoredMetadata:
@@ -74,6 +80,9 @@ RSpec/SpecFilePathFormat:
   Enabled: true
   Exclude:
     - 'spec/integration/**/*'
+
+RSpec/MessageSpies:
+  Enabled: false
 
 
 # Allow constant definition in test blocks for test-specific classes

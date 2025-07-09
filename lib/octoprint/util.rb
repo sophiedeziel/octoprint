@@ -79,7 +79,6 @@ module Octoprint
         content_type_blacklist: T.nilable(String)
       ).returns(Util)
     end
-    # rubocop:disable Metrics/ParameterLists
     def self.test_url(url:, method: nil, timeout: nil, status: nil, auth_user: nil, auth_pass: nil,
                       auth_digest: nil, auth_bearer: nil, content_type_whitelist: nil, content_type_blacklist: nil)
       # rubocop:enable Metrics/ParameterLists
