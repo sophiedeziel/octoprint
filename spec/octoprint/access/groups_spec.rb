@@ -4,43 +4,51 @@
 require "spec_helper"
 
 RSpec.describe Octoprint::Access::Groups do
-  let(:client) { instance_double(Octoprint::Client) }
+  include_context "with default Octoprint config"
+
+  let(:client) { Octoprint::Client.new(host: host, api_key: api_key) }
 
   before do
     allow(Octoprint).to receive(:client).and_return(client)
+    # Bypass BaseResource's client method type checking for tests
+    allow(described_class).to receive(:client).and_return(client)
   end
 
   describe ".list" do
     it "fetches and deserializes groups" do
-      api_response = [
-        {
-          key: "admins",
-          name: "Administrators",
-          description: "Full access",
-          permissions: ["ADMIN"],
-          subgroups: [],
-          needsRole: [],
-          default: true,
-          removable: false,
-          changeable: false,
-          toggleable: false
-        },
-        {
-          key: "operators",
-          name: "Operators",
-          description: "Can operate the printer",
-          permissions: %w[CONTROL MONITOR],
-          subgroups: ["users"],
-          needsRole: [],
-          default: false,
-          removable: true,
-          changeable: true,
-          toggleable: false
-        }
-      ]
+      api_response = {
+        groups: [
+          {
+            key: "admins",
+            name: "Administrators",
+            description: "Full access",
+            permissions: ["ADMIN"],
+            subgroups: [],
+            needs: { group: ["admins"], role: [] },
+            default: true,
+            removable: false,
+            changeable: false,
+            toggleable: false,
+            dangerous: true
+          },
+          {
+            key: "users",
+            name: "Users",
+            description: "Can operate the printer",
+            permissions: %w[CONTROL MONITOR],
+            subgroups: [],
+            needs: { group: ["users"], role: [] },
+            default: false,
+            removable: true,
+            changeable: true,
+            toggleable: false,
+            dangerous: false
+          }
+        ]
+      }
 
-      expect(client).to receive(:request)
-        .with("/api/access/groups", { http_method: :get })
+      allow(client).to receive(:request)
+        .with("/api/access/groups", http_method: :get)
         .and_return(api_response)
 
       groups = described_class.list
@@ -54,41 +62,46 @@ RSpec.describe Octoprint::Access::Groups do
       expect(admin_group.name).to eq("Administrators")
       expect(admin_group.default).to be(true)
       expect(admin_group.removable).to be(false)
+      expect(admin_group.dangerous).to be(true)
 
-      operator_group = groups.last
-      expect(operator_group.key).to eq("operators")
-      expect(operator_group.name).to eq("Operators")
-      expect(operator_group.permissions).to eq(%w[CONTROL MONITOR])
-      expect(operator_group.subgroups).to eq(["users"])
+      user_group = groups.last
+      expect(user_group.key).to eq("users")
+      expect(user_group.name).to eq("Users")
+      expect(user_group.permissions).to eq(%w[CONTROL MONITOR])
+      expect(user_group.dangerous).to be(false)
     end
   end
 
   describe ".add" do
     it "creates a new group" do
       api_response = {
-        key: "testers",
-        name: "Testers",
-        description: "Test group",
-        permissions: ["MONITOR"],
-        subgroups: [],
-        needsRole: [],
-        default: false,
-        removable: true,
-        changeable: true,
-        toggleable: false
+        groups: [{
+          key: "testers",
+          name: "Testers",
+          description: "Test group",
+          permissions: ["MONITOR"],
+          subgroups: [],
+          needsRole: [],
+          default: false,
+          removable: true,
+          changeable: true,
+          toggleable: false
+        }]
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/groups", {
                 http_method: :post,
-                params: {
+                body: {
                   key: "testers",
                   name: "Testers",
                   description: "Test group",
                   permissions: ["MONITOR"],
                   subgroups: [],
                   default: false
-                }
+                },
+                headers: {},
+                options: {}
               })
         .and_return(api_response)
 
@@ -99,7 +112,7 @@ RSpec.describe Octoprint::Access::Groups do
         permissions: ["MONITOR"],
         subgroups: [],
         default: false
-      )
+      ).last
 
       expect(group).to be_a(Octoprint::Access::Group)
       expect(group.key).to eq("testers")
@@ -124,8 +137,8 @@ RSpec.describe Octoprint::Access::Groups do
         toggleable: false
       }
 
-      expect(client).to receive(:request)
-        .with("/api/access/groups/operators", { http_method: :get })
+      allow(client).to receive(:request)
+        .with("/api/access/groups/operators", http_method: :get)
         .and_return(api_response)
 
       group = described_class.get(key: "operators")
@@ -139,25 +152,29 @@ RSpec.describe Octoprint::Access::Groups do
   describe ".update" do
     it "updates a group" do
       api_response = {
-        key: "operators",
-        name: "Operators",
-        description: "Updated description",
-        permissions: %w[CONTROL MONITOR FILES_LIST],
-        subgroups: ["users"],
-        needsRole: [],
-        default: false,
-        removable: true,
-        changeable: true,
-        toggleable: false
+        groups: [{
+          key: "operators",
+          name: "Operators",
+          description: "Updated description",
+          permissions: %w[CONTROL MONITOR FILES_LIST],
+          subgroups: ["users"],
+          needsRole: [],
+          default: false,
+          removable: true,
+          changeable: true,
+          toggleable: false
+        }]
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/groups/operators", {
                 http_method: :put,
-                params: {
+                body: {
                   description: "Updated description",
                   permissions: %w[CONTROL MONITOR FILES_LIST]
-                }
+                },
+                headers: {},
+                options: {}
               })
         .and_return(api_response)
 
@@ -167,7 +184,7 @@ RSpec.describe Octoprint::Access::Groups do
           description: "Updated description",
           permissions: %w[CONTROL MONITOR FILES_LIST]
         }
-      )
+      ).last
 
       expect(group).to be_a(Octoprint::Access::Group)
       expect(group.description).to eq("Updated description")
@@ -177,13 +194,33 @@ RSpec.describe Octoprint::Access::Groups do
 
   describe ".delete" do
     it "deletes a group" do
-      expect(client).to receive(:request)
-        .with("/api/access/groups/operators", { http_method: :delete })
+      allow(client).to receive(:request)
+        .with("/api/access/groups/operators", {
+                http_method: :delete,
+                body: nil,
+                headers: {},
+                options: {}
+              })
         .and_return(nil)
 
       result = described_class.delete(key: "operators")
 
       expect(result).to be_nil
+    end
+
+    it "calls super when no key is provided" do
+      allow(client).to receive(:request)
+        .with("/api/access/groups", {
+                http_method: :delete,
+                body: nil,
+                headers: {},
+                options: {}
+              })
+        .and_return(true)
+
+      result = described_class.delete(path: "/api/access/groups")
+
+      expect(result).to be(true)
     end
   end
 end

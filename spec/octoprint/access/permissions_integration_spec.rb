@@ -4,6 +4,8 @@
 require "spec_helper"
 
 RSpec.describe Octoprint::Access::Permissions, vcr: { cassette_name: "access/permissions" } do
+  include_context "with default Octoprint config"
+  use_octoprint_server
   describe ".list" do
     it "fetches permissions from the API" do
       permissions = described_class.list
@@ -14,7 +16,7 @@ RSpec.describe Octoprint::Access::Permissions, vcr: { cassette_name: "access/per
 
       # Check for common permissions
       permission_keys = permissions.map(&:key)
-      expect(permission_keys).to include("ADMIN", "SETTINGS", "CONTROL", "MONITOR")
+      expect(permission_keys).to include("ADMIN", "SETTINGS", "CONTROL", "STATUS")
 
       # Verify structure of a permission
       admin_permission = permissions.find { |p| p.key == "ADMIN" }
@@ -23,6 +25,7 @@ RSpec.describe Octoprint::Access::Permissions, vcr: { cassette_name: "access/per
       expect(admin_permission.dangerous).to be_in([true, false])
       expect(admin_permission.default_groups).to be_an(Array)
       expect(admin_permission.needs).to be_an(Array)
+      expect(admin_permission.needs_role).to be_an(Array)
     end
   end
 end

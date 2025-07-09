@@ -1,0 +1,737 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/access/users"
+    body:
+      encoding: UTF-8
+      string: '{"name":"test_user","password":"test_password_123","active":true,"admin":false,"groups":["users"],"permissions":["FILES_LIST"]}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=823
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNyk0KgCAQBtC7fOuI_izyMiI15JBNkraQ6O5Fq9bvXZgOmkkSWx9NJBLoelBNVY-qGcq2U13bF-CvpFzaMzmTciBoOb3_Cc_QiHtwTCjg94XFbDQ5Kxy3l2zglTLuB4B1JsY.aG2ySA.fb6jjyfuGy516_ib3BXp92tK4uY;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "users": [
+            {
+              "active": true,
+              "admin": true,
+              "apikey": null,
+              "groups": [
+                "users",
+                "admins"
+              ],
+              "name": "sophie",
+              "needs": {
+                "group": [
+                  "admins",
+                  "users"
+                ],
+                "role": [
+                  "plugin_file_check_run",
+                  "timelapse_list",
+                  "gcodeviewer",
+                  "print",
+                  "timelapse_manage_unrendered",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "files_list",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "files_delete",
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_appkeys_admin",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_softwareupdate_update",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "plugin_pluginmanager_manage",
+                  "monitor_terminal",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "settings_read",
+                  "timelapse_delete",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [],
+              "roles": [
+                "user",
+                "admin"
+              ],
+              "settings": {
+                "interface": {
+                  "language": "_default"
+                }
+              },
+              "user": true
+            },
+            {
+              "active": true,
+              "admin": false,
+              "apikey": null,
+              "groups": [
+                "users"
+              ],
+              "name": "test_user",
+              "needs": {
+                "group": [
+                  "users"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_file_check_run",
+                  "timelapse_list",
+                  "gcodeviewer",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_softwareupdate_check",
+                  "status",
+                  "plugin_pluginmanager_list",
+                  "print",
+                  "timelapse_manage_unrendered",
+                  "monitor_terminal",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "slice",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "settings_read",
+                  "files_list",
+                  "timelapse_delete",
+                  "files_upload",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_delete",
+                  "files_select"
+                ]
+              },
+              "permissions": [
+                "FILES_LIST"
+              ],
+              "roles": [
+                "user"
+              ],
+              "settings": {},
+              "user": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:27 GMT
+- request:
+    method: put
+    uri: "<HOST>/api/access/users/test_user"
+    body:
+      encoding: UTF-8
+      string: '{"active":false,"groups":["readonly"]}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=121
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgCAQRuG7_OuIFKLyMiI15JBNkraQ6O5Jq972ezfmkxaSzC4km4gERg297tTU67HVtUE14G_JpXVX9jaXSDByhfATXmCQjuiZ0CAcK4vdafZOOO2VXOSNCp4XffYmvg.aG2ySA.Dfq2WTLHmFDgpaY6qYqELW2lv0Y;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "users": [
+            {
+              "active": true,
+              "admin": true,
+              "apikey": null,
+              "groups": [
+                "users",
+                "admins"
+              ],
+              "name": "sophie",
+              "needs": {
+                "group": [
+                  "admins",
+                  "users"
+                ],
+                "role": [
+                  "plugin_file_check_run",
+                  "timelapse_list",
+                  "gcodeviewer",
+                  "print",
+                  "timelapse_manage_unrendered",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "files_list",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "files_delete",
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_appkeys_admin",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_softwareupdate_update",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "plugin_pluginmanager_manage",
+                  "monitor_terminal",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "settings_read",
+                  "timelapse_delete",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [],
+              "roles": [
+                "user",
+                "admin"
+              ],
+              "settings": {
+                "interface": {
+                  "language": "_default"
+                }
+              },
+              "user": true
+            },
+            {
+              "active": false,
+              "admin": false,
+              "apikey": null,
+              "groups": [
+                "readonly"
+              ],
+              "name": "test_user",
+              "needs": {
+                "group": [
+                  "readonly"
+                ],
+                "role": [
+                  "settings_read",
+                  "files_list",
+                  "files_download",
+                  "monitor_terminal",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "webcam",
+                  "status",
+                  "timelapse_download",
+                  "plugin_pluginmanager_list",
+                  "plugin_achievements_view"
+                ]
+              },
+              "permissions": [
+                "FILES_LIST"
+              ],
+              "roles": [
+                "user"
+              ],
+              "settings": {},
+              "user": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: get
+    uri: "<HOST>/api/access/users/test_user/settings"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=17
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgCAQBdC7_HVEFlF5GZEccsgmSVtIdPeiVev3LswHOZLMNiSTiARaDX3bqKlvx7qbhqZTFfgrudT2zN7kEglazhB-wg4aaY-eCRXCvrCYjWZvhdP2ko28UsH9AIBAJsU.aG2ySA.pf0js6GsWJWrQovuKSl7hA7epnU;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: "{}\n"
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: patch
+    uri: "<HOST>/api/access/users/test_user/settings"
+    body:
+      encoding: UTF-8
+      string: '{"interface":{"color":"dark"}}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=66
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEOgyAQBdC7_LUxSkBbLkOITmQijqTAgpjevcZV1-9dWD60khT2MbtMJLDjbNQwvo169drMk9Id-Cml9b6W4EpLBCs1xj_hFRb5TIEJHeK5sbiDluCF83GTT7xTw_cHgcYmyg.aG2ySA.-tX-0RQqg-OyT9FdJmZmtudkO0w;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: "{}\n"
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: post
+    uri: "<HOST>/api/access/users/test_user/apikey"
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Content-Length:
+      - '0'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=69
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgCAQBdC7_HVEBaJ5GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwlsr9XQ9aMaTKuM1mpswF8ptfVnCa7URLByxvgTnmGR9xSY0CDuC4vbaApeOG8v-cQrVdwPhdIm1w.aG2ySA.qwnPZOgWEH1VnMIrR81o1we8Sjo;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "apikey": "YzwFOtlGZJYtZxVbG5xv-QkeGXod0ezG-iGiIlvP4kQ"
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: delete
+    uri: "<HOST>/api/access/users/test_user/apikey"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=71
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgCAQBdC7_HWECVF6GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwlsN_RadabXYzvoUZkG_I1SW3-W4EpNBCtnjD_hGRZ5T4EJDeK-sLiNpuCF8_aST7xSxf0AZ7kmmA.aG2ySA.WrKk7J6i9recHWm3OCVVQaT0u1Y;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: "{}\n"
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: delete
+    uri: "<HOST>/api/access/users/test_user"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=82
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgCAQBdC7_HVEGVF6GZEacsgmSVtIdPeiVev3LkwHzSSZXUg2EQlMO_SqaXWvxnrsBq1VBf5KLrU7s7e5RIKRM4Sf8AyDtEfPhAphX1jsRpN3wml7yUVeqeB-AITrJtQ.aG2ySA.levN3kdN8hXKv_fy4pXdQLKR0-k;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "users": [
+            {
+              "active": true,
+              "admin": true,
+              "apikey": null,
+              "groups": [
+                "users",
+                "admins"
+              ],
+              "name": "sophie",
+              "needs": {
+                "group": [
+                  "admins",
+                  "users"
+                ],
+                "role": [
+                  "plugin_file_check_run",
+                  "timelapse_list",
+                  "gcodeviewer",
+                  "print",
+                  "timelapse_manage_unrendered",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "files_list",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "files_delete",
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_appkeys_admin",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_softwareupdate_update",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "plugin_pluginmanager_manage",
+                  "monitor_terminal",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "settings_read",
+                  "timelapse_delete",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [],
+              "roles": [
+                "user",
+                "admin"
+              ],
+              "settings": {
+                "interface": {
+                  "language": "_default"
+                }
+              },
+              "user": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+- request:
+    method: get
+    uri: "<HOST>/api/access/users/test_user"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: NOT FOUND
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '138'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=19
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNyk0KgCAQBtC7fOuICuzHy4jkkEM2SdpCorsXrVq_d2E-yJFktiGZRCTQ7aC6pp1UN9ZTr1QzVOCv5FLbM3uTSyRoOUP4CTtopD16JlQI-8JiNpq9FU7bSzbySgX3A4MRJs4.aG2ySA.Ur69-qlycmpEe0fTd-mTNMsh7Cg;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:28 GMT
+recorded_with: VCR 6.3.1

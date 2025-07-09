@@ -104,6 +104,78 @@ RSpec.describe Octoprint::BaseResource do
     end
   end
 
+  describe ".put" do
+    let(:params) { { name: "updated" } }
+    let(:headers) { { "Content-Type" => "application/json" } }
+    let(:options) { { timeout: 30 } }
+
+    before do
+      allow(client).to receive(:request).and_return(true)
+    end
+
+    context "with default parameters" do
+      it "makes a PUT request to the resource path" do
+        test_class.put
+        expect(client).to have_received(:request).with(
+          "/api/test",
+          http_method: :put,
+          body: {},
+          headers: {},
+          options: {}
+        )
+      end
+    end
+
+    context "with custom parameters" do
+      it "makes a PUT request with provided parameters" do
+        test_class.put(path: "/custom", params: params, headers: headers, options: options)
+        expect(client).to have_received(:request).with(
+          "/custom",
+          http_method: :put,
+          body: params,
+          headers: headers,
+          options: options
+        )
+      end
+    end
+  end
+
+  describe ".patch" do
+    let(:params) { { status: "active" } }
+    let(:headers) { { "Authorization" => "Bearer token" } }
+    let(:options) { { timeout: 45 } }
+
+    before do
+      allow(client).to receive(:request).and_return(true)
+    end
+
+    context "with default parameters" do
+      it "makes a PATCH request to the resource path" do
+        test_class.patch
+        expect(client).to have_received(:request).with(
+          "/api/test",
+          http_method: :patch,
+          body: {},
+          headers: {},
+          options: {}
+        )
+      end
+    end
+
+    context "with custom parameters" do
+      it "makes a PATCH request with provided parameters" do
+        test_class.patch(path: "/custom", params: params, headers: headers, options: options)
+        expect(client).to have_received(:request).with(
+          "/custom",
+          http_method: :patch,
+          body: params,
+          headers: headers,
+          options: options
+        )
+      end
+    end
+  end
+
   describe ".delete" do
     let(:params) { { force: true } }
     let(:headers) { { "Authorization" => "Bearer token" } }

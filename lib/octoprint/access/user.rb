@@ -53,6 +53,18 @@ module Octoprint
       #   @return [Array<String>] Roles needed by the user
       auto_attr :needs_role, type: String, array: true
 
+      # @!attribute [r] needs
+      #   @return [Hash] Needs information with groups and roles
+      auto_attr :needs, type: Hash
+
+      # @!attribute [r] roles
+      #   @return [Array<String>] User roles
+      auto_attr :roles, type: String, array: true
+
+      # @!attribute [r] user
+      #   @return [Boolean, nil] Whether this is a user (vs admin)
+      auto_attr :user, type: Types::Boolean, nilable: true
+
       # @!attribute [r] extra
       #   @return [Hash] Additional attributes from the API
       auto_attr :extra, type: Hash
@@ -62,6 +74,22 @@ module Octoprint
       deserialize_config do
         rename apikey: :api_key
         rename needsRole: :needs_role
+        transform do |data|
+          # Handle the needs structure which comes as a hash with group and role arrays
+          data[:needs_role] = data[:needs][:role] if data[:needs].is_a?(Hash) && data[:needs][:role]
+        end
+      end
+
+      # Convenient class method to get current user (delegates to Users.current)
+      #
+      # @example Get current user
+      #   user = Octoprint::Access::User.current
+      #   puts "Current user: #{user.name}"
+      #
+      # @return [User] The current user object
+      sig { returns(User) }
+      def self.current
+        Users.current
       end
     end
   end

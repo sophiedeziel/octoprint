@@ -1,0 +1,751 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/access/permissions"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=35
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEOgyAQBdC7_DUxolaUyxCikzIRRyK4IE3vXuOq6_c-WE5aSQr7mF0mElhtXl2rezO0zTiZYe4U-CmlNv4qwZWaCFauGP-EV1jkIwUmKMTjzeJ2WoIXzvtNPvFGFd8fgPEmyA.aG2brA.2QbCjhMutdLxPGOLheZ0iqCOFAg;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "permissions": [
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Admin is allowed to do everything",
+              "key": "ADMIN",
+              "name": "Admin",
+              "needs": {
+                "role": [
+                  "admin"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to gather basic status information, e.g. job progress, printer state, temperatures, ... Mandatory for the default UI to work",
+              "key": "STATUS",
+              "name": "Status",
+              "needs": {
+                "role": [
+                  "status"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to connect to and disconnect from a printer",
+              "key": "CONNECTION",
+              "name": "Connection",
+              "needs": {
+                "role": [
+                  "connection"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to watch the webcam stream",
+              "key": "WEBCAM",
+              "name": "Webcam",
+              "needs": {
+                "role": [
+                  "webcam"
+                ]
+              }
+            },
+            {
+              "dangerous": true,
+              "default_groups": [],
+              "description": "Allows to run system commands, e.g. restart OctoPrint, shutdown or reboot the system, and to retrieve system and usage information",
+              "key": "SYSTEM",
+              "name": "System",
+              "needs": {
+                "role": [
+                  "system"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to retrieve a list of all uploaded files and folders, includingtheir metadata (e.g. date, file size, analysis results, ...)",
+              "key": "FILES_LIST",
+              "name": "File List",
+              "needs": {
+                "role": [
+                  "files_list"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows users to upload new files, create new folders and copy existing ones. If the File Delete permission is also set, File Upload also allows moving files and folders.",
+              "key": "FILES_UPLOAD",
+              "name": "File Upload",
+              "needs": {
+                "role": [
+                  "files_upload"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows users to download files. The GCODE viewer is affected by this as well.",
+              "key": "FILES_DOWNLOAD",
+              "name": "File Download",
+              "needs": {
+                "role": [
+                  "files_download"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows users to delete files and folders. If the File Upload permission is also set, File Delete also allows moving files and folders.",
+              "key": "FILES_DELETE",
+              "name": "File Delete",
+              "needs": {
+                "role": [
+                  "files_delete"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to select a file for printing",
+              "key": "FILES_SELECT",
+              "name": "File Select",
+              "needs": {
+                "role": [
+                  "files_select"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to start, pause and cancel a print job",
+              "key": "PRINT",
+              "name": "Print",
+              "needs": {
+                "role": [
+                  "print"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows access to the GCODE viewer if the \"File Download\"permission is also set.",
+              "key": "GCODE_VIEWER",
+              "name": "GCODE viewer",
+              "needs": {
+                "role": [
+                  "gcodeviewer"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to watch the terminal tab but not to send commands to the printer from it",
+              "key": "MONITOR_TERMINAL",
+              "name": "Terminal",
+              "needs": {
+                "role": [
+                  "monitor_terminal"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to control of the printer by using the temperature controls,the control tab or sending commands through the terminal.",
+              "key": "CONTROL",
+              "name": "Control",
+              "needs": {
+                "role": [
+                  "control"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to slice files",
+              "key": "SLICE",
+              "name": "Slice",
+              "needs": {
+                "role": [
+                  "slice"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to list timelapse videos",
+              "key": "TIMELAPSE_LIST",
+              "name": "Timelapse List",
+              "needs": {
+                "role": [
+                  "timelapse_list"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to download timelapse videos",
+              "key": "TIMELAPSE_DOWNLOAD",
+              "name": "Timelapse Download",
+              "needs": {
+                "role": [
+                  "timelapse_download"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to delete timelapse videos",
+              "key": "TIMELAPSE_DELETE",
+              "name": "Timelapse Delete",
+              "needs": {
+                "role": [
+                  "timelapse_delete"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to list, delete and render unrendered timelapses",
+              "key": "TIMELAPSE_MANAGE_UNRENDERED",
+              "name": "Timelapse Manage Unrendered",
+              "needs": {
+                "role": [
+                  "timelapse_manage_unrendered"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to change the timelapse settings.",
+              "key": "TIMELAPSE_ADMIN",
+              "name": "Timelapse Admin",
+              "needs": {
+                "role": [
+                  "timelapse_admin"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "readonly"
+              ],
+              "description": "Allows to read non sensitive settings. Mandatory for the default UI to work.",
+              "key": "SETTINGS_READ",
+              "name": "Settings Access",
+              "needs": {
+                "role": [
+                  "settings_read"
+                ]
+              }
+            },
+            {
+              "dangerous": true,
+              "default_groups": [],
+              "description": "Allows to manage settings and also to read sensitive settings",
+              "key": "SETTINGS",
+              "name": "Settings Admin",
+              "needs": {
+                "role": [
+                  "settings"
+                ]
+              }
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins",
+                "users"
+              ],
+              "description": "Allows to delete print jobs from history",
+              "key": "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+              "name": "PrintJobHistory: Delete print jobs",
+              "needs": {
+                "role": [
+                  "plugin_PrintJobHistory_print_operator"
+                ]
+              },
+              "plugin": "PrintJobHistory"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins",
+                "users"
+              ],
+              "description": "Allows to edit print jobs",
+              "key": "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+              "name": "PrintJobHistory: Edit print jobs",
+              "needs": {
+                "role": [
+                  "plugin_PrintJobHistory_print_operator"
+                ]
+              },
+              "plugin": "PrintJobHistory"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "readonly",
+                "users",
+                "admins"
+              ],
+              "description": "Allows to view the instance achievements & stats.",
+              "key": "PLUGIN_ACHIEVEMENTS_VIEW",
+              "name": "Achievements Plugin: View instance achievements & stats",
+              "needs": {
+                "role": [
+                  "plugin_achievements_view"
+                ]
+              },
+              "plugin": "achievements"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to reset the instance achievements & stats.",
+              "key": "PLUGIN_ACHIEVEMENTS_RESET",
+              "name": "Achievements Plugin: Reset instance achievements & stats",
+              "needs": {
+                "role": [
+                  "plugin_achievements_reset"
+                ]
+              },
+              "plugin": "achievements"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to see printer notifications",
+              "key": "PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW",
+              "name": "Action Command Notification Support: Show printer notifications",
+              "needs": {
+                "role": [
+                  "plugin_action_command_notification_show"
+                ]
+              },
+              "plugin": "action_command_notification"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to clear printer notifications",
+              "key": "PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR",
+              "name": "Action Command Notification Support: Clear printer notifications",
+              "needs": {
+                "role": [
+                  "plugin_action_command_notification_clear"
+                ]
+              },
+              "plugin": "action_command_notification"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to see and interact with printer prompts",
+              "key": "PLUGIN_ACTION_COMMAND_PROMPT_INTERACT",
+              "name": "Action Command Prompt Support: Interact with printer prompts",
+              "needs": {
+                "role": [
+                  "plugin_action_command_prompt_interact"
+                ]
+              },
+              "plugin": "action_command_prompt"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to read announcements",
+              "key": "PLUGIN_ANNOUNCEMENTS_READ",
+              "name": "Announcement Plugin: Read announcements",
+              "needs": {
+                "role": [
+                  "plugin_announcements_read"
+                ]
+              },
+              "plugin": "announcements"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to manage announcement subscriptions. Includes \"Read announcements\" permission",
+              "key": "PLUGIN_ANNOUNCEMENTS_MANAGE",
+              "name": "Announcement Plugin: Manage announcement subscriptions",
+              "needs": {
+                "role": [
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "plugin": "announcements"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows administrating all application keys",
+              "key": "PLUGIN_APPKEYS_ADMIN",
+              "name": "Application Keys Plugin: Admin access",
+              "needs": {
+                "role": [
+                  "plugin_appkeys_admin"
+                ]
+              },
+              "plugin": "appkeys"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to grant app access",
+              "key": "PLUGIN_APPKEYS_GRANT",
+              "name": "Application Keys Plugin: Grant access",
+              "needs": {
+                "role": [
+                  "plugin_appkeys_user"
+                ]
+              },
+              "plugin": "appkeys"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to trigger the creation of backups",
+              "key": "PLUGIN_BACKUP_CREATE",
+              "name": "Backup & Restore: Create backup",
+              "needs": {
+                "role": [
+                  "plugin_backup_create"
+                ]
+              },
+              "plugin": "backup"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows modifying or adding shell commands",
+              "key": "PLUGIN_DASHBOARD_ADMIN",
+              "name": "Dashboard: Admin access",
+              "needs": {
+                "role": [
+                  "plugin_dashboard_admin"
+                ]
+              },
+              "plugin": "dashboard"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users",
+                "admins"
+              ],
+              "description": "Allows to run File Check and view the results.",
+              "key": "PLUGIN_FILE_CHECK_RUN",
+              "name": "File Check: Run File Check",
+              "needs": {
+                "role": [
+                  "plugin_file_check_run"
+                ]
+              },
+              "plugin": "file_check"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to see firmware check warnings",
+              "key": "PLUGIN_FIRMWARE_CHECK_DISPLAY",
+              "name": "Firmware Check: Display firmware check warnings",
+              "needs": {
+                "role": [
+                  "plugin_firmware_check_display"
+                ]
+              },
+              "plugin": "firmware_check"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to perform health checks and view their results",
+              "key": "PLUGIN_HEALTH_CHECK_CHECK",
+              "name": "Healthcheck Plugin: Perform healthchecks",
+              "needs": {
+                "role": [
+                  "plugin_health_check_check"
+                ]
+              },
+              "plugin": "health_check"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to download and delete log files and list and set log levels.",
+              "key": "PLUGIN_LOGGING_MANAGE",
+              "name": "Logging: Logging management",
+              "needs": {
+                "role": [
+                  "plugin_logging_manage"
+                ]
+              },
+              "plugin": "logging"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to check for the Pi's throttling status and environment info",
+              "key": "PLUGIN_PI_SUPPORT_STATUS",
+              "name": "Pi Support Plugin: Status",
+              "needs": {
+                "role": [
+                  "plugin_pi_support_check"
+                ]
+              },
+              "plugin": "pi_support"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "readonly",
+                "users",
+                "admins"
+              ],
+              "description": "Allows to list installed plugins.",
+              "key": "PLUGIN_PLUGINMANAGER_LIST",
+              "name": "Plugin Manager: List plugins",
+              "needs": {
+                "role": [
+                  "plugin_pluginmanager_list"
+                ]
+              },
+              "plugin": "pluginmanager"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to enable, disable and uninstall installed plugins.",
+              "key": "PLUGIN_PLUGINMANAGER_MANAGE",
+              "name": "Plugin Manager: Manage plugins",
+              "needs": {
+                "role": [
+                  "plugin_pluginmanager_manage"
+                ]
+              },
+              "plugin": "pluginmanager"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to install new plugins. Includes the \"Manage plugins\" permission.",
+              "key": "PLUGIN_PLUGINMANAGER_INSTALL",
+              "name": "Plugin Manager: Install new plugins",
+              "needs": {
+                "role": [
+                  "plugin_pluginmanager_install",
+                  "plugin_pluginmanager_manage"
+                ]
+              },
+              "plugin": "pluginmanager"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows access to scan files.",
+              "key": "PLUGIN_PRUSASLICERTHUMBNAILS_SCAN",
+              "name": "Slicer Thumbnails: Scan Files",
+              "needs": {
+                "role": [
+                  "plugin_prusaslicerthumbnails_admin"
+                ]
+              },
+              "plugin": "prusaslicerthumbnails"
+            },
+            {
+              "dangerous": false,
+              "default_groups": [
+                "users"
+              ],
+              "description": "Allows to check for software updates",
+              "key": "PLUGIN_SOFTWAREUPDATE_CHECK",
+              "name": "Software Update: Check",
+              "needs": {
+                "role": [
+                  "plugin_softwareupdate_check"
+                ]
+              },
+              "plugin": "softwareupdate"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to perform software updates",
+              "key": "PLUGIN_SOFTWAREUPDATE_UPDATE",
+              "name": "Software Update: Update",
+              "needs": {
+                "role": [
+                  "plugin_softwareupdate_update"
+                ]
+              },
+              "plugin": "softwareupdate"
+            },
+            {
+              "dangerous": true,
+              "default_groups": [
+                "admins"
+              ],
+              "description": "Allows to configure software update",
+              "key": "PLUGIN_SOFTWAREUPDATE_CONFIGURE",
+              "name": "Software Update: Configure",
+              "needs": {
+                "role": [
+                  "plugin_softwareupdate_configure"
+                ]
+              },
+              "plugin": "softwareupdate"
+            }
+          ]
+        }
+  recorded_at: Tue, 08 Jul 2025 22:29:00 GMT
+recorded_with: VCR 6.3.1

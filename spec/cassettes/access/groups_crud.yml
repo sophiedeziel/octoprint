@@ -1,0 +1,938 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/access/groups"
+    body:
+      encoding: UTF-8
+      string: '{"key":"test_group","name":"Test Group","description":"A test group
+        for integration testing","permissions":["STATUS"],"subgroups":[],"default":false}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=166
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgzAQBdC7_LVIo52W5jIhxMEMjWMwcRHEu7e4cv3egbDxxFrFp-IKs8KaNw0P86GRevN8EQ0d5Cq19X6v0dWWGVb3lG4iEyzKmqMwOqR1FnULh-hVyvInn-XLDecPf4Imww.aG2yTw.YFuZrTzPCysay9Qi9dR9Z5D1-EA;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "groups": [
+            {
+              "changeable": false,
+              "dangerous": true,
+              "default": false,
+              "description": "Administrators",
+              "key": "admins",
+              "name": "Admins",
+              "needs": {
+                "group": [
+                  "admins"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_file_check_run",
+                  "plugin_appkeys_admin",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "plugin_softwareupdate_update",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "print",
+                  "plugin_pluginmanager_manage",
+                  "timelapse_manage_unrendered",
+                  "monitor_terminal",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "settings_read",
+                  "files_list",
+                  "timelapse_delete",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_delete",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [
+                "ADMIN",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACHIEVEMENTS_RESET",
+                "PLUGIN_ANNOUNCEMENTS_READ",
+                "PLUGIN_ANNOUNCEMENTS_MANAGE",
+                "PLUGIN_APPKEYS_ADMIN",
+                "PLUGIN_BACKUP_CREATE",
+                "PLUGIN_DASHBOARD_ADMIN",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_HEALTH_CHECK_CHECK",
+                "PLUGIN_LOGGING_MANAGE",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_PLUGINMANAGER_MANAGE",
+                "PLUGIN_PLUGINMANAGER_INSTALL",
+                "PLUGIN_PRUSASLICERTHUMBNAILS_SCAN",
+                "PLUGIN_SOFTWAREUPDATE_UPDATE",
+                "PLUGIN_SOFTWAREUPDATE_CONFIGURE"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": true,
+              "description": "Group to gain operator access",
+              "key": "users",
+              "name": "Operator",
+              "needs": {
+                "group": [
+                  "users"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "timelapse_manage_unrendered",
+                  "files_download",
+                  "monitor_terminal",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "webcam",
+                  "slice",
+                  "connection",
+                  "timelapse_download",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "timelapse_admin",
+                  "settings_read",
+                  "plugin_file_check_run",
+                  "files_list",
+                  "timelapse_list",
+                  "files_upload",
+                  "gcodeviewer",
+                  "timelapse_delete",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_softwareupdate_check",
+                  "plugin_pi_support_check",
+                  "status",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "plugin_pluginmanager_list",
+                  "files_delete",
+                  "print",
+                  "files_select"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "CONNECTION",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_UPLOAD",
+                "FILES_DOWNLOAD",
+                "FILES_DELETE",
+                "FILES_SELECT",
+                "PRINT",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "CONTROL",
+                "SLICE",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "TIMELAPSE_DELETE",
+                "TIMELAPSE_MANAGE_UNRENDERED",
+                "TIMELAPSE_ADMIN",
+                "SETTINGS_READ",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR",
+                "PLUGIN_ACTION_COMMAND_PROMPT_INTERACT",
+                "PLUGIN_APPKEYS_GRANT",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_FIRMWARE_CHECK_DISPLAY",
+                "PLUGIN_PI_SUPPORT_STATUS",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_SOFTWAREUPDATE_CHECK"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": false,
+              "description": "Anyone who is not currently logged in",
+              "key": "guests",
+              "name": "Guests",
+              "needs": {
+                "group": [
+                  "guests"
+                ]
+              },
+              "permissions": [],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": false
+            },
+            {
+              "changeable": false,
+              "dangerous": false,
+              "default": false,
+              "description": "Group to gain read-only access",
+              "key": "readonly",
+              "name": "Read-only Access",
+              "needs": {
+                "group": [
+                  "readonly"
+                ],
+                "role": [
+                  "settings_read",
+                  "files_list",
+                  "files_download",
+                  "monitor_terminal",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "webcam",
+                  "status",
+                  "timelapse_download",
+                  "plugin_pluginmanager_list",
+                  "plugin_achievements_view"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_DOWNLOAD",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "SETTINGS_READ",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_PLUGINMANAGER_LIST"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": false,
+              "description": "A test group for integration testing",
+              "key": "test_group",
+              "name": "Test Group",
+              "needs": {
+                "group": [
+                  "test_group"
+                ],
+                "role": [
+                  "status"
+                ]
+              },
+              "permissions": [
+                "STATUS"
+              ],
+              "removable": true,
+              "subgroups": [],
+              "toggleable": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:35 GMT
+- request:
+    method: put
+    uri: "<HOST>/api/access/groups/test_group"
+    body:
+      encoding: UTF-8
+      string: '{"description":"Updated test group description","permissions":["FILES_LIST"]}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=199
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNyk0KgCAQBtC7fOuI_izyMiI15JBNkraQ6O5Fq9bvXZgOmkkSWx9NJBLoelBNVY-qVWWrhrHvCvBXUi7tmZxJORC0nN7_hGdoxD04JhTw-8JiNpqcFY7bSzbwShn3A4L2Js4.aG2yTw.mm5ZW8pyi8ZA-H2oDY-wUok_i5A;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "groups": [
+            {
+              "changeable": false,
+              "dangerous": true,
+              "default": false,
+              "description": "Administrators",
+              "key": "admins",
+              "name": "Admins",
+              "needs": {
+                "group": [
+                  "admins"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_file_check_run",
+                  "plugin_appkeys_admin",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "plugin_softwareupdate_update",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "print",
+                  "plugin_pluginmanager_manage",
+                  "timelapse_manage_unrendered",
+                  "monitor_terminal",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "settings_read",
+                  "files_list",
+                  "timelapse_delete",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_delete",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [
+                "ADMIN",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACHIEVEMENTS_RESET",
+                "PLUGIN_ANNOUNCEMENTS_READ",
+                "PLUGIN_ANNOUNCEMENTS_MANAGE",
+                "PLUGIN_APPKEYS_ADMIN",
+                "PLUGIN_BACKUP_CREATE",
+                "PLUGIN_DASHBOARD_ADMIN",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_HEALTH_CHECK_CHECK",
+                "PLUGIN_LOGGING_MANAGE",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_PLUGINMANAGER_MANAGE",
+                "PLUGIN_PLUGINMANAGER_INSTALL",
+                "PLUGIN_PRUSASLICERTHUMBNAILS_SCAN",
+                "PLUGIN_SOFTWAREUPDATE_UPDATE",
+                "PLUGIN_SOFTWAREUPDATE_CONFIGURE"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": true,
+              "description": "Group to gain operator access",
+              "key": "users",
+              "name": "Operator",
+              "needs": {
+                "group": [
+                  "users"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "timelapse_manage_unrendered",
+                  "files_download",
+                  "monitor_terminal",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "webcam",
+                  "slice",
+                  "connection",
+                  "timelapse_download",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "timelapse_admin",
+                  "settings_read",
+                  "plugin_file_check_run",
+                  "files_list",
+                  "timelapse_list",
+                  "files_upload",
+                  "gcodeviewer",
+                  "timelapse_delete",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_softwareupdate_check",
+                  "plugin_pi_support_check",
+                  "status",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "plugin_pluginmanager_list",
+                  "files_delete",
+                  "print",
+                  "files_select"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "CONNECTION",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_UPLOAD",
+                "FILES_DOWNLOAD",
+                "FILES_DELETE",
+                "FILES_SELECT",
+                "PRINT",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "CONTROL",
+                "SLICE",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "TIMELAPSE_DELETE",
+                "TIMELAPSE_MANAGE_UNRENDERED",
+                "TIMELAPSE_ADMIN",
+                "SETTINGS_READ",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR",
+                "PLUGIN_ACTION_COMMAND_PROMPT_INTERACT",
+                "PLUGIN_APPKEYS_GRANT",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_FIRMWARE_CHECK_DISPLAY",
+                "PLUGIN_PI_SUPPORT_STATUS",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_SOFTWAREUPDATE_CHECK"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": false,
+              "description": "Anyone who is not currently logged in",
+              "key": "guests",
+              "name": "Guests",
+              "needs": {
+                "group": [
+                  "guests"
+                ]
+              },
+              "permissions": [],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": false
+            },
+            {
+              "changeable": false,
+              "dangerous": false,
+              "default": false,
+              "description": "Group to gain read-only access",
+              "key": "readonly",
+              "name": "Read-only Access",
+              "needs": {
+                "group": [
+                  "readonly"
+                ],
+                "role": [
+                  "settings_read",
+                  "files_list",
+                  "files_download",
+                  "monitor_terminal",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "webcam",
+                  "status",
+                  "timelapse_download",
+                  "plugin_pluginmanager_list",
+                  "plugin_achievements_view"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_DOWNLOAD",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "SETTINGS_READ",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_PLUGINMANAGER_LIST"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": false,
+              "description": "Updated test group description",
+              "key": "test_group",
+              "name": "Test Group",
+              "needs": {
+                "group": [
+                  "test_group"
+                ],
+                "role": [
+                  "files_list"
+                ]
+              },
+              "permissions": [
+                "FILES_LIST"
+              ],
+              "removable": true,
+              "subgroups": [],
+              "toggleable": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:35 GMT
+- request:
+    method: delete
+    uri: "<HOST>/api/access/groups/test_group"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=156
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNykEKgzAQBdC7_LWI05KIuUwIOpjBOIYmLkLp3ZWuXL_3xfzhhbVKSMUXZoWj0bwGmszb9JasJeog_1JbH84afW2Z4fRM6SGywKEcOQqjQzpWUb_zHINK2W8KWTZu-F1-8SbB.aG2yTw.n9ZsBhOirZXGoWZMDtbb00jG3iQ;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "groups": [
+            {
+              "changeable": false,
+              "dangerous": true,
+              "default": false,
+              "description": "Administrators",
+              "key": "admins",
+              "name": "Admins",
+              "needs": {
+                "group": [
+                  "admins"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "files_download",
+                  "webcam",
+                  "plugin_logging_manage",
+                  "connection",
+                  "timelapse_download",
+                  "timelapse_admin",
+                  "plugin_file_check_run",
+                  "plugin_appkeys_admin",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_health_check_check",
+                  "plugin_backup_create",
+                  "plugin_softwareupdate_check",
+                  "plugin_softwareupdate_update",
+                  "status",
+                  "plugin_achievements_reset",
+                  "plugin_pluginmanager_list",
+                  "print",
+                  "plugin_pluginmanager_manage",
+                  "timelapse_manage_unrendered",
+                  "monitor_terminal",
+                  "plugin_prusaslicerthumbnails_admin",
+                  "plugin_softwareupdate_configure",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "admin",
+                  "slice",
+                  "plugin_pluginmanager_install",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "settings",
+                  "settings_read",
+                  "files_list",
+                  "timelapse_delete",
+                  "files_upload",
+                  "plugin_dashboard_admin",
+                  "system",
+                  "plugin_pi_support_check",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "files_delete",
+                  "files_select",
+                  "plugin_announcements_manage",
+                  "plugin_announcements_read"
+                ]
+              },
+              "permissions": [
+                "ADMIN",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACHIEVEMENTS_RESET",
+                "PLUGIN_ANNOUNCEMENTS_READ",
+                "PLUGIN_ANNOUNCEMENTS_MANAGE",
+                "PLUGIN_APPKEYS_ADMIN",
+                "PLUGIN_BACKUP_CREATE",
+                "PLUGIN_DASHBOARD_ADMIN",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_HEALTH_CHECK_CHECK",
+                "PLUGIN_LOGGING_MANAGE",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_PLUGINMANAGER_MANAGE",
+                "PLUGIN_PLUGINMANAGER_INSTALL",
+                "PLUGIN_PRUSASLICERTHUMBNAILS_SCAN",
+                "PLUGIN_SOFTWAREUPDATE_UPDATE",
+                "PLUGIN_SOFTWAREUPDATE_CONFIGURE"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": true,
+              "description": "Group to gain operator access",
+              "key": "users",
+              "name": "Operator",
+              "needs": {
+                "group": [
+                  "users"
+                ],
+                "role": [
+                  "plugin_appkeys_user",
+                  "timelapse_manage_unrendered",
+                  "files_download",
+                  "monitor_terminal",
+                  "plugin_action_command_prompt_interact",
+                  "plugin_firmware_check_display",
+                  "webcam",
+                  "slice",
+                  "connection",
+                  "timelapse_download",
+                  "plugin_achievements_view",
+                  "plugin_action_command_notification_clear",
+                  "timelapse_admin",
+                  "settings_read",
+                  "plugin_file_check_run",
+                  "files_list",
+                  "timelapse_list",
+                  "files_upload",
+                  "gcodeviewer",
+                  "timelapse_delete",
+                  "plugin_PrintJobHistory_print_operator",
+                  "plugin_softwareupdate_check",
+                  "plugin_pi_support_check",
+                  "status",
+                  "plugin_action_command_notification_show",
+                  "control",
+                  "plugin_pluginmanager_list",
+                  "files_delete",
+                  "print",
+                  "files_select"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "CONNECTION",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_UPLOAD",
+                "FILES_DOWNLOAD",
+                "FILES_DELETE",
+                "FILES_SELECT",
+                "PRINT",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "CONTROL",
+                "SLICE",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "TIMELAPSE_DELETE",
+                "TIMELAPSE_MANAGE_UNRENDERED",
+                "TIMELAPSE_ADMIN",
+                "SETTINGS_READ",
+                "PLUGIN_PRINTJOBHISTORY_DELETE_JOB",
+                "PLUGIN_PRINTJOBHISTORY_EDIT_JOB",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW",
+                "PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR",
+                "PLUGIN_ACTION_COMMAND_PROMPT_INTERACT",
+                "PLUGIN_APPKEYS_GRANT",
+                "PLUGIN_FILE_CHECK_RUN",
+                "PLUGIN_FIRMWARE_CHECK_DISPLAY",
+                "PLUGIN_PI_SUPPORT_STATUS",
+                "PLUGIN_PLUGINMANAGER_LIST",
+                "PLUGIN_SOFTWAREUPDATE_CHECK"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            },
+            {
+              "changeable": true,
+              "dangerous": false,
+              "default": false,
+              "description": "Anyone who is not currently logged in",
+              "key": "guests",
+              "name": "Guests",
+              "needs": {
+                "group": [
+                  "guests"
+                ]
+              },
+              "permissions": [],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": false
+            },
+            {
+              "changeable": false,
+              "dangerous": false,
+              "default": false,
+              "description": "Group to gain read-only access",
+              "key": "readonly",
+              "name": "Read-only Access",
+              "needs": {
+                "group": [
+                  "readonly"
+                ],
+                "role": [
+                  "settings_read",
+                  "files_list",
+                  "files_download",
+                  "monitor_terminal",
+                  "gcodeviewer",
+                  "timelapse_list",
+                  "webcam",
+                  "status",
+                  "timelapse_download",
+                  "plugin_pluginmanager_list",
+                  "plugin_achievements_view"
+                ]
+              },
+              "permissions": [
+                "STATUS",
+                "WEBCAM",
+                "FILES_LIST",
+                "FILES_DOWNLOAD",
+                "GCODE_VIEWER",
+                "MONITOR_TERMINAL",
+                "TIMELAPSE_LIST",
+                "TIMELAPSE_DOWNLOAD",
+                "SETTINGS_READ",
+                "PLUGIN_ACHIEVEMENTS_VIEW",
+                "PLUGIN_PLUGINMANAGER_LIST"
+              ],
+              "removable": false,
+              "subgroups": [],
+              "toggleable": true
+            }
+          ]
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:35 GMT
+- request:
+    method: get
+    uri: "<HOST>/api/access/groups/test_group"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: NOT FOUND
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '138'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=17
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P80=.eJxNyk0KgCAQBtC7fOuIfpDKy4jkkEM2SdpCorsXrVq_d2E-yJFktiGZRCTQ7aC6pp1Ur-qxV81Ygb-RS23P7E0ukaDlDOEn7KCR9uiZUCHsC4vZaPZWOG0v2cgrFdwPZncmlA.aG2yTw.e7jfG3LwQ8aJ6AIpjUSQ0E5bDvk;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+        }
+  recorded_at: Wed, 09 Jul 2025 00:05:35 GMT
+recorded_with: VCR 6.3.1

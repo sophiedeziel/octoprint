@@ -25,7 +25,8 @@ module Octoprint
       sig { returns(T::Array[Group]) }
       def self.list
         response = fetch_resource(deserialize: false)
-        response.map { |group_data| Group.deserialize(group_data) }
+        groups_data = response[:groups] || response["groups"] || []
+        groups_data.map { |group_data| Group.deserialize(group_data) }
       end
 
       # Add a new group
@@ -48,7 +49,7 @@ module Octoprint
       # @param permissions [Array<String>] Permissions to assign
       # @param subgroups [Array<String>] Subgroups to include
       # @param default [Boolean] Whether this is a default group
-      # @return [Group] The created group
+      # @return [Array<Group>] The created groups
       sig do
         params(
           key: String,
@@ -57,18 +58,25 @@ module Octoprint
           permissions: T::Array[String],
           subgroups: T::Array[String],
           default: T::Boolean
-        ).returns(Group)
+        ).returns(T::Array[Group])
       end
       def self.add(key:, name:, description:, permissions:, subgroups:, default:)
-        response = post(params: {
-                          key: key,
-                          name: name,
-                          description: description,
-                          permissions: permissions,
-                          subgroups: subgroups,
-                          default: default
-                        })
-        Group.deserialize(response)
+        response = client.request(
+          @path,
+          http_method: :post,
+          body: {
+            key: key,
+            name: name,
+            description: description,
+            permissions: permissions,
+            subgroups: subgroups,
+            default: default
+          },
+          headers: {},
+          options: {}
+        )
+        groups_data = response[:groups] || response["groups"] || []
+        groups_data.map { |group_data| Group.deserialize(group_data) }
       end
 
       # Retrieve a specific group
@@ -101,12 +109,20 @@ module Octoprint
       #
       # @param key [String] The group's identifier
       # @param params [Hash] The attributes to update
-      # @return [Group] The updated group
-      sig { params(key: String, params: T::Hash[Symbol, T.untyped]).returns(Group) }
+      # @return [Array<Group>] The created groups
+      sig { params(key: String, params: T::Hash[Symbol, T.untyped]).returns(T::Array[Group]) }
       def self.update(key:, params:)
         path = [@path, key].join("/")
-        response = put(path: path, params: params)
-        Group.deserialize(response)
+        response = client.request(
+          path,
+          http_method: :put,
+          body: params,
+          headers: {},
+          options: {}
+        )
+
+        groups_data = response[:groups] || response["groups"] || []
+        groups_data.map { |group_data| Group.deserialize(group_data) }
       end
 
       # Delete a group
@@ -118,10 +134,37 @@ module Octoprint
       #
       # @param key [String] The group's identifier
       # @return [void]
-      sig { params(key: String).void }
-      def self.delete(key:)
-        path = [@path, key].join("/")
-        super(path: path)
+      sig do
+        params(
+          key: T.nilable(String),
+          path: String,
+          params: T::Hash[Symbol, T.untyped],
+          headers: T::Hash[Symbol, T.untyped],
+          options: T::Hash[Symbol, T.untyped]
+        ).returns(T.untyped)
+      end
+      def self.delete(key: nil, path: @path, params: {}, headers: {}, options: {})
+        if key
+          # Group deletion case - ignore path parameter and construct our own
+          group_path = [@path, key].join("/")
+          delete_resource(group_path)
+          nil
+        else
+          # Fall back to base behavior
+          super(path: path, params: params, headers: headers, options: options)
+        end
+      end
+
+      # Delete a resource at the given path
+      sig { params(path: String).void }
+      def self.delete_resource(path)
+        client.request(
+          path,
+          http_method: :delete,
+          body: nil,
+          headers: {},
+          options: {}
+        )
         nil
       end
     end

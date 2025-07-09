@@ -8,7 +8,6 @@ module Octoprint
   # Information about files on the server
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/master/api/files.html
-  # rubocop:disable Metrics/ClassLength
   class Files < BaseResource
     extend T::Sig
 

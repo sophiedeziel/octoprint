@@ -47,6 +47,14 @@ module Octoprint
       #   @return [Array<String>] Roles needed for this group
       auto_attr :needs_role, type: String, array: true
 
+      # @!attribute [r] needs
+      #   @return [Hash] Needs information with groups and roles
+      auto_attr :needs, type: Hash
+
+      # @!attribute [r] dangerous
+      #   @return [Boolean] Whether this group is dangerous
+      auto_attr :dangerous, type: Types::Boolean
+
       # @!attribute [r] default
       #   @return [Boolean] Whether this is a default group
       auto_attr :default, type: Types::Boolean
@@ -71,6 +79,10 @@ module Octoprint
 
       deserialize_config do
         rename needsRole: :needs_role
+        transform do |data|
+          # Handle the needs structure which comes as a hash instead of array
+          data[:needs_role] = data[:needs][:role] if data[:needs].is_a?(Hash) && data[:needs][:role]
+        end
       end
     end
   end

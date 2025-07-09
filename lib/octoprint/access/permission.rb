@@ -43,6 +43,14 @@ module Octoprint
       #   @return [Array<String>] Permissions this one depends on
       auto_attr :needs, type: String, array: true
 
+      # @!attribute [r] needs_role
+      #   @return [Array<String>] Roles this permission needs
+      auto_attr :needs_role, type: String, array: true
+
+      # @!attribute [r] plugin
+      #   @return [String, nil] Plugin that provides this permission
+      auto_attr :plugin, type: String, nilable: true
+
       # @!attribute [r] extra
       #   @return [Hash] Additional attributes from the API
       auto_attr :extra, type: Hash
@@ -51,6 +59,13 @@ module Octoprint
 
       deserialize_config do
         rename defaultGroups: :default_groups
+        transform do |data|
+          # Handle the needs structure which comes as a hash with role array
+          if data[:needs].is_a?(Hash) && data[:needs][:role]
+            data[:needs_role] = data[:needs][:role]
+            data[:needs] = [] # Set needs to empty array since API uses hash structure
+          end
+        end
       end
     end
   end

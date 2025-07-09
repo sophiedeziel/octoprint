@@ -4,38 +4,48 @@
 require "spec_helper"
 
 RSpec.describe Octoprint::Access::Users do
-  let(:client) { instance_double(Octoprint::Client) }
+  include_context "with default Octoprint config"
+
+  let(:client) { Octoprint::Client.new(host: host, api_key: api_key) }
 
   before do
     allow(Octoprint).to receive(:client).and_return(client)
+    # Bypass BaseResource's client method type checking for tests
+    allow(described_class).to receive(:client).and_return(client)
   end
 
   describe ".list" do
     it "fetches and deserializes users" do
-      api_response = [
-        {
-          name: "admin",
-          active: true,
-          admin: true,
-          apikey: "ABC123",
-          settings: {},
-          groups: ["admins"],
-          permissions: ["ADMIN"],
-          needsRole: []
-        },
-        {
-          name: "john_doe",
-          active: true,
-          admin: false,
-          apikey: "XYZ789",
-          settings: { interface: { color: "dark" } },
-          groups: ["operators"],
-          permissions: %w[CONTROL MONITOR],
-          needsRole: []
-        }
-      ]
+      api_response = {
+        users: [
+          {
+            name: "admin",
+            active: true,
+            admin: true,
+            apikey: "ABC123",
+            settings: {},
+            groups: ["admins"],
+            permissions: ["ADMIN"],
+            needs: { group: ["admins"], role: ["admin"] },
+            roles: ["admin"],
+            user: false
+          },
+          {
+            name: "john_doe",
+            active: true,
+            admin: false,
+            apikey: "XYZ789",
+            settings: { interface: { color: "dark" } },
+            groups: ["operators"],
+            permissions: %w[CONTROL MONITOR],
+            needs: { group: ["operators"], role: %w[control monitor] },
+            roles: ["user"],
+            user: true
+          }
+        ]
+      }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users", { http_method: :get })
         .and_return(api_response)
 
@@ -64,17 +74,19 @@ RSpec.describe Octoprint::Access::Users do
   describe ".add" do
     it "creates a new user" do
       api_response = {
-        name: "jane_doe",
-        active: true,
-        admin: false,
-        apikey: "DEF456",
-        settings: {},
-        groups: ["users"],
-        permissions: ["MONITOR"],
-        needsRole: []
+        users: [{
+          name: "jane_doe",
+          active: true,
+          admin: false,
+          apikey: "DEF456",
+          settings: {},
+          groups: ["users"],
+          permissions: ["MONITOR"],
+          needsRole: []
+        }]
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users", {
                 http_method: :post,
                 params: {
@@ -95,7 +107,7 @@ RSpec.describe Octoprint::Access::Users do
         admin: false,
         groups: ["users"],
         permissions: ["MONITOR"]
-      )
+      ).find { |u| u.name == "jane_doe" }
 
       expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq("jane_doe")
@@ -107,17 +119,19 @@ RSpec.describe Octoprint::Access::Users do
 
     it "creates a user without optional parameters" do
       api_response = {
-        name: "test_user",
-        active: false,
-        admin: true,
-        apikey: "GHI789",
-        settings: {},
-        groups: [],
-        permissions: [],
-        needsRole: []
+        users: [{
+          name: "test_user",
+          active: false,
+          admin: true,
+          apikey: "GHI789",
+          settings: {},
+          groups: [],
+          permissions: [],
+          needsRole: []
+        }]
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users", {
                 http_method: :post,
                 params: {
@@ -134,7 +148,7 @@ RSpec.describe Octoprint::Access::Users do
         password: "password",
         active: false,
         admin: true
-      )
+      ).find { |u| u.name == "test_user" }
 
       expect(user).to be_a(Octoprint::Access::User)
       expect(user.name).to eq("test_user")
@@ -156,7 +170,7 @@ RSpec.describe Octoprint::Access::Users do
         needsRole: []
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe", { http_method: :get })
         .and_return(api_response)
 
@@ -172,17 +186,19 @@ RSpec.describe Octoprint::Access::Users do
   describe ".update" do
     it "updates a user" do
       api_response = {
-        name: "john_doe",
-        active: false,
-        admin: false,
-        apikey: "XYZ789",
-        settings: { interface: { color: "dark" } },
-        groups: %w[operators users],
-        permissions: %w[CONTROL MONITOR],
-        needsRole: []
+        users: [{
+          name: "john_doe",
+          active: false,
+          admin: false,
+          apikey: "XYZ789",
+          settings: { interface: { color: "dark" } },
+          groups: %w[operators users],
+          permissions: %w[CONTROL MONITOR],
+          needsRole: []
+        }]
       }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe", {
                 http_method: :put,
                 params: {
@@ -198,7 +214,7 @@ RSpec.describe Octoprint::Access::Users do
           active: false,
           groups: %w[operators users]
         }
-      )
+      ).find { |u| u.name == "john_doe" }
 
       expect(user).to be_a(Octoprint::Access::User)
       expect(user.active).to be(false)
@@ -208,7 +224,7 @@ RSpec.describe Octoprint::Access::Users do
 
   describe ".delete" do
     it "deletes a user" do
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe", { http_method: :delete })
         .and_return(nil)
 
@@ -216,11 +232,26 @@ RSpec.describe Octoprint::Access::Users do
 
       expect(result).to be_nil
     end
+
+    it "calls super when no username is provided" do
+      allow(client).to receive(:request)
+        .with("/api/access/users", {
+                http_method: :delete,
+                body: nil,
+                headers: {},
+                options: {}
+              })
+        .and_return(true)
+
+      result = described_class.delete(path: "/api/access/users")
+
+      expect(result).to be(true)
+    end
   end
 
   describe ".change_password" do
     it "changes a user's password" do
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe/password", {
                 http_method: :post,
                 params: { password: "new_password" }
@@ -240,7 +271,7 @@ RSpec.describe Octoprint::Access::Users do
     it "gets user settings" do
       settings = { interface: { color: "dark" }, webcam: { rotate90: true } }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe/settings", { http_method: :get })
         .and_return(settings)
 
@@ -255,7 +286,7 @@ RSpec.describe Octoprint::Access::Users do
       settings = { interface: { color: "light" } }
       updated_settings = { interface: { color: "light" }, webcam: { rotate90: true } }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe/settings", {
                 http_method: :patch,
                 params: settings
@@ -275,7 +306,7 @@ RSpec.describe Octoprint::Access::Users do
     it "generates a new API key" do
       api_response = { apikey: "NEW_API_KEY_123" }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe/apikey", { http_method: :post })
         .and_return(api_response)
 
@@ -287,7 +318,7 @@ RSpec.describe Octoprint::Access::Users do
 
   describe ".delete_api_key" do
     it "deletes a user's API key" do
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/users/john_doe/apikey", { http_method: :delete })
         .and_return(nil)
 

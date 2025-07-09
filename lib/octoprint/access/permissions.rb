@@ -23,7 +23,8 @@ module Octoprint
       sig { returns(T::Array[Permission]) }
       def self.list
         response = fetch_resource(deserialize: false)
-        response.map { |permission_data| Permission.deserialize(permission_data) }
+        permissions_data = response[:permissions] || response["permissions"] || []
+        permissions_data.map { |permission_data| Permission.deserialize(permission_data) }
       end
     end
   end

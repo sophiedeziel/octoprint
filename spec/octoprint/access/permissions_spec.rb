@@ -4,34 +4,40 @@
 require "spec_helper"
 
 RSpec.describe Octoprint::Access::Permissions do
-  let(:client) { instance_double(Octoprint::Client) }
+  include_context "with default Octoprint config"
+
+  let(:client) { Octoprint::Client.new(host: host, api_key: api_key) }
 
   before do
     allow(Octoprint).to receive(:client).and_return(client)
+    # Bypass BaseResource's client method type checking for tests
+    allow(described_class).to receive(:client).and_return(client)
   end
 
   describe ".list" do
     it "fetches and deserializes permissions" do
-      api_response = [
-        {
-          key: "ADMIN",
-          name: "Admin",
-          dangerous: true,
-          defaultGroups: ["admins"],
-          description: "Full administrative access",
-          needs: []
-        },
-        {
-          key: "SETTINGS",
-          name: "Settings",
-          dangerous: false,
-          defaultGroups: %w[admins operators],
-          description: "Allows access to settings",
-          needs: ["CONNECTION"]
-        }
-      ]
+      api_response = {
+        permissions: [
+          {
+            key: "ADMIN",
+            name: "Admin",
+            dangerous: true,
+            defaultGroups: ["admins"],
+            description: "Full administrative access",
+            needs: { role: ["admin"] }
+          },
+          {
+            key: "SETTINGS",
+            name: "Settings",
+            dangerous: false,
+            defaultGroups: %w[admins operators],
+            description: "Allows access to settings",
+            needs: { role: ["settings"] }
+          }
+        ]
+      }
 
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/permissions", { http_method: :get })
         .and_return(api_response)
 
@@ -52,13 +58,13 @@ RSpec.describe Octoprint::Access::Permissions do
       expect(settings_permission.name).to eq("Settings")
       expect(settings_permission.dangerous).to be(false)
       expect(settings_permission.default_groups).to eq(%w[admins operators])
-      expect(settings_permission.needs).to eq(["CONNECTION"])
+      expect(settings_permission.needs_role).to eq(["settings"])
     end
 
     it "handles empty response" do
-      expect(client).to receive(:request)
+      allow(client).to receive(:request)
         .with("/api/access/permissions", { http_method: :get })
-        .and_return([])
+        .and_return({ permissions: [] })
 
       permissions = described_class.list
 
