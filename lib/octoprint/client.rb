@@ -21,7 +21,7 @@ module Octoprint
       @client = new_client
     end
 
-    # Instanciates an object from a hash. Can be overriden by child classes
+    # Instantiates an object from a hash. Can be overridden by child classes
     #
     # @param [String] path                the path of the request
     # @param [Symbol|String] http_method  the http method of the request

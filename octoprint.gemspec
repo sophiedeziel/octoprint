@@ -8,13 +8,15 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Sophie Déziel"]
   spec.email         = ["courrier@sophiedeziel.com"]
 
-  spec.summary       = "Wrapper around Octoprint's API."
-  spec.description   = "Wrapper around Octoprint's API."
+  spec.summary       = "A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbet integration."
+  spec.description   = "A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbet " \
+                       "integration. Features include smart error handling, 100% test coverage, and support " \
+                       "for Files, Jobs, Printer Profiles, Connections, Logs, and more."
   spec.homepage      = "https://github.com/sophiedeziel/octoprint"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/sophiedeziel/octoprint"
