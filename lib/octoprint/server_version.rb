@@ -2,41 +2,50 @@
 # frozen_string_literal: true
 
 module Octoprint
-  # Version informations about the server
+  # Version information about the OctoPrint server.
   #
-  # Octoprint's API doc: https://docs.octoprint.org/en/master/api/version.html
+  # @example Get server version
+  #   version = Octoprint::ServerVersion.get
+  #   puts "API: #{version.api}"
+  #   puts "Server: #{version.server}"
+  #   puts "Text: #{version.text}"
   #
-  # @attr [String] api      Server's API version
-  # @attr [String] server   Server's version
-  # @attr [String] text     server version including the prefix `Octoprint`
-  #
-  # @example
-  #           Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
-  #
-  #           version = Octoprint::ServerVersion.get
-  #           version.api #=> "0.1"
-  #           version.server= #=> "1.7.3"
-  #           version.text #=> "OctoPrint 1.7.3"
+  # @see https://docs.octoprint.org/en/master/api/version.html
   class ServerVersion < BaseResource
-    resource_path("/api/version")
-    attr_reader :api, :server, :text
+    extend T::Sig
+    include AutoInitializable
+    include Deserializable
 
-    def initialize(api:, server:, text:)
-      @api = api
-      @server = server
-      @text = text
-      super()
-    end
+    resource_path("/api/version")
+
+    # @!attribute [r] api
+    #   @return [String] The server's API version
+    auto_attr :api, type: String, nilable: false
+
+    # @!attribute [r] server
+    #   @return [String] The server's version number
+    auto_attr :server, type: String, nilable: false
+
+    # @!attribute [r] text
+    #   @return [String] Server version including the prefix "OctoPrint"
+    auto_attr :text, type: String, nilable: false
+
+    # @!attribute [r] extra
+    #   @return [Hash] Any additional fields returned by the API
+    auto_attr :extra, type: Hash
+
+    auto_initialize!
 
     # Retrieve information regarding server and API version.
     #
-    # @return [ServerVersion]
+    # @example Get server version
+    #   version = Octoprint::ServerVersion.get
+    #   puts "API: #{version.api}"
+    #   puts "Server: #{version.server}"
     #
-    # @example
-    #           version = Octoprint::ServerVersion.get
-    #           version.api #=> "0.1"
-    #           version.server= #=> "1.7.3"
-    #           version.text #=> "OctoPrint 1.7.3"
+    # @return [ServerVersion] Version information object
+    # @raise [Octoprint::Exceptions::Error] if the request fails
+    sig { returns(ServerVersion) }
     def self.get
       fetch_resource
     end

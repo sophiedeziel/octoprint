@@ -9,6 +9,9 @@ class Octoprint::Job
   sig { returns(T.nilable(::String)) }
   def error; end
 
+  sig { returns(T.nilable(::Hash)) }
+  def extra; end
+
   sig { returns(T.nilable(::Octoprint::Job::Information)) }
   def information; end
 

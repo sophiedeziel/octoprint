@@ -10,6 +10,9 @@ class Octoprint::Job::Information
   def estimated_print_time; end
 
   sig { returns(T.nilable(::Hash)) }
+  def extra; end
+
+  sig { returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
   def filament; end
 
   sig { returns(T.nilable(::Hash)) }

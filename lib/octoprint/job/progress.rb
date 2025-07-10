@@ -3,34 +3,43 @@
 
 module Octoprint
   class Job
-    # Information regarding the progress of the current print job
+    # Information regarding the progress of the current print job.
     #
-    # Octoprint's API doc: https://docs.octoprint.org/en/master/api/datamodel.html#progress-information
+    # @example Access job progress
+    #   job = Octoprint::Job.get
+    #   progress = job.progress
+    #   puts "Completion: #{progress.completion * 100}%"
+    #   puts "Time left: #{progress.print_time_left} seconds"
     #
-    # @attr [Float] completion The completion that is the target of the current print job
-    # @attr [Integer] filepos  Current position in the file being printed, in bytes from the beginning
-    # @attr [Float] print_time  Time already spent printing, in seconds
-    # @attr [Float] print_time_left Estimate of time left to print, in seconds
-    # @attr [String] print_time_left_origin Origin of the current time left estimate.
-    #
-    # @example
-    #           Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
-    #
-    #           options = Octoprint::Job.get.progress
-    #
-    #           options.completion #=> 0.2298468264184775
-    #           options.filepos #=>  337942
-    #           options.print_time #=>  276
-    #           options.print_time_left #=>  912
-    #           options.print_time_left_origin #=>  "estimate"
+    # @see https://docs.octoprint.org/en/master/api/datamodel.html#progress-information
     class Progress
+      extend T::Sig
       include AutoInitializable
+      include Deserializable
 
+      # @!attribute [r] completion
+      #   @return [Float] The completion percentage of the current print job
       auto_attr :completion, type: Float
+
+      # @!attribute [r] filepos
+      #   @return [Integer] Current position in the file being printed, in bytes
       auto_attr :filepos, type: Integer
+
+      # @!attribute [r] print_time
+      #   @return [Float] Time already spent printing, in seconds
       auto_attr :print_time, type: Float
+
+      # @!attribute [r] print_time_left
+      #   @return [Float] Estimate of time left to print, in seconds
       auto_attr :print_time_left, type: Float
+
+      # @!attribute [r] print_time_left_origin
+      #   @return [String] Origin of the current time left estimate
       auto_attr :print_time_left_origin, type: String
+
+      # @!attribute [r] extra
+      #   @return [Hash] Any additional fields returned by the API
+      auto_attr :extra, type: Hash
 
       auto_initialize!
     end
