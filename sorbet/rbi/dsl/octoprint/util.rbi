@@ -6,7 +6,7 @@
 
 
 class Octoprint::Util
-  sig { returns(T::Boolean) }
+  sig { returns(T.nilable(T::Boolean)) }
   def exists; end
 
   sig { returns(T.nilable(::Hash)) }

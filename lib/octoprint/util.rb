@@ -2,7 +2,12 @@
 # frozen_string_literal: true
 
 module Octoprint
-  # OctoPrint Util API
+  # Utility operations for testing paths, URLs, and connectivity.
+  #
+  # @example Test a path
+  #   result = Octoprint::Util.test_path(path: "/tmp/test")
+  #   puts "Exists: #{result.exists}"
+  #
   # @see https://docs.octoprint.org/en/1.11.2/api/util.html
   class Util < BaseResource
     extend T::Sig
@@ -11,18 +16,23 @@ module Octoprint
 
     resource_path("/api/util")
 
-    auto_attr :result, type: String, nilable: true
-    auto_attr :exists, type: T::Boolean, nilable: true
-    auto_attr :status, type: String, nilable: true
+    # @!attribute [r] result
+    #   @return [String, nil] The result of the utility operation
+    auto_attr :result, type: Types::NilableString
+
+    # @!attribute [r] exists
+    #   @return [Boolean, nil] Whether the tested resource exists
+    auto_attr :exists, type: Types::NilableBoolean
+
+    # @!attribute [r] status
+    #   @return [String, nil] Status of the operation
+    auto_attr :status, type: Types::NilableString
+
+    # @!attribute [r] extra
+    #   @return [Hash] Any additional fields returned by the API
     auto_attr :extra, type: Hash
 
     auto_initialize!
-
-    deserialize_config do
-      transform do |data|
-        data
-      end
-    end
 
     # Test file system paths
     #

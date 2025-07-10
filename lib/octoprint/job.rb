@@ -2,45 +2,58 @@
 # frozen_string_literal: true
 
 module Octoprint
-  # Use these operations to query the currently selected file and start/cancel/restart/pause the actual print job.
+  # Information about the current print job.
   #
-  # Octoprint's API doc: https://docs.octoprint.org/en/master/api/job.html
+  # @example Get current job
+  #   job = Octoprint::Job.get
+  #   puts "State: #{job.state}"
+  #   puts "Progress: #{job.progress.percent}%"
   #
-  # @attr [Job::Information] job  Information regarding the target of the current print job
-  # @attr [Job::Progress]         progress  Information regarding the progress of the current print job
-  # @attr [String] state          A textual representation of the current state of the job or connection, e.g.
-  #                                 “Operational”, “Printing”, “Pausing”, “Paused”, “Cancelling”, “Error”, “Offline”,
-  #                                 “Offline after error”, “Opening serial connection”, … – please note that this list
-  #                                 is not exhaustive!
-  # @attr [String] error          Any error message for the job or connection, only set if there has been an error.
-  #
-  # @example
-  #           Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
-  #
-  #           job = Octoprint::Job.get
-  #           job.state #=> "Printing"
+  # @see https://docs.octoprint.org/en/master/api/job.html
   class Job < BaseResource
+    extend T::Sig
     include AutoInitializable
+    include Deserializable
 
     resource_path("/api/job")
 
-    auto_attr :information, type: Information, from: :job
-    auto_attr :progress, type: Progress, from: :progress
+    # @!attribute [r] information
+    #   @return [Job::Information] Information about the target file
+    auto_attr :information, type: Information
+
+    # @!attribute [r] progress
+    #   @return [Job::Progress] Information about print progress
+    auto_attr :progress, type: Progress
+
+    # @!attribute [r] state
+    #   @return [String] Current state of the job
     auto_attr :state, type: String
+
+    # @!attribute [r] error
+    #   @return [String, nil] Error message if any
     auto_attr :error, type: String
+
+    # @!attribute [r] extra
+    #   @return [Hash] Any additional fields returned by the API
+    auto_attr :extra, type: Hash
 
     auto_initialize!
 
-    # Retrieve information about the current job (if there is one).
+    deserialize_config do
+      transform do |data|
+        data[:information] = Information.deserialize(data[:job])
+      end
+    end
+
+    # Retrieve information about the current job.
     #
-    # @return [Job]
+    # @example Get current job
+    #   job = Octoprint::Job.get
+    #   puts "State: #{job.state}"
     #
-    # @example
-    #           job = Octoprint::Job.get
-    #           job.information.estimated_print_time #=> 30233
-    #           job.progress.print_time_left= #=> 823
-    #           job.state #=> "Printing"
-    #           job.error #=> nil
+    # @return [Job] Current job information
+    # @raise [Octoprint::Exceptions::Error] if the request fails
+    sig { returns(Job) }
     def self.get
       fetch_resource
     end

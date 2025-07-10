@@ -5,29 +5,37 @@ module Octoprint
   class Job
     # Information regarding the target of the current print job.
     #
-    # Octoprint's API doc: https://docs.octoprint.org/en/master/api/datamodel.html#sec-api-datamodel-jobs-job
+    # @example Access job information
+    #   job = Octoprint::Job.get
+    #   info = job.information
+    #   puts "File: #{info.file[:name]}"
+    #   puts "Estimated time: #{info.estimated_print_time} seconds"
     #
-    # @attr [Hash]        file                    The file that is the target of the current print job
-    # @attr [Float | nil] estimated_print_time    The estimated print time for the file, in seconds.
-    # @attr [Float | nil] last_print_time         The print time of the last print of the file, in seconds.
-    # @attr [Hash | nil]  filament                Information regarding the estimated filament usage of the print job
-    #
-    # @example
-    #           Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
-    #
-    #           options = Octoprint::Job.get.information
-    #
-    #           options.file #=> "whistle_v2.gcode"
-    #           options.estimated_print_time #=>  8811
-    #           options.last_print_time #=>  nil
-    #           options.filament #=>  {tool0: {length: 810, volume: 5.36}}
+    # @see https://docs.octoprint.org/en/master/api/datamodel.html#sec-api-datamodel-jobs-job
     class Information
+      extend T::Sig
       include AutoInitializable
+      include Deserializable
 
+      # @!attribute [r] file
+      #   @return [Hash] The file that is the target of the current print job
       auto_attr :file, type: Hash
-      auto_attr :estimated_print_time, type: Float
-      auto_attr :last_print_time, type: Float
-      auto_attr :filament, type: Hash
+
+      # @!attribute [r] estimated_print_time
+      #   @return [Float, nil] The estimated print time for the file, in seconds
+      auto_attr :estimated_print_time, type: Types::NilableFloat
+
+      # @!attribute [r] last_print_time
+      #   @return [Float, nil] The print time of the last print of the file, in seconds
+      auto_attr :last_print_time, type: Types::NilableFloat
+
+      # @!attribute [r] filament
+      #   @return [Hash, nil] Information regarding the estimated filament usage
+      auto_attr :filament, type: Types::NilableHash
+
+      # @!attribute [r] extra
+      #   @return [Hash] Any additional fields returned by the API
+      auto_attr :extra, type: Hash
 
       auto_initialize!
     end

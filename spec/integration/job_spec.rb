@@ -32,7 +32,7 @@ RSpec.describe Octoprint::Job, type: :integration do
   end
 
   describe "The connection object" do
-    subject { described_class.new(**job_params) }
+    subject { described_class.deserialize(job_params) }
 
     its(:information) { is_expected.to be_a Octoprint::Job::Information }
     its(:progress)    { is_expected.to be_a Octoprint::Job::Progress }

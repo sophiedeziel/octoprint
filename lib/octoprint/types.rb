@@ -63,5 +63,80 @@ module Octoprint
     # A nullable boolean (can be Boolean or nil)
     # @example true, false, or nil
     NilableBoolean = T.nilable(T.any(TrueClass, FalseClass))
+
+    # API Response Types
+    # A typical API response hash
+    # @example { data: {...}, status: "success" }
+    ApiResponse = T::Hash[Symbol, T.untyped]
+
+    # File Types
+    # A file path string
+    # @example "/path/to/file.gcode"
+    FilePath = String
+
+    # File size in bytes
+    # @example 1048576
+    FileSize = Integer
+
+    # Time Types
+    # Unix timestamp (seconds since epoch)
+    # @example 1640995200
+    UnixTimestamp = Integer
+
+    # ISO 8601 formatted date string
+    # @example "2023-12-31T12:00:00Z"
+    Iso8601String = String
+
+    # Network Types
+    # A hostname or IP address
+    # @example "octopi.local" or "192.168.1.100"
+    Hostname = String
+
+    # A port number
+    # @example 80, 443, 5000
+    Port = Integer
+
+    # A URL string
+    # @example "https://octopi.local/api/version"
+    Url = String
+
+    # Printer Types
+    # A printer identifier
+    # @example "ender3", "_default"
+    PrinterId = String
+
+    # Number of extruders
+    # @example 1, 2, 4
+    ExtruderCount = Integer
+
+    # Bed temperature in Celsius
+    # @example 60.0, 80.5
+    BedTemperature = Float
+
+    # Job Types
+    # Job state string
+    # @example "Printing", "Paused", "Operational"
+    JobState = String
+
+    # Print progress percentage (0.0 to 100.0)
+    # @example 45.5, 100.0
+    ProgressPercent = Float
+
+    # Print time in seconds
+    # @example 3600, 7200
+    PrintTime = Integer
+
+    # Connection Types
+    # Connection state string
+    # @example "Connected", "Disconnected", "Connecting"
+    ConnectionState = String
+
+    # Baud rate for serial connections
+    # @example 115200, 250000, 500000
+    BaudRate = Integer
+
+    # Serial port name
+    # @example "/dev/ttyUSB0", "COM3"
+    SerialPort = String
   end
 end

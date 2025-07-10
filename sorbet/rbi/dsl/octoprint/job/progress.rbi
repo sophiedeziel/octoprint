@@ -9,6 +9,9 @@ class Octoprint::Job::Progress
   sig { returns(T.nilable(::Float)) }
   def completion; end
 
+  sig { returns(T.nilable(::Hash)) }
+  def extra; end
+
   sig { returns(T.nilable(::Integer)) }
   def filepos; end
 
