@@ -370,6 +370,7 @@ RSpec.describe Octoprint::Deserializable do
     let(:test_class) do
       Class.new do
         include Octoprint::Deserializable
+
         attr_reader :value, :nested_obj, :array_items
 
         def initialize(value: nil, nested_obj: nil, array_items: [])
@@ -408,6 +409,7 @@ RSpec.describe Octoprint::Deserializable do
 
       test_class_with_simple = Class.new do
         include Octoprint::Deserializable
+
         attr_reader :simple_obj
 
         def initialize(simple_obj: nil)
@@ -444,6 +446,7 @@ RSpec.describe Octoprint::Deserializable do
 
       test_class_with_array = Class.new do
         include Octoprint::Deserializable
+
         attr_reader :items
 
         def initialize(items: [])
@@ -482,6 +485,7 @@ RSpec.describe Octoprint::Deserializable do
 
       test_class_with_array = Class.new do
         include Octoprint::Deserializable
+
         attr_reader :items
 
         def initialize(items: [])
@@ -510,6 +514,7 @@ RSpec.describe Octoprint::Deserializable do
       # Create a class that doesn't respond to auto_attrs
       test_class_without_auto_attrs = Class.new do
         include Octoprint::Deserializable
+
         attr_reader :name
 
         def initialize(**kwargs)

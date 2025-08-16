@@ -20,6 +20,7 @@ require_relative "tapioca/dsl/compilers/auto_initializable" if defined?(Tapioca)
 module Octoprint
   class << self
     extend T::Sig
+
     # Configure the API client with the server's address and key
     #
     # @param [String] host      Server's host address

@@ -165,6 +165,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Create a very minimal test case
       test_class = Class.new(Object) do
         include Octoprint::AutoInitializable
+
         auto_attr :name, type: String
 
         # Remove initialize if it exists to test the branch
@@ -196,6 +197,7 @@ RSpec.describe Octoprint::AutoInitializable do
 
       child = Class.new(parent) do
         include Octoprint::AutoInitializable
+
         auto_attr :value, type: String
         auto_initialize!
       end
@@ -213,6 +215,7 @@ RSpec.describe Octoprint::AutoInitializable do
 
       child = Class.new(parent) do
         include Octoprint::AutoInitializable
+
         auto_attr :value, type: String
         auto_initialize!
       end
@@ -226,6 +229,7 @@ RSpec.describe Octoprint::AutoInitializable do
     let(:test_class) do
       Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :custom_obj, type: Object
         auto_initialize!
       end
@@ -241,6 +245,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test Array type specifically
       array_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: Array
         auto_initialize!
       end
@@ -251,6 +256,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test String type
       string_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: String
         auto_initialize!
       end
@@ -261,6 +267,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test Integer type
       integer_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: Integer
         auto_initialize!
       end
@@ -271,6 +278,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test Float type
       float_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: Float
         auto_initialize!
       end
@@ -281,6 +289,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test TrueClass type
       true_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: TrueClass
         auto_initialize!
       end
@@ -291,6 +300,7 @@ RSpec.describe Octoprint::AutoInitializable do
       # Test FalseClass type
       false_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: FalseClass
         auto_initialize!
       end
@@ -305,6 +315,7 @@ RSpec.describe Octoprint::AutoInitializable do
 
       type_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: mock_type
         auto_initialize!
       end
@@ -319,6 +330,7 @@ RSpec.describe Octoprint::AutoInitializable do
 
       type_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: non_class_type
         auto_initialize!
       end
@@ -333,12 +345,14 @@ RSpec.describe Octoprint::AutoInitializable do
       # Create a simple custom class
       custom_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :name, type: String
         auto_initialize!
       end
 
       test_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :items, type: custom_class, array: true
         auto_initialize!
       end
@@ -355,12 +369,14 @@ RSpec.describe Octoprint::AutoInitializable do
     it "handles non-array values for array attributes" do
       custom_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :name, type: String
         auto_initialize!
       end
 
       test_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :items, type: custom_class, array: true
         auto_initialize!
       end
@@ -377,6 +393,7 @@ RSpec.describe Octoprint::AutoInitializable do
     it "handles classes with no auto_attrs declared" do
       empty_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_initialize!
       end
 
@@ -390,6 +407,7 @@ RSpec.describe Octoprint::AutoInitializable do
     it "handles attributes without type specified" do
       test_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data # No type specified
         auto_initialize!
       end
@@ -401,6 +419,7 @@ RSpec.describe Octoprint::AutoInitializable do
     it "handles attributes with type: nil" do
       test_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: nil # Explicitly nil type
         auto_initialize!
       end
@@ -412,6 +431,7 @@ RSpec.describe Octoprint::AutoInitializable do
     it "handles attributes with type: false" do
       test_class = Class.new do
         include Octoprint::AutoInitializable
+
         auto_attr :data, type: false # Falsy type
         auto_initialize!
       end

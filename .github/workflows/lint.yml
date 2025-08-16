@@ -17,7 +17,6 @@ jobs:
     - name: Install Ruby and gems
       uses: ruby/setup-ruby@a4effe49ee8ee5b8b5091268c473a4628afb5651
       with:
-        ruby-version: 3.2.2
         bundler-cache: true
 
     - name: Run Sorbet
@@ -33,7 +32,6 @@ jobs:
     - name: Install Ruby and gems
       uses: ruby/setup-ruby@a4effe49ee8ee5b8b5091268c473a4628afb5651
       with:
-        ruby-version: 3.2.2
         bundler-cache: true
 
     - name: Run Rubocop
@@ -49,7 +47,6 @@ jobs:
     - name: Install Ruby and gems
       uses: ruby/setup-ruby@a4effe49ee8ee5b8b5091268c473a4628afb5651
       with:
-        ruby-version: 3.2.2
         bundler-cache: true
 
     - name: Verify Tapioca RBI files are up to date
