@@ -6,6 +6,7 @@ module Octoprint
   class BaseResource
     class << self
       extend T::Sig
+
       # Defines the path for the resource's endpoint
       #
       # @param [String] path      The API's endpoint path
