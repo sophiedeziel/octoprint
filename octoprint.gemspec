@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
                        "for Files, Jobs, Printer Profiles, Connections, Logs, and more."
   spec.homepage      = "https://github.com/sophiedeziel/octoprint"
   spec.license       = "MIT"
-  spec.required_ruby_version = ">= 3.3"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
