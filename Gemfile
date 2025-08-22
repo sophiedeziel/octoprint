@@ -24,6 +24,7 @@ group :development, :test do
   gem "rake", "~> 13.0"
   gem "rspec-sorbet"
   gem "rubocop", "~> 1.77"
+  gem "rubocop-github-annotations-formatter", require: false
   gem "rubocop-rspec", "~> 3.0"
   gem "tapioca", "~> 0.17.5", require: false
   gem "yard"
