@@ -35,7 +35,7 @@ jobs:
         bundler-cache: true
 
     - name: Run Rubocop
-      run: bundle exec rubocop
+      run: bundle exec rubocop --format github
 
   tapioca:
     runs-on: ubuntu-latest
