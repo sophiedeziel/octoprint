@@ -160,7 +160,7 @@ module Octoprint
           end
 
           # Call parent initializer if it exists and has an initialize method
-          return unless T.unsafe(self).class.superclass.instance_methods.include?(:initialize)
+          return unless T.unsafe(self).class.superclass.method_defined?(:initialize)
 
           super()
         end

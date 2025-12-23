@@ -193,7 +193,7 @@ RSpec.describe Octoprint::AutoInitializable do
       end
 
       # Verify that parent has initialize in instance_methods
-      expect(parent.instance_methods.include?(:initialize)).to be(true)
+      expect(parent.method_defined?(:initialize)).to be(true)
 
       child = Class.new(parent) do
         include Octoprint::AutoInitializable
