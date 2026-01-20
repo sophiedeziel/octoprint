@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@b90be12699fdfcbee4440c2bba85f6f460446bb0
+      uses: ruby/setup-ruby@e69dcf3ded5967f30d7ef595704928d91cdae930
       with:
         bundler-cache: true
 
@@ -30,7 +30,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@b90be12699fdfcbee4440c2bba85f6f460446bb0
+      uses: ruby/setup-ruby@e69dcf3ded5967f30d7ef595704928d91cdae930
       with:
         bundler-cache: true
 
@@ -45,7 +45,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@b90be12699fdfcbee4440c2bba85f6f460446bb0
+      uses: ruby/setup-ruby@e69dcf3ded5967f30d7ef595704928d91cdae930
       with:
         bundler-cache: true
 
