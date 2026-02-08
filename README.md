@@ -176,17 +176,15 @@ end
 
 ## 🧪 Testing & Code Quality
 
-This gem maintains exceptional quality standards:
+This gem maintains quality standards:
 
 ### Test Coverage
-- **100% Line Coverage**: 966/966 lines covered
-- **VCR Integration**: Real API interactions recorded and replayed, ensuring tests ran in real conditions
-- **Sensitive Data Protection**: Automatically filters hosts and API keys
+- **100% Line Coverage**
+- **API calls recorded with VCR**: Real API interactions recorded and replayed, ensuring tests ran in real conditions while keeping CI simple and fast.
 
 ### Code Quality
-- **RuboCop Clean**: 0 offenses across 70 files
-- **Sorbet Type Checking**: All files pass `srb tc` with 0 errors
-- **Modern Ruby Standards**: Built for Ruby 3.2+ with best practices
+- **RuboCop**
+- **Sorbet Type Checking**
 
 ```bash
 # Run all quality checks
@@ -201,13 +199,34 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-### HTTP requests
+### Testing with Octoprint
 
-This project uses VCR to record the HTTP interactions with an Octoprint's API. When you add tests, you can use existing cassettes or record new ones. You should never edit the cassettes manually. You can delete the files and re-record them as you need.
+You can test with an existing octoprint instance that you have, or you can setup a test [octoprint](https://octoprint.org/download/) instance using the [virtual printer plugin](https://docs.octoprint.org/en/main/bundledplugins/virtual_printer.html).
 
-To set up recording with actual HTTP requests, first set the `OCTOPRINT_HOST` and `OCTOPRINT_API_KEY` environment variables in your prefered way. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automaticaaly load it's content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
+There are many ways you can set that up; using Docker, pip on your local machine or use a raspberry pi, and many more options. Pick the one that works for you.
+
+As a convenience, here is the test setup I use, using Docker:
+
+```bash
+brew install --cask docker # Install docker on a mac, if not already installed.
+
+# Once Docker is started
+docker run -d -p 5050:80 --name octoprint octoprint/octoprint
+```
+
+Then, open http://localhost:5050/ and go through the setup wizard.
+
+Enable the virtual printer plugin.
+
+Go to Settings > Application keys and generate a new API key.
+
+Set the `OCTOPRINT_HOST` and `OCTOPRINT_API_KEY` environment variables in your prefered way. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automaticaly load it's content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
 
 Remember, you should never commit your credentials to git. With the current configuration, you should never have to.
+
+### Recorded HTTP requests for the test suite
+
+This project uses VCR to record the HTTP interactions with an Octoprint's API. When you add tests, you can use existing cassettes or record new ones. You should never edit the cassettes manually. You can delete the files and re-record them as you need.
 
 If you need all request to pass through while developing, you can add the `:wip` flag to your tests. It will prevent cassettes from recording until you remove the flag. Remember to remove it and record all missing cassettes before you commit your changes. More information here: https://link.medium.com/QU7ZgM8P9nb
 
@@ -220,6 +239,12 @@ example:
       expect(result.name).to eq 'sophie'
     end
 ```
+
+It is preferable to have the test setup and teardown making all the required operations so deleting all cassettes to re-record them results in a successful full run, in any order of the tests.
+
+For example: if a file is required on the octoprint instance in order to make an API call referencing that file, the test setup should upload it.
+
+However, it is not realistic to apply this strictly, some exceptions exist. It is not recommended to delete all cassettes to record them again. Only re-record new cassettes if strictly needed.
 
 ## Contributing
 
