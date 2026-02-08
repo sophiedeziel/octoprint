@@ -54,7 +54,7 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
   end
 
-  describe "Retrieve a specific file’s or folder’s information", vcr: { cassette_name: "files/get" } do
+  describe "Retrieve a specific file's or folder's information", vcr: { cassette_name: "files/get" } do
     use_octoprint_server
     subject(:get) { described_class.get(**params) }
 
@@ -304,10 +304,25 @@ RSpec.describe Octoprint::Files, type: :integration do
     use_octoprint_server
     subject(:copy_file) { described_class.copy(**params) }
 
+    before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local, options: { path: "test_folder" }) }
+
+    after do
+      begin
+        described_class.delete_file(filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local)
+      rescue StandardError
+        # in case the test failed
+      end
+      begin
+        described_class.delete_file(filename: "test_folder/copied_file.gcode", location: Octoprint::Location::Local)
+      rescue StandardError
+        # when the test passed
+      end
+    end
+
     let(:params) do
       {
-        filename: "test_file.gcode",
-        destination: "copied_file.gcode",
+        filename: "test_folder/test_file.gcode",
+        destination: "test_folder/copied_file.gcode",
         location: Octoprint::Location::Local
       }
     end
@@ -322,10 +337,25 @@ RSpec.describe Octoprint::Files, type: :integration do
     use_octoprint_server
     subject(:move_file) { described_class.move(**params) }
 
+    before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local, options: { path: "test_folder" }) }
+
+    after do
+      begin
+        described_class.delete_file(filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local)
+      rescue StandardError
+        # in case the test failed
+      end
+      begin
+        described_class.delete_file(filename: "test_folder/moved_file.gcode", location: Octoprint::Location::Local)
+      rescue StandardError
+        # when the test passed
+      end
+    end
+
     let(:params) do
       {
-        filename: "test_file_for_move.gcode",
-        destination: "moved_file.gcode",
+        filename: "test_folder/test_file.gcode",
+        destination: "test_folder/moved_file.gcode",
         location: Octoprint::Location::Local
       }
     end
@@ -362,32 +392,23 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
   end
 
-  describe "Delete file successfully" do
+  describe "Delete file successfully", vcr: { cassette_name: "files/delete" } do
     use_octoprint_server
     subject(:delete_file) { described_class.delete_file(**params) }
 
-    let(:params) { { filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local } }
+    let(:params) { { filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local } }
 
-    before do
-      allow(described_class).to receive(:delete).and_return(true)
-    end
+    # This one cannot realisticly have a teardown.
+    before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local, options: { path: "test_folder" }) }
 
     it "deletes file successfully" do
       expect(delete_file).to be true
-      expect(described_class).to have_received(:delete).with(
-        path: "/api/files/local/test_file_to_delete.gcode"
-      )
     end
 
     it "file no longer exists after deletion" do
-      allow(described_class).to receive(:get).and_raise(
-        Octoprint::Exceptions::NotFoundError,
-        "The requested URL was not found on the server"
-      )
-
       delete_file
 
-      expect { described_class.get(filename: "test_file_to_delete.gcode", location: Octoprint::Location::Local) }
+      expect { described_class.get(filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local) }
         .to raise_error(Octoprint::Exceptions::NotFoundError)
     end
   end

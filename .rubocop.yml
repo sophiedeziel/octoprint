@@ -9,6 +9,7 @@ AllCops:
     - 'sorbet/rbi/**/*'
     - 'node_modules/**/*'
     - 'vendor/**/*'
+    - '.ruby-lsp/**/*'
 
 Style/StringLiterals:
   Enabled: true

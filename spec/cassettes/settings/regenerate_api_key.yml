@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/settings/apikey"
+    body:
+      encoding: UTF-8
+      string: "{}"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '62'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=5
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNyk0KgCAQBtC7fOsIK_rzMiI15JBNkraQ6O5Fq9bvXZgOmkkSWx9NJBLoqu9VO4xqqMpW1V0zFuCvpFzaMzmTciBoOb3_Cc_QiHtwTCjg94XFbDQ5Kxy3l2zglTLuB4LwJs0.aYkLmQ.k3LMXZ_J76V5tlDZdiES1nw-j4A;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "apikey": "-6UPkmoZZnmB8GPgw5Nr1E0k2vbeWZE00RxJLAW34gg"
+        }
+  recorded_at: Sun, 08 Feb 2026 22:18:01 GMT
+recorded_with: VCR 6.3.1

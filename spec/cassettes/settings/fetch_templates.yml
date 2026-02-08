@@ -1,0 +1,447 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/settings/templates"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '9674'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HVERpF5GZEacsgmSVtIdPeiVev3LkwHzSSZXUg2EQmMGoam12OjVd2rrh11Bf5KLrU7s7e5RIKRM4Sf8AyDtEfPhAphX1jsRpN3wml7yUVeqeB-AIQwJtE.aYkLmQ.SPBeeuSfilqxg25APf6xnO3-Ve0;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "order": {
+            "about": [
+              {
+                "id": "about",
+                "name": "About OctoPrint"
+              },
+              {
+                "id": "supporters",
+                "name": "Supporters"
+              },
+              {
+                "id": "authors",
+                "name": "Authors"
+              },
+              {
+                "id": "license",
+                "name": "OctoPrint License"
+              },
+              {
+                "id": "thirdparty",
+                "name": "Third Party Licenses"
+              },
+              {
+                "id": "plugin_pluginmanager",
+                "name": "Plugin Licenses",
+                "plugin_id": "pluginmanager",
+                "plugin_name": "Plugin Manager"
+              },
+              {
+                "id": "plugin_achievements",
+                "name": "Achievements",
+                "plugin_id": "achievements",
+                "plugin_name": "Achievements Plugin"
+              },
+              {
+                "id": "plugin_achievements_2",
+                "name": "Instance Stats",
+                "plugin_id": "achievements",
+                "plugin_name": "Achievements Plugin"
+              },
+              {
+                "id": "systeminfo",
+                "name": "System Information"
+              }
+            ],
+            "generic": [
+              {
+                "id": "plugin_appkeys",
+                "name": "plugin_appkeys",
+                "plugin_id": "appkeys",
+                "plugin_name": "Application Keys Plugin"
+              },
+              {
+                "id": "plugin_uploadmanager",
+                "name": "plugin_uploadmanager",
+                "plugin_id": "uploadmanager",
+                "plugin_name": "Upload Manager"
+              },
+              {
+                "id": "plugin_health_check",
+                "name": "plugin_health_check",
+                "plugin_id": "health_check",
+                "plugin_name": "Healthcheck Plugin"
+              },
+              {
+                "id": "plugin_gcodeviewer",
+                "name": "plugin_gcodeviewer",
+                "plugin_id": "gcodeviewer",
+                "plugin_name": "GCode Viewer"
+              },
+              {
+                "id": "plugin_errortracking",
+                "name": "plugin_errortracking",
+                "plugin_id": "errortracking",
+                "plugin_name": "Error Tracking"
+              },
+              {
+                "id": "plugin_achievements",
+                "name": "plugin_achievements",
+                "plugin_id": "achievements",
+                "plugin_name": "Achievements Plugin"
+              },
+              {
+                "id": "plugin_announcements",
+                "name": "plugin_announcements",
+                "plugin_id": "announcements",
+                "plugin_name": "Announcement Plugin"
+              }
+            ],
+            "navbar": [
+              {
+                "id": "plugin_action_command_prompt",
+                "name": "plugin_action_command_prompt",
+                "plugin_id": "action_command_prompt",
+                "plugin_name": "Action Command Prompt Support"
+              },
+              {
+                "id": "offlineindicator",
+                "name": "offlineindicator"
+              },
+              {
+                "id": "settings",
+                "name": "settings"
+              },
+              {
+                "id": "systemmenu",
+                "name": "systemmenu"
+              },
+              {
+                "id": "plugin_announcements",
+                "name": "plugin_announcements",
+                "plugin_id": "announcements",
+                "plugin_name": "Announcement Plugin"
+              },
+              {
+                "id": "plugin_logging_seriallog",
+                "name": "plugin_logging_seriallog",
+                "plugin_id": "logging",
+                "plugin_name": "Logging"
+              },
+              {
+                "id": "plugin_logging_plugintimingslog",
+                "name": "plugin_logging_plugintimingslog",
+                "plugin_id": "logging",
+                "plugin_name": "Logging"
+              },
+              {
+                "id": "plugin_health_check",
+                "name": "plugin_health_check",
+                "plugin_id": "health_check",
+                "plugin_name": "Healthcheck Plugin"
+              },
+              {
+                "id": "login",
+                "name": "login"
+              }
+            ],
+            "plugin_pluginmanager_about_thirdparty": [],
+            "settings": [
+              {
+                "id": "section_printer",
+                "name": "Printer"
+              },
+              {
+                "id": "serial",
+                "name": "Serial Connection"
+              },
+              {
+                "id": "printerprofiles",
+                "name": "Printer Profiles"
+              },
+              {
+                "id": "temperatures",
+                "name": "Temperatures"
+              },
+              {
+                "id": "terminalfilters",
+                "name": "Terminal Filters"
+              },
+              {
+                "id": "gcodescripts",
+                "name": "GCODE Scripts"
+              },
+              {
+                "id": "section_features",
+                "name": "Features"
+              },
+              {
+                "id": "features",
+                "name": "Features"
+              },
+              {
+                "id": "webcam",
+                "name": "Webcam & Timelapse"
+              },
+              {
+                "id": "accesscontrol",
+                "name": "Access Control"
+              },
+              {
+                "id": "plugin_gcodeviewer",
+                "name": "GCode Viewer",
+                "plugin_id": "gcodeviewer",
+                "plugin_name": "GCode Viewer"
+              },
+              {
+                "id": "api",
+                "name": "API"
+              },
+              {
+                "id": "plugin_appkeys",
+                "name": "Application Keys",
+                "plugin_id": "appkeys",
+                "plugin_name": "Application Keys Plugin"
+              },
+              {
+                "id": "section_octoprint",
+                "name": "OctoPrint"
+              },
+              {
+                "id": "server",
+                "name": "Server"
+              },
+              {
+                "id": "folders",
+                "name": "Folders"
+              },
+              {
+                "id": "appearance",
+                "name": "Appearance"
+              },
+              {
+                "id": "plugin_logging",
+                "name": "Logging",
+                "plugin_id": "logging",
+                "plugin_name": "Logging"
+              },
+              {
+                "id": "plugin_pluginmanager",
+                "name": "Plugin Manager",
+                "plugin_id": "pluginmanager",
+                "plugin_name": "Plugin Manager"
+              },
+              {
+                "id": "plugin_softwareupdate",
+                "name": "Software Update",
+                "plugin_id": "softwareupdate",
+                "plugin_name": "Software Update"
+              },
+              {
+                "id": "plugin_announcements",
+                "name": "Announcements",
+                "plugin_id": "announcements",
+                "plugin_name": "Announcement Plugin"
+              },
+              {
+                "id": "plugin_eventmanager",
+                "name": "Event Manager",
+                "plugin_id": "eventmanager",
+                "plugin_name": "Event Manager"
+              },
+              {
+                "id": "plugin_backup",
+                "name": "Backup & Restore",
+                "plugin_id": "backup",
+                "plugin_name": "Backup & Restore"
+              },
+              {
+                "id": "plugin_tracking",
+                "name": "Anonymous Usage Tracking",
+                "plugin_id": "tracking",
+                "plugin_name": "Anonymous Usage Tracking"
+              },
+              {
+                "id": "plugin_errortracking",
+                "name": "Error Tracking",
+                "plugin_id": "errortracking",
+                "plugin_name": "Error Tracking"
+              },
+              {
+                "id": "section_plugins",
+                "name": "Plugins"
+              },
+              {
+                "id": "plugin_achievements",
+                "name": "Achievements & Instance Stats",
+                "plugin_id": "achievements",
+                "plugin_name": "Achievements Plugin"
+              },
+              {
+                "id": "plugin_classicwebcam",
+                "name": "Classic Webcam",
+                "plugin_id": "classicwebcam",
+                "plugin_name": "Classic Webcam"
+              },
+              {
+                "id": "plugin_customcontrolmanager",
+                "name": "Custom Control Manager",
+                "plugin_id": "customcontrolmanager",
+                "plugin_name": "Custom Control Manager"
+              },
+              {
+                "id": "plugin_file_check",
+                "name": "File Check",
+                "plugin_id": "file_check",
+                "plugin_name": "File Check"
+              },
+              {
+                "id": "plugin_firmware_check",
+                "name": "Firmware Check",
+                "plugin_id": "firmware_check",
+                "plugin_name": "Firmware Check"
+              },
+              {
+                "id": "plugin_action_command_prompt",
+                "name": "Printer Dialogs",
+                "plugin_id": "action_command_prompt",
+                "plugin_name": "Action Command Prompt Support"
+              },
+              {
+                "id": "plugin_action_command_notification",
+                "name": "Printer Notifications",
+                "plugin_id": "action_command_notification",
+                "plugin_name": "Action Command Notification Support"
+              },
+              {
+                "id": "plugin_virtual_printer",
+                "name": "Virtual Printer",
+                "plugin_id": "virtual_printer",
+                "plugin_name": "Virtual Printer"
+              }
+            ],
+            "sidebar": [
+              {
+                "id": "plugin_firmware_check_warning",
+                "name": "Attention!",
+                "plugin_id": "firmware_check",
+                "plugin_name": "Firmware Check"
+              },
+              {
+                "id": "plugin_firmware_check_info",
+                "name": "Info",
+                "plugin_id": "firmware_check",
+                "plugin_name": "Firmware Check"
+              },
+              {
+                "id": "connection",
+                "name": "Connection"
+              },
+              {
+                "id": "state",
+                "name": "State"
+              },
+              {
+                "id": "files",
+                "name": "Files"
+              },
+              {
+                "id": "plugin_action_command_notification",
+                "name": "Printer Notifications",
+                "plugin_id": "action_command_notification",
+                "plugin_name": "Action Command Notification Support"
+              }
+            ],
+            "tab": [
+              {
+                "id": "temperature",
+                "name": "Temperature"
+              },
+              {
+                "id": "control",
+                "name": "Control"
+              },
+              {
+                "id": "plugin_gcodeviewer",
+                "name": "GCode Viewer",
+                "plugin_id": "gcodeviewer",
+                "plugin_name": "GCode Viewer"
+              },
+              {
+                "id": "terminal",
+                "name": "Terminal"
+              },
+              {
+                "id": "timelapse",
+                "name": "Timelapse"
+              }
+            ],
+            "usersettings": [
+              {
+                "id": "access",
+                "name": "Access"
+              },
+              {
+                "id": "interface",
+                "name": "Interface"
+              },
+              {
+                "id": "plugin_appkeys",
+                "name": "Application Keys",
+                "plugin_id": "appkeys",
+                "plugin_name": "Application Keys Plugin"
+              }
+            ],
+            "usersettings_mfa": [],
+            "webcam": [
+              {
+                "id": "plugin_classicwebcam_real",
+                "name": "Classic Webcam",
+                "plugin_id": "classicwebcam",
+                "plugin_name": "Classic Webcam"
+              }
+            ],
+            "wizard": []
+          }
+        }
+  recorded_at: Sun, 08 Feb 2026 22:18:01 GMT
+recorded_with: VCR 6.3.1
