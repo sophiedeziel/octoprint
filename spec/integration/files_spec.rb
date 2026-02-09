@@ -87,11 +87,6 @@ RSpec.describe Octoprint::Files, type: :integration do
 
       let(:file_name) { "test_f-1.gco" }
 
-      before do
-        # Uncomment when recording the cassette. Uploading to SD requires a short time before the file is available
-        # sleep 1
-      end
-
       it { is_expected.to be_a Octoprint::Files::File }
       its(:name) { is_expected.to eq file_name }
       its(:origin) { is_expected.to eq location }
@@ -199,10 +194,6 @@ RSpec.describe Octoprint::Files, type: :integration do
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
       let(:params) { { location: location, options: { print: true } } }
 
-      after do
-        # Teardown should stop the print
-      end
-
       its(:effective_print) { is_expected.to be true }
       its(:effective_select) { is_expected.to be false }
     end
@@ -282,12 +273,12 @@ RSpec.describe Octoprint::Files, type: :integration do
       # The select and print will fail the deletion
     end
 
-    it { expect(select_file).to eq true }
+    it { expect(select_file).to be true }
 
     context "with print option", vcr: { cassette_name: "files/select_and_print" } do
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
 
-      it { expect(select_file).to eq true }
+      it { expect(select_file).to be true }
     end
   end
 
@@ -308,14 +299,14 @@ RSpec.describe Octoprint::Files, type: :integration do
       # The select and print will fail the deletion
     end
 
-    it { expect(unselect_file).to eq true }
+    it { expect(unselect_file).to be true }
 
     context "when it was already unselected" do
       before do
         unselect_file
       end
 
-      it { expect(unselect_file).to eq true }
+      it { expect(unselect_file).to be true }
     end
   end
 
