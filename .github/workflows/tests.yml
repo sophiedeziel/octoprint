@@ -11,34 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
 ##
+# latest info: https://endoflife.date/ruby
+#
+# Ruby 4.0
+# status: normal maintenance
+# release date: 2025-12-25
+# EOL: 2029-03-31 (expected)
+
+# Ruby 3.4
+# status: normal maintenance
+# release date: 2024-12-25
+# EOL: 2028-03-31 (expected)
+
 # Ruby 3.3
-# status: preview
-# release date:
-# normal maintenance until: TBD
-# EOL: TBD
+# status: normal maintenance
+# release date: 2023-12-25
+# EOL: 2027-03-31 (expected)
 
 # Ruby 3.2
-# status: normal maintenance
-# release date: 2022-12-25
-# normal maintenance until: TBD
-# EOL: 2026-03-31 (expected)
-
-# Ruby 3.1
-# status: normal maintenance
-# release date: 2021-12-25
-# normal maintenance until: TBD
-# EOL: 2025-03-31 (expected)
-
-# Ruby 3.0
 # status: security maintenance
-# release date: 2020-12-25
-# normal maintenance until: 2023-04-01
-# EOL: 2024-03-31 (expected)
-
+# release date: 2022-12-25
+# EOL: 2026-03-31
 
     strategy:
       matrix:
         ruby:
+          - 4.0
           - 3.4
           - 3.3
           - 3.2
