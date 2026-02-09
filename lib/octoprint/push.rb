@@ -10,8 +10,10 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/master/api/push.html OctoPrint Push Updates API Documentation
   #
-  # @example Subscribe to push notifications
+  # @example Subscribe and listen for messages (non-blocking)
   #   push = Octoprint::Push.subscribe
+  #   push.listen
+  #   sleep 2
   #   messages = push.receive
   #   push.unsubscribe
   #
@@ -34,6 +36,9 @@ module Octoprint
       super()
       @session_id = session_id
       @server_id = server_id
+      @queue = T.let(Thread::Queue.new, Thread::Queue)
+      @thread = T.let(nil, T.nilable(Thread))
+      @polling = T.let(false, T::Boolean)
     end
 
     # Subscribes to push notifications from the OctoPrint server.
@@ -41,9 +46,13 @@ module Octoprint
     # Opens a SockJS session, authenticates with the configured API key,
     # and sends a subscribe command with the specified filters.
     # Returns a Push instance that can be used to receive messages.
+    # Call {#listen} to start background polling, then {#receive} to
+    # drain queued messages non-blockingly.
     #
-    # @example Subscribe to all updates
+    # @example Subscribe and listen for messages
     #   push = Octoprint::Push.subscribe
+    #   push.listen
+    #   sleep 2
     #   messages = push.receive
     #   push.unsubscribe
     #
@@ -68,22 +77,24 @@ module Octoprint
       push = new(session_id: session_id)
       push.open_session
       push.authenticate
-      push.receive # Consume initial connected message
+      push.poll_once # Consume initial connected message
       push.send_subscribe(state: state, events: events, plugins: plugins)
       push
     end
 
     # Unsubscribes from push notifications.
     #
-    # Sends an empty subscribe command to stop receiving all message types.
+    # Stops background polling if active, then sends an unsubscribe command.
     #
     # @example Unsubscribe from push notifications
     #   push = Octoprint::Push.subscribe
+    #   push.listen
     #   push.unsubscribe
     #
     # @return [Boolean] true on success
     sig { returns(T::Boolean) }
     def unsubscribe # rubocop:disable Naming/PredicateMethod
+      stop_polling
       send_command(subscribe: { state: false, events: false, plugins: false })
       true
     end
@@ -106,25 +117,87 @@ module Octoprint
       push = new(session_id: session_id)
       push.open_session
       push.authenticate
-      messages = push.receive
+      messages = push.poll_once
       connected = messages.find { |m| m.key?(:connected) }
       connected&.fetch(:connected) || {}
     end
 
-    # Receives the next batch of messages from the push notification stream.
+    # Returns all queued messages without blocking.
     #
-    # This method blocks until messages are available from the server.
+    # Call {#listen} first to start background polling. Messages are
+    # accumulated in a thread-safe queue and drained by this method.
     #
-    # @example Receive messages
+    # @example Receive queued messages
     #   push = Octoprint::Push.subscribe
+    #   push.listen
+    #   sleep 2
     #   messages = push.receive
     #   messages.each { |msg| puts msg.keys }
     #
-    # @return [Array<Hash>] Array of parsed message hashes
+    # @return [Array<Hash>] Array of parsed message hashes (empty if none queued)
     sig { returns(T::Array[T::Hash[Symbol, T.untyped]]) }
     def receive
+      messages = T.let([], T::Array[T::Hash[Symbol, T.untyped]])
+      begin
+        messages << @queue.pop(true) while true # rubocop:disable Style/InfiniteLoop
+      rescue ThreadError
+        # Queue is empty
+      end
+      messages
+    end
+
+    # Performs a single blocking poll for messages from the server.
+    #
+    # Blocks until the server sends data or the long-poll times out.
+    # For non-blocking message reception, use {#listen} + {#receive} instead.
+    #
+    # @example Poll once for messages
+    #   push = Octoprint::Push.subscribe
+    #   messages = push.poll_once
+    #
+    # @return [Array<Hash>] Array of parsed message hashes
+    sig { returns(T::Array[T::Hash[Symbol, T.untyped]]) }
+    def poll_once
       response = faraday_client.post(session_path("xhr"))
       parse_sockjs_frame(response.body)
+    end
+
+    # Starts background polling for messages.
+    #
+    # Spawns a thread that continuously long-polls the SockJS endpoint
+    # and pushes received messages into a thread-safe queue.
+    # Use {#receive} to drain the queue.
+    #
+    # @example Start listening
+    #   push = Octoprint::Push.subscribe
+    #   push.listen
+    #   sleep 2
+    #   messages = push.receive
+    #
+    # @return [void]
+    sig { void }
+    def listen
+      @polling = true
+      @thread = Thread.new do
+        while @polling
+          messages = poll_once
+          messages.each { |m| @queue.push(m) }
+        end
+      rescue StandardError
+        @polling = false
+      end
+    end
+
+    # Returns whether the background polling thread is active.
+    #
+    # @example Check if listening
+    #   push.listen
+    #   push.listening? # => true
+    #
+    # @return [Boolean] true if polling thread is alive
+    sig { returns(T::Boolean) }
+    def listening?
+      @thread&.alive? == true
     end
 
     # Opens the SockJS session.
@@ -172,6 +245,14 @@ module Octoprint
     end
 
     private
+
+    sig { void }
+    def stop_polling
+      @polling = false
+      @thread&.kill
+      @thread&.join(1)
+      @thread = nil
+    end
 
     sig { returns(Faraday::Connection) }
     def faraday_client

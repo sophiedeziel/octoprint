@@ -114,6 +114,16 @@ RSpec.describe Octoprint::Push do
       it "returns true" do
         expect(push.unsubscribe).to be true
       end
+
+      it "stops the polling thread if running" do
+        push.instance_variable_set(:@polling, true)
+        thread = instance_double(Thread, alive?: true, kill: nil, join: nil)
+        push.instance_variable_set(:@thread, thread)
+
+        push.unsubscribe
+
+        expect(thread).to have_received(:kill)
+      end
     end
 
     describe ".test" do
@@ -173,13 +183,41 @@ RSpec.describe Octoprint::Push do
     describe "#receive" do
       subject(:push) { described_class.new(session_id: "test_session") }
 
+      it "returns empty array when queue is empty" do
+        expect(push.receive).to eq([])
+      end
+
+      it "drains all messages from the queue" do
+        queue = push.instance_variable_get(:@queue)
+        queue.push({ current: { state: "Printing" } })
+        queue.push({ event: { type: "PrintDone" } })
+
+        messages = push.receive
+        expect(messages).to eq([
+                                 { current: { state: "Printing" } },
+                                 { event: { type: "PrintDone" } }
+                               ])
+      end
+
+      it "leaves the queue empty after draining" do
+        queue = push.instance_variable_get(:@queue)
+        queue.push({ current: { state: "Printing" } })
+
+        push.receive
+        expect(push.receive).to eq([])
+      end
+    end
+
+    describe "#poll_once" do
+      subject(:push) { described_class.new(session_id: "test_session") }
+
       it "parses SockJS array messages" do
         message = 'a["{\"current\":{\"state\":\"Operational\"}}"]'
         allow(faraday).to receive(:post).and_return(
           instance_double(Faraday::Response, body: message)
         )
 
-        result = push.receive
+        result = push.poll_once
         expect(result).to eq([{ current: { state: "Operational" } }])
       end
 
@@ -188,7 +226,7 @@ RSpec.describe Octoprint::Push do
           instance_double(Faraday::Response, body: "h")
         )
 
-        expect(push.receive).to eq([])
+        expect(push.poll_once).to eq([])
       end
 
       it "returns empty array for empty body" do
@@ -196,7 +234,7 @@ RSpec.describe Octoprint::Push do
           instance_double(Faraday::Response, body: "")
         )
 
-        expect(push.receive).to eq([])
+        expect(push.poll_once).to eq([])
       end
 
       it "transforms camelCase keys to snake_case symbols" do
@@ -205,8 +243,63 @@ RSpec.describe Octoprint::Push do
           instance_double(Faraday::Response, body: message)
         )
 
-        result = push.receive
+        result = push.poll_once
         expect(result.first[:connected]).to include(:display_version, :plugin_hash)
+      end
+    end
+
+    describe "#listen" do
+      subject(:push) { described_class.new(session_id: "test_session") }
+
+      after { push.send(:stop_polling) }
+
+      it "starts a background polling thread" do
+        message = 'a["{\"current\":{\"state\":\"Operational\"}}"]'
+        allow(faraday).to receive(:post).and_return(
+          instance_double(Faraday::Response, body: message)
+        )
+
+        push.listen
+        sleep 0.1
+
+        expect(push.listening?).to be true
+      end
+
+      it "pushes messages into the queue" do
+        call_count = 0
+        allow(faraday).to receive(:post) do
+          call_count += 1
+          if call_count <= 2
+            instance_double(Faraday::Response, body: 'a["{\"current\":{\"state\":\"Operational\"}}"]')
+          else
+            push.send(:stop_polling)
+            instance_double(Faraday::Response, body: "h")
+          end
+        end
+
+        push.listen
+        sleep 0.2
+
+        messages = push.receive
+        expect(messages).not_to be_empty
+        expect(messages.first).to eq({ current: { state: "Operational" } })
+      end
+
+      it "stops on errors" do
+        allow(faraday).to receive(:post).and_raise(StandardError, "connection lost")
+
+        push.listen
+        sleep 0.1
+
+        expect(push.listening?).to be false
+      end
+    end
+
+    describe "#listening?" do
+      subject(:push) { described_class.new(session_id: "test_session") }
+
+      it "returns false when no thread is running" do
+        expect(push.listening?).to be false
       end
     end
 
