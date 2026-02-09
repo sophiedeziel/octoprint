@@ -1,0 +1,106 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/setup/wizard"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '954'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=7
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HVEWWR4GZEacsgmSVtIdPeiVev3LkwHzSSZXUg2EQlMq3UzKKX0WKu268ehAn8ll9qd2dtcIsHIGcJPeIZB2qNnQoWwLyx2o8k74bS95CKvVHA_gSImyA.aYmNRg.9-aCkJ3yXmUap3NajtH0CaFOMsY;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "backup": {
+            "details": {
+              "required": false
+            },
+            "ignored": true,
+            "required": false,
+            "version": null
+          },
+          "classicwebcam": {
+            "details": {},
+            "ignored": true,
+            "required": false,
+            "version": 1
+          },
+          "corewizard": {
+            "details": {
+              "acl": {
+                "required": false
+              },
+              "onlinecheck": {
+                "required": false
+              },
+              "pluginblacklist": {
+                "required": false
+              },
+              "printerprofile": {
+                "required": false
+              },
+              "servercommands": {
+                "required": true
+              }
+            },
+            "ignored": true,
+            "required": false,
+            "version": 4
+          },
+          "file_check": {
+            "details": {},
+            "ignored": false,
+            "required": false,
+            "version": 1
+          },
+          "softwareupdate": {
+            "details": {},
+            "ignored": false,
+            "required": false,
+            "version": 1
+          },
+          "tracking": {
+            "details": {},
+            "ignored": true,
+            "required": false,
+            "version": null
+          }
+        }
+  recorded_at: Mon, 09 Feb 2026 07:31:18 GMT
+recorded_with: VCR 6.3.1
