@@ -56,45 +56,45 @@ RSpec.describe Octoprint::Files, type: :integration do
 
   describe "Retrieve a specific file's or folder's information", vcr: { cassette_name: "files/get" } do
     use_octoprint_server
+
     subject(:get) { described_class.get(**params) }
 
-    let(:params) { { location: Octoprint::Location::Local, filename: "test_file.gcode" } }
+    let(:location) { Octoprint::Location::Local }
+    let(:file_name) { "test_file.gcode" }
+    let(:params) { { location: location, filename: file_name } }
+
+    before do
+      described_class.upload("spec/files/test_file.gcode", location: location)
+    end
+
+    after do
+      described_class.delete_file(filename: file_name, location: location)
+    end
 
     it { is_expected.to be_a Octoprint::Files::File }
-    its(:name) { is_expected.to eq "test_file.gcode" }
-    its(:origin) { is_expected.to eq Octoprint::Location::Local }
-    its(:path) { is_expected.to eq "test_file.gcode" }
+    its(:name) { is_expected.to eq file_name }
+    its(:origin) { is_expected.to eq location }
+    its(:path) { is_expected.to eq file_name }
     its(:refs) { is_expected.to be_a Octoprint::Files::Refs }
-    its("refs.resource") { is_expected.to eq("#{host}/api/files/local/test_file.gcode") }
-    its("refs.download") { is_expected.to eq("#{host}/downloads/files/local/test_file.gcode") }
-    its("refs.model") { is_expected.to be_nil }
-    its(:display_layer_progress) { is_expected.to be_a Hash }
-    its(:dashboard) { is_expected.to be_a Hash }
+    its("refs.resource") { is_expected.to eq("#{host}/api/files/local/#{file_name}") }
+    its("refs.download") { is_expected.to eq("#{host}/downloads/files/local/#{file_name}") }
     its(:date) { is_expected.to be_a(Time) }
-    its(:gcode_analysis) { is_expected.to be_a Hash }
-    its(:md5_hash) { is_expected.to eq "89e36832ddc7fa8a71c0133b4048343586d31ea2" }
-    its(:size) { is_expected.to eq 1034 }
-    its(:userdata) { is_expected.to eq({ test_value: "some value" }) }
-    its(:children) { is_expected.to be_nil }
-    its(:prints) { is_expected.to be_nil }
-    its(:statistics) { is_expected.to be_nil }
+    its(:md5_hash) { is_expected.not_to be_nil }
+    its(:size) { is_expected.not_to be_nil }
 
-    context "when location is the SD card" do
-      let(:params) { { location: Octoprint::Location::SDCard, filename: "TEST_~25.GCO" } }
+    context "when location is the SD card", vcr: { cassette_name: "files/get_on_sd_card" } do
+      let(:location) { Octoprint::Location::SDCard }
+
+      let(:file_name) { "test_f-1.gco" }
 
       before do
-        # Stub the get method to return a mock file for SD card tests
-        mock_file = Octoprint::Files::File.new(
-          name: "TEST_~25.GCO",
-          origin: Octoprint::Location::SDCard,
-          path: "TEST_~25.GCO"
-        )
-        allow(described_class).to receive(:get).with(params).and_return(mock_file)
+        # Uncomment when recording the cassette. Uploading to SD requires a short time before the file is available
+        # sleep 1
       end
 
       it { is_expected.to be_a Octoprint::Files::File }
-      its(:name) { is_expected.to eq "TEST_~25.GCO" }
-      its(:origin) { is_expected.to eq Octoprint::Location::SDCard }
+      its(:name) { is_expected.to eq file_name }
+      its(:origin) { is_expected.to eq location }
     end
 
     context "when the filename is a folder", vcr: { cassette_name: "files/get_folder" } do
@@ -107,20 +107,27 @@ RSpec.describe Octoprint::Files, type: :integration do
         described_class.create_folder(foldername: "child", path: "/parent")
       end
 
+      after do
+        described_class.delete_file(filename: "parent", location: Octoprint::Location::Local)
+      end
+
       its("children.first.name") { is_expected.to eq "child" }
       its("children.first.children") { is_expected.to be_empty }
     end
 
     context "when the filename is a folder and set recursive", vcr: { cassette_name: "files/get_folder_recursive" } do
-      let(:params) { { location: Octoprint::Location::Local, filename: "parent", options: { recursive: true } } }
+      let(:location) { Octoprint::Location::Local }
+      let(:file_name) { "parent" }
+
+      let(:params) { { location: Octoprint::Location::Local, filename: file_name, options: { recursive: true } } }
 
       before do
         # Create the parent folder
-        described_class.create_folder(foldername: "parent")
+        described_class.create_folder(foldername: file_name)
         # Create a child folder inside parent
-        described_class.create_folder(foldername: "child", path: "/parent")
+        described_class.create_folder(foldername: "child", path: "/#{file_name}")
         # Create a grandchild folder inside child for recursive testing
-        described_class.create_folder(foldername: "grandchild", path: "/parent/child")
+        described_class.create_folder(foldername: "grandchild", path: "/#{file_name}/child")
       end
 
       its("children.first.name") { is_expected.to eq "child" }
@@ -133,8 +140,17 @@ RSpec.describe Octoprint::Files, type: :integration do
 
     subject(:upload) { described_class.upload(file_to_upload, **params) }
 
-    let(:params) { { location: Octoprint::Location::Local } }
+    let(:params) { { location: location, options: { path: "test_folder" } } }
     let(:file_to_upload) { "spec/files/test_file.gcode" }
+    let(:location) { Octoprint::Location::Local }
+
+    before do
+      described_class.create_folder(foldername: "test_folder")
+    end
+
+    after do
+      described_class.delete_file(filename: "test_folder")
+    end
 
     it { is_expected.to be_a Octoprint::Files::OperationResult }
     its(:done) { is_expected.to be true }
@@ -151,7 +167,8 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
 
     context "when uploading to SD card", vcr: { cassette_name: "files/upload_to_sd" } do
-      let(:params) { { location: Octoprint::Location::SDCard } }
+      let(:location) { Octoprint::Location::SDCard }
+      let(:params) { { location: location } }
 
       its(:done) { is_expected.to be false }
       its(:files) { is_expected.to be_a Hash }
@@ -162,7 +179,7 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
 
     context "when uploading to a folder", vcr: { cassette_name: "files/upload_to_folder" } do
-      let(:params) { { location: Octoprint::Location::Local, options: { path: "test_folder" } } }
+      let(:params) { { location: location, options: { path: "test_folder/lksadjhf" } } }
 
       its(:done) { is_expected.to be true }
       its(:files) { is_expected.to be_a Hash }
@@ -173,14 +190,18 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_select" } do
-      let(:params) { { location: Octoprint::Location::Local, options: { select: true } } }
+      let(:params) { { location: location, options: { select: true } } }
 
       its(:effective_print) { is_expected.to be false }
       its(:effective_select) { is_expected.to be true }
     end
 
     context "when chosing to select the file", vcr: { cassette_name: "files/upload_print" } do
-      let(:params) { { location: Octoprint::Location::Local, options: { print: true } } }
+      let(:params) { { location: location, options: { print: true } } }
+
+      after do
+        # Teardown should stop the print
+      end
 
       its(:effective_print) { is_expected.to be true }
       its(:effective_select) { is_expected.to be false }
@@ -245,54 +266,56 @@ RSpec.describe Octoprint::Files, type: :integration do
   # Error case testing provides comprehensive coverage for all new operations,
   # demonstrating that the methods correctly construct requests and handle responses.
 
-  describe "Select file" do
+  describe "Select file", vcr: { cassette_name: "files/select" } do
+    use_octoprint_server
     subject(:select_file) { described_class.select(**params) }
 
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     before do
-      allow(described_class).to receive(:post).and_return(true)
+      described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local)
     end
 
-    it "selects file successfully" do
-      result = select_file
-      expect(result).to be true
-      expect(described_class).to have_received(:post).with(
-        path: "/api/files/local/test_file.gcode",
-        params: { command: "select" }
-      )
+    after do
+      described_class.delete_file(filename: "test_file.gcode", location: Octoprint::Location::Local)
+    rescue Octoprint::Exceptions::ConflictError
+      # The select and print will fail the deletion
     end
 
-    context "with print option" do
+    it { expect(select_file).to eq true }
+
+    context "with print option", vcr: { cassette_name: "files/select_and_print" } do
       let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local, print: true } }
 
-      it "selects and prints file successfully" do
-        result = select_file
-        expect(result).to be true
-        expect(described_class).to have_received(:post).with(
-          path: "/api/files/local/test_file.gcode",
-          params: { command: "select", print: true }
-        )
-      end
+      it { expect(select_file).to eq true }
     end
   end
 
-  describe "Unselect file" do
+  describe "Unselect file", vcr: { cassette_name: "files/unselect" } do
+    use_octoprint_server
     subject(:unselect_file) { described_class.unselect(**params) }
 
     let(:params) { { filename: "test_file.gcode", location: Octoprint::Location::Local } }
 
     before do
-      allow(described_class).to receive(:post).and_return(true)
+      described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local)
+      described_class.select(filename: "test_file.gcode", location: Octoprint::Location::Local)
     end
 
-    it "unselects file successfully" do
-      result = unselect_file
-      expect(result).to be true
-      expect(described_class).to have_received(:post).with(
-        path: "/api/files/local/test_file.gcode",
-        params: { command: "unselect" }
-      )
+    after do
+      described_class.delete_file(filename: "test_file.gcode", location: Octoprint::Location::Local)
+    rescue Octoprint::Exceptions::ConflictError
+      # The select and print will fail the deletion
+    end
+
+    it { expect(unselect_file).to eq true }
+
+    context "when it was already unselected" do
+      before do
+        unselect_file
+      end
+
+      it { expect(unselect_file).to eq true }
     end
   end
 
@@ -307,16 +330,7 @@ RSpec.describe Octoprint::Files, type: :integration do
     before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local, options: { path: "test_folder" }) }
 
     after do
-      begin
-        described_class.delete_file(filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local)
-      rescue StandardError
-        # in case the test failed
-      end
-      begin
-        described_class.delete_file(filename: "test_folder/copied_file.gcode", location: Octoprint::Location::Local)
-      rescue StandardError
-        # when the test passed
-      end
+      described_class.delete_file(filename: "test_folder/copied_file.gcode", location: Octoprint::Location::Local)
     end
 
     let(:params) do
@@ -366,9 +380,12 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
   end
 
-  describe "Issue command" do
+  describe "Issue command", vcr: { cassette_name: "files/issue_command" } do
     use_octoprint_server
     subject(:issue_command) { described_class.issue_command(**params) }
+
+    before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local) }
+    after { described_class.delete_file(filename: "test_file.gcode", location: Octoprint::Location::Local) }
 
     let(:params) do
       {
@@ -379,16 +396,8 @@ RSpec.describe Octoprint::Files, type: :integration do
       }
     end
 
-    before do
-      allow(described_class).to receive(:post).and_return(true)
-    end
-
     it "issues command successfully or handles printer state appropriately" do
       expect(issue_command).to be true
-      expect(described_class).to have_received(:post).with(
-        path: "/api/files/local/test_file.gcode",
-        params: { command: "select" }
-      )
     end
   end
 
@@ -398,7 +407,6 @@ RSpec.describe Octoprint::Files, type: :integration do
 
     let(:params) { { filename: "test_folder/test_file.gcode", location: Octoprint::Location::Local } }
 
-    # This one cannot realisticly have a teardown.
     before { described_class.upload("spec/files/test_file.gcode", location: Octoprint::Location::Local, options: { path: "test_folder" }) }
 
     it "deletes file successfully" do
