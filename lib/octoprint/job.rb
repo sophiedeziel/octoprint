@@ -57,5 +57,85 @@ module Octoprint
     def self.get
       fetch_resource
     end
+
+    # Issues a job command.
+    #
+    # @param command [String] The command to issue (start, cancel, restart, pause)
+    # @param options [Hash] Additional command parameters
+    # @option options [String] :action The action for the pause command (pause, resume, toggle)
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or job state doesn't match
+    #
+    # @example Start a print job
+    #   Octoprint::Job.issue_command(command: "start")
+    #
+    # @example Pause with a specific action
+    #   Octoprint::Job.issue_command(command: "pause", options: { action: "pause" })
+    sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+    def self.issue_command(command:, options: {})
+      params = { command: command }.merge(options)
+      post(params: params)
+    end
+
+    # Start printing the currently selected file.
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or no file is selected
+    #
+    # @example
+    #   Octoprint::Job.start
+    sig { returns(T.untyped) }
+    def self.start
+      issue_command(command: "start")
+    end
+
+    # Cancel the current print job.
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or not printing
+    #
+    # @example
+    #   Octoprint::Job.cancel
+    sig { returns(T.untyped) }
+    def self.cancel
+      issue_command(command: "cancel")
+    end
+
+    # Restart the current print job from the beginning. Requires the job to be paused.
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or job is not paused
+    #
+    # @example
+    #   Octoprint::Job.restart
+    sig { returns(T.untyped) }
+    def self.restart
+      issue_command(command: "restart")
+    end
+
+    # Pause the current print job.
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or not printing
+    #
+    # @example
+    #   Octoprint::Job.pause
+    sig { returns(T.untyped) }
+    def self.pause
+      issue_command(command: "pause", options: { action: "pause" })
+    end
+
+    # Resume the current print job.
+    #
+    # @return [T::Boolean] true on success (204 No Content)
+    # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or not paused
+    #
+    # @example
+    #   Octoprint::Job.resume
+    sig { returns(T.untyped) }
+    def self.resume
+      issue_command(command: "pause", options: { action: "resume" })
+    end
   end
 end

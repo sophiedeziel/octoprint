@@ -80,4 +80,52 @@ RSpec.describe Octoprint::Job, type: :integration do
       its(:print_time_left_origin) { is_expected.to eq "average" }
     end
   end
+
+  describe ".start", vcr: { cassette_name: "job/start" } do
+    use_octoprint_server
+
+    subject(:start_job) { described_class.start }
+
+    it { expect(start_job).to be true }
+  end
+
+  describe ".cancel", vcr: { cassette_name: "job/cancel" } do
+    use_octoprint_server
+
+    subject(:cancel_job) { described_class.cancel }
+
+    it { expect(cancel_job).to be true }
+  end
+
+  describe ".restart", vcr: { cassette_name: "job/restart" } do
+    use_octoprint_server
+
+    subject(:restart_job) { described_class.restart }
+
+    it { expect(restart_job).to be true }
+  end
+
+  describe ".pause", vcr: { cassette_name: "job/pause_with_action_pause" } do
+    use_octoprint_server
+
+    subject(:pause_job) { described_class.pause }
+
+    it { expect(pause_job).to be true }
+  end
+
+  describe ".resume", vcr: { cassette_name: "job/pause_with_action_resume" } do
+    use_octoprint_server
+
+    subject(:resume_job) { described_class.resume }
+
+    it { expect(resume_job).to be true }
+  end
+
+  describe ".issue_command", vcr: { cassette_name: "job/issue_command" } do
+    use_octoprint_server
+
+    subject(:issue_command) { described_class.issue_command(command: "pause") }
+
+    it { expect(issue_command).to be true }
+  end
 end
