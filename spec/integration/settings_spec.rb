@@ -12,11 +12,16 @@ RSpec.describe Octoprint::Settings, type: :integration do
     it { is_expected.to be_a Hash }
 
     it "returns settings structure" do
+      expect(settings).to include(:api)
       expect(settings).to include(:appearance)
+      expect(settings).to include(:controls)
+      expect(settings).to include(:devel)
       expect(settings).to include(:feature)
       expect(settings).to include(:folder)
       expect(settings).to include(:plugins)
-      # expect(settings).to include(:printer_profiles)
+      expect(settings).to include(:scripts)
+      expect(settings).to include(:serial)
+      expect(settings).to include(:server)
       expect(settings).to include(:system)
       expect(settings).to include(:temperature)
       expect(settings).to include(:webcam)
@@ -39,9 +44,15 @@ RSpec.describe Octoprint::Settings, type: :integration do
       described_class.save(
         appearance: {
           color: "blue",
-          name: "Test OctoPrint"
+          name: "New Name"
         }
       )
+    end
+
+    let!(:previous_settings) { described_class.get }
+
+    after do
+      described_class.save(previous_settings)
     end
 
     it { is_expected.to be_a Hash }
@@ -49,13 +60,13 @@ RSpec.describe Octoprint::Settings, type: :integration do
     it "returns updated settings" do
       expect(updated_settings).to include(:appearance)
       expect(updated_settings[:appearance][:color]).to eq("blue")
-      expect(updated_settings[:appearance][:name]).to eq("Test OctoPrint")
+      expect(updated_settings[:appearance][:name]).to eq("New Name")
     end
 
     it "preserves other settings" do
-      expect(updated_settings).to include(:feature)
-      expect(updated_settings).to include(:folder)
-      expect(updated_settings).to include(:system)
+      expect(updated_settings[:feature]).to eq(previous_settings[:feature])
+      expect(updated_settings[:folder]).to eq(previous_settings[:folder])
+      expect(updated_settings[:system]).to eq(previous_settings[:system])
     end
   end
 
@@ -72,7 +83,7 @@ RSpec.describe Octoprint::Settings, type: :integration do
 
     it "updates only specified fields" do
       expect(partial_update[:appearance][:color]).to eq("green")
-      expect(partial_update[:appearance][:name]).not_to be_nil
+      expect(partial_update[:appearance][:name]).to be_present
     end
   end
 
@@ -89,10 +100,9 @@ RSpec.describe Octoprint::Settings, type: :integration do
       expect(api_key_result[:apikey]).not_to be_empty
     end
 
-    it "returns a different key than the current one" do
-      # This test assumes the API key will be different each time
-      # In a real scenario, you'd need to compare with the current key
-      expect(api_key_result[:apikey].length).to be > 10
+    it "returns a different key than the current one", vcr: { cassette_name: "settings/regenerate_api_key_twice" } do
+      previous_key = described_class.regenerate_api_key[:apikey]
+      expect(api_key_result[:apikey]).not_to eq previous_key
     end
   end
 
@@ -105,8 +115,10 @@ RSpec.describe Octoprint::Settings, type: :integration do
 
     it "returns template component identifiers" do
       # The exact structure depends on the OctoPrint installation
-      # but it should return a hash with component identifiers
-      expect(templates).not_to be_empty
+      # but it should return a hash with component identifiers. This is tested using a vanilla octoprint instance
+      expect(templates).to include(:order)
+      expect(templates[:order]).to include(:about)
+      expect(templates[:order]).to include(:generic)
     end
   end
 end

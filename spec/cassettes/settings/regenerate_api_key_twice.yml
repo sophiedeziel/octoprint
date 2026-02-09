@@ -1,0 +1,111 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/settings/apikey"
+    body:
+      encoding: UTF-8
+      string: "{}"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '62'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=8
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNyk0KgCAQBtC7fOuIsj_wMiI55JBNkraQ6O5Fq9bvXZgPciSZbUgmEQl0O03N2AydUvWgetV3FfgrudT2zN7kEglazhB-wg4aaY-eCRXCvrCYjWZvhdP2ko28UsH9AHz5Jrs.aYlLCg.FGUY0-OLzOYBZPHgUGCsrUx_HY8;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "apikey": "6qxJAoGw0av1KawbFLgub-okVJzd7qRl6TEuoyGS5p0"
+        }
+  recorded_at: Mon, 09 Feb 2026 02:48:42 GMT
+- request:
+    method: post
+    uri: "<HOST>/api/settings/apikey"
+    body:
+      encoding: UTF-8
+      string: "{}"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '62'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=2
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNysEKhCAUBdB_uesIS5zCnxHJRz7GXpK2kOjfZ2jV-pwLy0GBpLJPxRUigR2mSX2U0ePYG21mpTvwU2rr_Vmjqy0TrJwpvYQDLMqeIxM6pH1lcRst0QuX7U8-85ca7h9-QCa_.aYlLCg.v9M3sHI7E9_WW3j4B2kg-UK-lY0;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "apikey": "0tSN8qpGf6UB2-pEvj6bWgMdsG3ibIqHj1UBgFmKfZc"
+        }
+  recorded_at: Mon, 09 Feb 2026 02:48:42 GMT
+recorded_with: VCR 6.3.1
