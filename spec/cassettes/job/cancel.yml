@@ -1,0 +1,54 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/api/job"
+    body:
+      encoding: UTF-8
+      string: '{"command":"cancel"}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: NO CONTENT
+    headers:
+      Content-Type:
+      - text/plain
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=11
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HWEusjwMiI15JBNkraQ6O5Fq9bvXZgOmkkqh1R8IRI4ba0ajDKj6bVS2o4d-Cu19eGs0deWCU7OlH7CMxzKniMTOqR9YfEbTTEIl-2lkHmlhvsBfI8mug.aYmFeg.Qf4G6zwWA9GRxGmCR4pceK0Xsg8;
+        HttpOnly; Path=/; SameSite=Lax
+      Content-Length:
+      - '0'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 09 Feb 2026 06:58:02 GMT
+recorded_with: VCR 6.3.1
