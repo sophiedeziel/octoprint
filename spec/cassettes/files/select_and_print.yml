@@ -5,8 +5,7 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-24d3887c05dcfaa56dd849af35449b62\r\nContent-Disposition:
-        form-data; name=\"path\"\r\n\r\ntest_folder\r\n-------------RubyMultipartPost-24d3887c05dcfaa56dd849af35449b62\r\nContent-Disposition:
+      string: "-------------RubyMultipartPost-6106db152cd0c6a2a75e9013894b6cfc\r\nContent-Disposition:
         form-data; name=\"file\"; filename=\"test_file.gcode\"\r\nContent-Length:
         981\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding:
         binary\r\n\r\n;FLAVOR:Marlin\n;TIME:1021\n;Filament used: 0.273093m\n;Layer
@@ -21,16 +20,16 @@ http_interactions:
         Y200.0 Z0.28 F1500.0 E15 ;Draw the first line\nG1 X10.4 Y200.0 Z0.28 F5000.0
         ;Move to side a little\nG1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line\nG92
         E0 ;Reset Extruder\nG1 Z2.0 F3000 ;Move Z Axis up\n\nG92 E0\nG92 E0\nG1 F1800
-        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-24d3887c05dcfaa56dd849af35449b62--\r\n"
+        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-6106db152cd0c6a2a75e9013894b6cfc--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-24d3887c05dcfaa56dd849af35449b62
+      - multipart/form-data; boundary=-----------RubyMultipartPost-6106db152cd0c6a2a75e9013894b6cfc
       User-Agent:
       - Faraday v2.14.0
       Content-Length:
-      - '1411'
+      - '1286'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -43,9 +42,9 @@ http_interactions:
       Content-Type:
       - application/json
       Content-Length:
-      - '423'
+      - '387'
       Location:
-      - "<HOST>/api/files/local/test_folder/test_file.gcode"
+      - "<HOST>/api/files/local/test_file.gcode"
       Cache-Control:
       - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
       Pragma:
@@ -55,11 +54,11 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=8
+      - app;dur=4
       Vary:
       - Cookie
       Set-Cookie:
-      - session_P5050=.eJxNykEKgCAQBdC7_LVEEmh4GZEacsgmSVtIdPeiVev3LkwHzSSVQyq-EAmctrY32vSj7UZtzWAU-Cu1deGs0deWCU7OlH7CMxzKniMTFNK-sPiNphiEy_ZSyLxSw_0Ag8cm0A.aYl1Fw.sTiTyjYbjPv-Agr0wp7BOuJG8wY;
+      - session_P5050=.eJxNykEKgCAQBdC7_HWEUWh4GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwlsZ4zSnTZqbAdl-n5swF8ptfVnCa7URLByxvgTnmGR9xSY0CDuC4vbaApeOG8v-cQrVdwPgdsmyg.aYl3hA.KIll7zhqmkZfY5EXpBP0yrf5h8c;
         HttpOnly; Path=/; SameSite=Lax
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
@@ -78,137 +77,21 @@ http_interactions:
             "local": {
               "name": "test_file.gcode",
               "origin": "local",
-              "path": "test_folder/test_file.gcode",
+              "path": "test_file.gcode",
               "refs": {
-                "download": "<HOST>/downloads/files/local/test_folder/test_file.gcode",
-                "resource": "<HOST>/api/files/local/test_folder/test_file.gcode"
+                "download": "<HOST>/downloads/files/local/test_file.gcode",
+                "resource": "<HOST>/api/files/local/test_file.gcode"
               }
             }
           }
         }
-  recorded_at: Mon, 09 Feb 2026 05:48:07 GMT
+  recorded_at: Mon, 09 Feb 2026 05:58:28 GMT
 - request:
     method: post
-    uri: "<HOST>/api/files/local/test_folder/test_file.gcode"
+    uri: "<HOST>/api/files/local/test_file.gcode"
     body:
       encoding: UTF-8
-      string: '{"command":"move","destination":"test_folder/moved_file.gcode"}'
-    headers:
-      Authorization:
-      - Bearer <API_KEY>
-      Content-Type:
-      - application/json
-      User-Agent:
-      - Faraday v2.14.0
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 201
-      message: CREATED
-    headers:
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '289'
-      Location:
-      - "<HOST>/api/files/local/test_folder/moved_file.gcode"
-      Cache-Control:
-      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
-      Pragma:
-      - no-cache
-      Expires:
-      - "-1"
-      X-Clacks-Overhead:
-      - GNU Terry Pratchett
-      Server-Timing:
-      - app;dur=5
-      Vary:
-      - Cookie
-      Set-Cookie:
-      - session_P5050=.eJxNyk0KgCAQBtC7fOuIpB_Dy4jUkEM2SdpCorsXrVq_d2E6aCbJ7EKyiUhglNbNoIZm1PXYtqrrK_BXcqndmb3NJRKMnCH8hGcYpD16JlQI-8JiN5q8E07bSy7ySgX3A4GYJsk.aYl1Fw.ojgvRaXht-0_-k81I7JSZHTw0O0;
-        HttpOnly; Path=/; SameSite=Lax
-      X-Robots-Tag:
-      - noindex, nofollow, noimageindex
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - sameorigin
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "name": "test_file.gcode",
-          "origin": "local",
-          "path": "test_folder/moved_file.gcode",
-          "refs": {
-            "download": "<HOST>/downloads/files/local/test_folder/moved_file.gcode",
-            "resource": "<HOST>/api/files/local/test_folder/moved_file.gcode"
-          }
-        }
-  recorded_at: Mon, 09 Feb 2026 05:48:07 GMT
-- request:
-    method: delete
-    uri: "<HOST>/api/files/local/test_folder/test_file.gcode"
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      Authorization:
-      - Bearer <API_KEY>
-      Content-Type:
-      - application/json
-      User-Agent:
-      - Faraday v2.14.0
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 404
-      message: NOT FOUND
-    headers:
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '138'
-      Cache-Control:
-      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
-      Pragma:
-      - no-cache
-      Expires:
-      - "-1"
-      X-Clacks-Overhead:
-      - GNU Terry Pratchett
-      Server-Timing:
-      - app;dur=0
-      Vary:
-      - Cookie
-      Set-Cookie:
-      - session_P5050=.eJxNykEKgCAQBdC7_HWEQWl4GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwlsZ4zSnVajacd-0KYBf6PU1p8luFITwcoZ4094hkXeU2BCg7gvLG6jKXjhvL3kE69UcT9qCiaf.aYl1Fw.JoVpzJjWtPImItCatQJLBK-Loro;
-        HttpOnly; Path=/; SameSite=Lax
-      X-Robots-Tag:
-      - noindex, nofollow, noimageindex
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - sameorigin
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
-        }
-  recorded_at: Mon, 09 Feb 2026 05:48:07 GMT
-- request:
-    method: delete
-    uri: "<HOST>/api/files/local/test_folder/moved_file.gcode"
-    body:
-      encoding: US-ASCII
-      string: ''
+      string: '{"command":"select","print":true}'
     headers:
       Authorization:
       - Bearer <API_KEY>
@@ -240,7 +123,7 @@ http_interactions:
       Vary:
       - Cookie
       Set-Cookie:
-      - session_P5050=.eJxNykEOgyAQBdC7_DUxYo0glyFEJzIRR1JwQUzvXtNV1-_dWN60klQOqfhCJHDamH7SU29NZ8fZvgYF_pXaunDV6GvLBCdXSn_CKxzKmSMTFNK5sfiDlhiEy_FQyLxTw-cLhMcm0w.aYl1Fw.4TChBbrRCLcL8ERu1NejwuNL_-0;
+      - session_P5050=.eJxNysEKhCAUBdB_ueuIjNLBnxHJx_gYe0naQqJ_L1rN-pwTy06BpLJPxRUigVXGDFppM3z6adSjmjvwW2rr_VGjqy0TrBwp_QkHWJQtRyZ0SNuXxa20RC9c1od85h81XDeAVibF.aYl3hA.O9xe0Lrj0wrXwr6BVepumidjnZ0;
         HttpOnly; Path=/; SameSite=Lax
       Content-Length:
       - '0'
@@ -253,5 +136,59 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Mon, 09 Feb 2026 05:48:07 GMT
+  recorded_at: Mon, 09 Feb 2026 05:58:28 GMT
+- request:
+    method: delete
+    uri: "<HOST>/api/files/local/test_file.gcode"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 409
+      message: CONFLICT
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '66'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HWEQmR5GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwmsNkb1ujdqaDszKq0b8FdKbf1Zgis1EaycMf6EZ1jkPQUmNIj7wuI2moIXzttLPvFKFfcDgQsmxw.aYl3hA.705-4h4tLEnsd5rGEVtkypwWH9s;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "Trying to delete a file that is currently in use"
+        }
+  recorded_at: Mon, 09 Feb 2026 05:58:28 GMT
 recorded_with: VCR 6.3.1

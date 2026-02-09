@@ -62,6 +62,7 @@ VCR.configure do |config|
   config.hook_into :webmock
   config.ignore_localhost = false
   config.configure_rspec_metadata!
+  config.default_cassette_options = { record: :none, record_on_error: false }
 
   config.filter_sensitive_data("<HOST>")    { octoprint_host }
   config.filter_sensitive_data("<API_KEY>") { octoprint_api_key }

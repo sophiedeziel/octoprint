@@ -5,15 +5,15 @@ http_interactions:
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\ntest\r\n-------------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2--\r\n"
+      string: "-------------RubyMultipartPost-e6fa8037d1f96053248a9ab2c5329e08\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\ntest\r\n-------------RubyMultipartPost-e6fa8037d1f96053248a9ab2c5329e08--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-5e1a2a398b3e60fed320d96c748162e2
+      - multipart/form-data; boundary=-----------RubyMultipartPost-e6fa8037d1f96053248a9ab2c5329e08
       User-Agent:
-      - Faraday v2.13.1
+      - Faraday v2.14.0
       Content-Length:
       - '191'
       Accept-Encoding:
@@ -27,6 +27,8 @@ http_interactions:
     headers:
       Content-Type:
       - application/json
+      Content-Length:
+      - '184'
       Location:
       - "<HOST>/api/files/local/test"
       Cache-Control:
@@ -38,17 +40,20 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=78
+      - app;dur=3
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_LWEEiV4GZEacsgmSVtIdPeiVev3LkwHzSSVQyq-EAmcsVaPxho7dkZr3Q8K_JXaunDW6GvLBCdnSj_hGQ5lz5EJCmlfWPxGUwzCZXspZF6p4X4AfM8mug.aYl5WA.Yx-6mGtPSvJ1vAt7VRL5TbFlmBE;
+        HttpOnly; Path=/; SameSite=Lax
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
-      Transfer-Encoding:
-      - chunked
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: |
         {
           "done": true,
@@ -61,22 +66,22 @@ http_interactions:
             }
           }
         }
-  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
+  recorded_at: Mon, 09 Feb 2026 06:06:16 GMT
 - request:
     method: post
     uri: "<HOST>/api/files/local"
     body:
       encoding: UTF-8
-      string: "-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38\r\nContent-Disposition:
-        form-data; name=\"path\"\r\n\r\n/test\r\n-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38\r\nContent-Disposition:
-        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38--\r\n"
+      string: "-------------RubyMultipartPost-35046cfe2e90ffed46a1f0161962c173\r\nContent-Disposition:
+        form-data; name=\"path\"\r\n\r\n/test\r\n-------------RubyMultipartPost-35046cfe2e90ffed46a1f0161962c173\r\nContent-Disposition:
+        form-data; name=\"foldername\"\r\n\r\nnew_folder\r\n-------------RubyMultipartPost-35046cfe2e90ffed46a1f0161962c173--\r\n"
     headers:
       Authorization:
       - Bearer <API_KEY>
       Content-Type:
-      - multipart/form-data; boundary=-----------RubyMultipartPost-9d42ff093a9e6eeb730b525838473c38
+      - multipart/form-data; boundary=-----------RubyMultipartPost-35046cfe2e90ffed46a1f0161962c173
       User-Agent:
-      - Faraday v2.13.1
+      - Faraday v2.14.0
       Content-Length:
       - '316'
       Accept-Encoding:
@@ -90,6 +95,8 @@ http_interactions:
     headers:
       Content-Type:
       - application/json
+      Content-Length:
+      - '212'
       Location:
       - "<HOST>/api/files/local/test/new_folder"
       Cache-Control:
@@ -101,17 +108,20 @@ http_interactions:
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=57
+      - app;dur=2
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HVEQ5TgZURqyCGbJG0h0d2LVq3fuzAdPLMW8TG7zKywZEw3kiEztkRD3w8N5Cultv4swZWaGFbPGH8iMyzynoIwGsR9EXUbT8Gr5O0ln2TlivsBf6Ymww.aYl5WA.y0VGJJcLBJrZE20HrvQp3krTP-k;
+        HttpOnly; Path=/; SameSite=Lax
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
-      Transfer-Encoding:
-      - chunked
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: |
         {
           "done": true,
@@ -124,5 +134,5 @@ http_interactions:
             }
           }
         }
-  recorded_at: Sun, 29 Jun 2025 14:58:25 GMT
+  recorded_at: Mon, 09 Feb 2026 06:06:16 GMT
 recorded_with: VCR 6.3.1

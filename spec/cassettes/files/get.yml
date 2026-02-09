@@ -1,6 +1,92 @@
 ---
 http_interactions:
 - request:
+    method: post
+    uri: "<HOST>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-fa25141629ba3c1db819838196118fae\r\nContent-Disposition:
+        form-data; name=\"file\"; filename=\"test_file.gcode\"\r\nContent-Length:
+        981\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding:
+        binary\r\n\r\n;FLAVOR:Marlin\n;TIME:1021\n;Filament used: 0.273093m\n;Layer
+        height: 0.12\n;MINX:126.352\n;MINY:88.919\n;MINZ:0.12\n;MAXX:173.648\n;MAXY:211.081\n;MAXZ:0.36\n;Generated
+        with Cura_SteamEngine 4.11.0\nM140 S50\nM105\nM190 S50\nM104 S200\nM105\nM109
+        S200\nM82 ;absolute extrusion mode\nM201 X500.00 Y500.00 Z100.00 E5000.00
+        ;Setup machine max acceleration\nM203 X500.00 Y500.00 Z10.00 E50.00 ;Setup
+        machine max feedrate\nM204 P500.00 R1000.00 T500.00 ;Setup Print/Retract/Travel
+        acceleration\nM205 X8.00 Y8.00 Z0.40 E5.00 ;Setup Jerk\nM220 S100 ;Reset Feedrate\nM221
+        S100 ;Reset Flowrate\n\nG28 ;Home\n\nG92 E0 ;Reset Extruder\nG1 Z2.0 F3000
+        ;Move Z Axis up\nG1 X10.1 Y20 Z0.28 F5000.0 ;Move to start position\nG1 X10.1
+        Y200.0 Z0.28 F1500.0 E15 ;Draw the first line\nG1 X10.4 Y200.0 Z0.28 F5000.0
+        ;Move to side a little\nG1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line\nG92
+        E0 ;Reset Extruder\nG1 Z2.0 F3000 ;Move Z Axis up\n\nG92 E0\nG92 E0\nG1 F1800
+        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-fa25141629ba3c1db819838196118fae--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-fa25141629ba3c1db819838196118fae
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Length:
+      - '1286'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: CREATED
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '387'
+      Location:
+      - "<HOST>/api/files/local/test_file.gcode"
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=2
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEOgyAQBdC7_DUxYi1ELkOITspEHEnBBTG9e40r1--dmL-0kFQOqfhCJHDa2t5oPZixe_d2nF4KfJfaunDU6GvLBCdHSg_hBQ5lz5EJCmn_sPiN5hiEy3ZRyLxSw-8PgBcmxQ.aYliQA.gnNv78q8zqcg-WcZ3ddk5WkRNro;
+        HttpOnly; Path=/; SameSite=Lax
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "done": true,
+          "effectivePrint": false,
+          "effectiveSelect": false,
+          "files": {
+            "local": {
+              "name": "test_file.gcode",
+              "origin": "local",
+              "path": "test_file.gcode",
+              "refs": {
+                "download": "<HOST>/downloads/files/local/test_file.gcode",
+                "resource": "<HOST>/api/files/local/test_file.gcode"
+              }
+            }
+          }
+        }
+  recorded_at: Mon, 09 Feb 2026 04:27:44 GMT
+- request:
     method: get
     uri: "<HOST>/api/files/local/test_file.gcode"
     body:
@@ -12,7 +98,7 @@ http_interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - Faraday v2.13.1
+      - Faraday v2.14.0
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -24,73 +110,36 @@ http_interactions:
     headers:
       Content-Type:
       - application/json
+      Content-Length:
+      - '470'
       Etag:
-      - '"d1cd6c2858d91368e020d6246bd6c46f1732095b"'
+      - '"6829ef584a09b23edf07d74055668f1435a22445"'
       Last-Modified:
-      - Sun, 29 Jun 2025 15:17:27 GMT
+      - Mon, 09 Feb 2026 04:27:44 GMT
       Cache-Control:
       - max-age=0
       X-Clacks-Overhead:
       - GNU Terry Pratchett
       Server-Timing:
-      - app;dur=54
+      - app;dur=1
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HVESiV4GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwmsMqYbldJj3w7KaN034K-U2vqzBFdqIlg5Y_wJz7DIewpMaBD3hcVtNAUvnLeXfOKVKu4Hfe4mvg.aYliQA.QRFwodCGxg9Q9hL5hLG1NMxiECA;
+        HttpOnly; Path=/; SameSite=Lax
       X-Robots-Tag:
       - noindex, nofollow, noimageindex
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - sameorigin
-      Transfer-Encoding:
-      - chunked
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: |
         {
-          "DisplayLayerProgress": {
-            "totalLayerCountWithoutOffset": "0"
-          },
-          "dashboard": {
-            "filament_change_array": "[]",
-            "layer_move_array": "[7, 1]"
-          },
-          "date": 1751210247,
+          "date": 1770611264,
           "display": "test_file.gcode",
-          "gcodeAnalysis": {
-            "dimensions": {
-              "depth": 180.0,
-              "height": 0.28,
-              "width": 0.3000000000000007
-            },
-            "estimatedPrintTime": 16.304844880097193,
-            "filament": {
-              "tool0": {
-                "length": 30.0,
-                "volume": 0.0
-              }
-            },
-            "printingArea": {
-              "maxX": 10.4,
-              "maxY": 200.0,
-              "maxZ": 0.28,
-              "minX": 10.1,
-              "minY": 20.0,
-              "minZ": 0.0
-            },
-            "travelArea": {
-              "maxX": 128.348,
-              "maxY": 200.0,
-              "maxZ": 2.0,
-              "minX": 0.0,
-              "minY": 0.0,
-              "minZ": 0.0
-            },
-            "travelDimensions": {
-              "depth": 200.0,
-              "height": 2.0,
-              "width": 128.348
-            }
-          },
-          "hash": "89e36832ddc7fa8a71c0133b4048343586d31ea2",
+          "hash": "42a10b291437f41e1834614c5841837260e57f45",
           "name": "test_file.gcode",
           "origin": "local",
           "path": "test_file.gcode",
@@ -98,15 +147,64 @@ http_interactions:
             "download": "<HOST>/downloads/files/local/test_file.gcode",
             "resource": "<HOST>/api/files/local/test_file.gcode"
           },
-          "size": 1034,
+          "size": 981,
           "type": "machinecode",
           "typePath": [
             "machinecode",
             "gcode"
           ],
-          "userdata": {
-            "test_value": "some value"
-          }
+          "user": "sophie"
         }
-  recorded_at: Sun, 29 Jun 2025 15:19:57 GMT
+  recorded_at: Mon, 09 Feb 2026 04:27:44 GMT
+- request:
+    method: delete
+    uri: "<HOST>/api/files/local/test_file.gcode"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: NO CONTENT
+    headers:
+      Content-Type:
+      - text/plain
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      Vary:
+      - Cookie
+      Set-Cookie:
+      - session_P5050=.eJxNykEKgCAQBdC7_HVEShZ4GZEacsgmSVtIdPeiVev3LkwHzSSFfcwuEwmsGsduUEoPfWu07jvTgL9SauvPElypiWDljPEnPMMi7ykwoUHcFxa30RS8cN5e8olXqrgffPsmuw.aYliQA.X5I6Jir0ejuIFqHeOwrQniLSngA;
+        HttpOnly; Path=/; SameSite=Lax
+      Content-Length:
+      - '0'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 09 Feb 2026 04:27:44 GMT
 recorded_with: VCR 6.3.1
