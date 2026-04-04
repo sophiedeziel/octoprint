@@ -1,0 +1,261 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST>/sockjs/000/push_sub/xhr"
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Length:
+      - '0'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/javascript; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 07:53:22 GMT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, max-age=0
+      Content-Length:
+      - '2'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: 'o
+
+        '
+  recorded_at: Mon, 09 Feb 2026 07:53:22 GMT
+- request:
+    method: post
+    uri: "<HOST>/sockjs/000/push_sub/xhr_send"
+    body:
+      encoding: UTF-8
+      string: '["{\"auth\":\"_api:<API_KEY>\"}"]'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Mon, 09 Feb 2026 07:53:22 GMT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, max-age=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 09 Feb 2026 07:53:22 GMT
+- request:
+    method: post
+    uri: "<HOST>/sockjs/000/push_sub/xhr"
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Length:
+      - '0'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/javascript; charset=UTF-8
+      Date:
+      - Mon, 09 Feb 2026 07:53:22 GMT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, max-age=0
+      Content-Length:
+      - '10561'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: 'a[{"connected":{"version":"1.11.6","display_version":"1.11.6","branch":"main","python_version":"3.10.18","plugin_hash":"51c5cc426714019ec4b81d2736d44047","config_hash":"3a4ed49778235d337da4a8e5eab856b6","debug":false,"safe_mode":null,"online":true,"permissions":[{"key":"ADMIN","name":"Admin","dangerous":true,"default_groups":["admins"],"description":"Admin
+        is allowed to do everything","needs":{"role":["admin"]}},{"key":"STATUS","name":"Status","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to gather basic status information, e.g. job progress, printer state, temperatures,
+        ... Mandatory for the default UI to work","needs":{"role":["status"]}},{"key":"CONNECTION","name":"Connection","dangerous":false,"default_groups":["users"],"description":"Allows
+        to connect to and disconnect from a printer","needs":{"role":["connection"]}},{"key":"WEBCAM","name":"Webcam","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to watch the webcam stream","needs":{"role":["webcam"]}},{"key":"SYSTEM","name":"System","dangerous":true,"default_groups":[],"description":"Allows
+        to run system commands, e.g. restart OctoPrint, shutdown or reboot the system,
+        and to retrieve system and usage information","needs":{"role":["system"]}},{"key":"FILES_LIST","name":"File
+        List","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to retrieve a list of all uploaded files and folders, includingtheir metadata
+        (e.g. date, file size, analysis results, ...)","needs":{"role":["files_list"]}},{"key":"FILES_UPLOAD","name":"File
+        Upload","dangerous":false,"default_groups":["users"],"description":"Allows
+        users to upload new files, create new folders and copy existing ones. If the
+        File Delete permission is also set, File Upload also allows moving files and
+        folders.","needs":{"role":["files_upload"]}},{"key":"FILES_DOWNLOAD","name":"File
+        Download","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        users to download files. The GCODE viewer is affected by this as well.","needs":{"role":["files_download"]}},{"key":"FILES_DELETE","name":"File
+        Delete","dangerous":false,"default_groups":["users"],"description":"Allows
+        users to delete files and folders. If the File Upload permission is also set,
+        File Delete also allows moving files and folders.","needs":{"role":["files_delete"]}},{"key":"FILES_SELECT","name":"File
+        Select","dangerous":false,"default_groups":["users"],"description":"Allows
+        to select a file for printing","needs":{"role":["files_select"]}},{"key":"PRINT","name":"Print","dangerous":false,"default_groups":["users"],"description":"Allows
+        to start, pause and cancel a print job","needs":{"role":["print"]}},{"key":"GCODE_VIEWER","name":"GCODE
+        viewer","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        access to the GCODE viewer if the \"File Download\"permission is also set.","needs":{"role":["gcodeviewer"]}},{"key":"MONITOR_TERMINAL","name":"Terminal","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to watch the terminal tab but not to send commands to the printer from it","needs":{"role":["monitor_terminal"]}},{"key":"CONTROL","name":"Control","dangerous":false,"default_groups":["users"],"description":"Allows
+        to control of the printer by using the temperature controls,the control tab
+        or sending commands through the terminal.","needs":{"role":["control"]}},{"key":"SLICE","name":"Slice","dangerous":false,"default_groups":["users"],"description":"Allows
+        to slice files","needs":{"role":["slice"]}},{"key":"TIMELAPSE_LIST","name":"Timelapse
+        List","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to list timelapse videos","needs":{"role":["timelapse_list"]}},{"key":"TIMELAPSE_DOWNLOAD","name":"Timelapse
+        Download","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to download timelapse videos","needs":{"role":["timelapse_download"]}},{"key":"TIMELAPSE_DELETE","name":"Timelapse
+        Delete","dangerous":false,"default_groups":["users"],"description":"Allows
+        to delete timelapse videos","needs":{"role":["timelapse_delete"]}},{"key":"TIMELAPSE_MANAGE_UNRENDERED","name":"Timelapse
+        Manage Unrendered","dangerous":false,"default_groups":["users"],"description":"Allows
+        to list, delete and render unrendered timelapses","needs":{"role":["timelapse_manage_unrendered"]}},{"key":"TIMELAPSE_ADMIN","name":"Timelapse
+        Admin","dangerous":false,"default_groups":["users"],"description":"Allows
+        to change the timelapse settings.","needs":{"role":["timelapse_admin"]}},{"key":"SETTINGS_READ","name":"Settings
+        Access","dangerous":false,"default_groups":["users","readonly"],"description":"Allows
+        to read non sensitive settings. Mandatory for the default UI to work.","needs":{"role":["settings_read"]}},{"key":"SETTINGS","name":"Settings
+        Admin","dangerous":true,"default_groups":[],"description":"Allows to manage
+        settings and also to read sensitive settings","needs":{"role":["settings"]}},{"key":"PLUGIN_ACHIEVEMENTS_VIEW","name":"Achievements
+        Plugin: View instance achievements & stats","dangerous":false,"default_groups":["readonly","users","admins"],"description":"Allows
+        to view the instance achievements & stats.","needs":{"role":["plugin_achievements_view"]},"plugin":"achievements"},{"key":"PLUGIN_ACHIEVEMENTS_RESET","name":"Achievements
+        Plugin: Reset instance achievements & stats","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to reset the instance achievements & stats.","needs":{"role":["plugin_achievements_reset"]},"plugin":"achievements"},{"key":"PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW","name":"Action
+        Command Notification Support: Show printer notifications","dangerous":false,"default_groups":["users"],"description":"Allows
+        to see printer notifications","needs":{"role":["plugin_action_command_notification_show"]},"plugin":"action_command_notification"},{"key":"PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR","name":"Action
+        Command Notification Support: Clear printer notifications","dangerous":false,"default_groups":["users"],"description":"Allows
+        to clear printer notifications","needs":{"role":["plugin_action_command_notification_clear"]},"plugin":"action_command_notification"},{"key":"PLUGIN_ACTION_COMMAND_PROMPT_INTERACT","name":"Action
+        Command Prompt Support: Interact with printer prompts","dangerous":false,"default_groups":["users"],"description":"Allows
+        to see and interact with printer prompts","needs":{"role":["plugin_action_command_prompt_interact"]},"plugin":"action_command_prompt"},{"key":"PLUGIN_ANNOUNCEMENTS_READ","name":"Announcement
+        Plugin: Read announcements","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to read announcements","needs":{"role":["plugin_announcements_read"]},"plugin":"announcements"},{"key":"PLUGIN_ANNOUNCEMENTS_MANAGE","name":"Announcement
+        Plugin: Manage announcement subscriptions","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to manage announcement subscriptions. Includes \"Read announcements\" permission","needs":{"role":["plugin_announcements_manage","plugin_announcements_read"]},"plugin":"announcements"},{"key":"PLUGIN_APPKEYS_ADMIN","name":"Application
+        Keys Plugin: Admin access","dangerous":true,"default_groups":["admins"],"description":"Allows
+        administrating all application keys","needs":{"role":["plugin_appkeys_admin"]},"plugin":"appkeys"},{"key":"PLUGIN_APPKEYS_GRANT","name":"Application
+        Keys Plugin: Grant access","dangerous":false,"default_groups":["users"],"description":"Allows
+        to grant app access","needs":{"role":["plugin_appkeys_user"]},"plugin":"appkeys"},{"key":"PLUGIN_BACKUP_CREATE","name":"Backup
+        & Restore: Create backup","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to trigger the creation of backups","needs":{"role":["plugin_backup_create"]},"plugin":"backup"},{"key":"PLUGIN_FILE_CHECK_RUN","name":"File
+        Check: Run File Check","dangerous":false,"default_groups":["users","admins"],"description":"Allows
+        to run File Check and view the results.","needs":{"role":["plugin_file_check_run"]},"plugin":"file_check"},{"key":"PLUGIN_FIRMWARE_CHECK_DISPLAY","name":"Firmware
+        Check: Display firmware check warnings","dangerous":false,"default_groups":["users"],"description":"Allows
+        to see firmware check warnings","needs":{"role":["plugin_firmware_check_display"]},"plugin":"firmware_check"},{"key":"PLUGIN_HEALTH_CHECK_CHECK","name":"Healthcheck
+        Plugin: Perform healthchecks","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to perform health checks and view their results","needs":{"role":["plugin_health_check_check"]},"plugin":"health_check"},{"key":"PLUGIN_LOGGING_MANAGE","name":"Logging:
+        Logging management","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to download and delete log files and list and set log levels.","needs":{"role":["plugin_logging_manage"]},"plugin":"logging"},{"key":"PLUGIN_PLUGINMANAGER_LIST","name":"Plugin
+        Manager: List plugins","dangerous":false,"default_groups":["readonly","users","admins"],"description":"Allows
+        to list installed plugins.","needs":{"role":["plugin_pluginmanager_list"]},"plugin":"pluginmanager"},{"key":"PLUGIN_PLUGINMANAGER_MANAGE","name":"Plugin
+        Manager: Manage plugins","dangerous":false,"default_groups":["admins"],"description":"Allows
+        to enable, disable and uninstall installed plugins.","needs":{"role":["plugin_pluginmanager_manage"]},"plugin":"pluginmanager"},{"key":"PLUGIN_PLUGINMANAGER_INSTALL","name":"Plugin
+        Manager: Install new plugins","dangerous":true,"default_groups":["admins"],"description":"Allows
+        to install new plugins. Includes the \"Manage plugins\" permission.","needs":{"role":["plugin_pluginmanager_manage","plugin_pluginmanager_install"]},"plugin":"pluginmanager"},{"key":"PLUGIN_SOFTWAREUPDATE_CHECK","name":"Software
+        Update: Check","dangerous":false,"default_groups":["users"],"description":"Allows
+        to check for software updates","needs":{"role":["plugin_softwareupdate_check"]},"plugin":"softwareupdate"},{"key":"PLUGIN_SOFTWAREUPDATE_UPDATE","name":"Software
+        Update: Update","dangerous":true,"default_groups":["admins"],"description":"Allows
+        to perform software updates","needs":{"role":["plugin_softwareupdate_update"]},"plugin":"softwareupdate"},{"key":"PLUGIN_SOFTWAREUPDATE_CONFIGURE","name":"Software
+        Update: Configure","dangerous":true,"default_groups":["admins"],"description":"Allows
+        to configure software update","needs":{"role":["plugin_softwareupdate_configure"]},"plugin":"softwareupdate"}]}},{"reauthRequired":{"reason":"stale"}}]
+
+        '
+  recorded_at: Mon, 09 Feb 2026 07:53:22 GMT
+- request:
+    method: post
+    uri: "<HOST>/sockjs/000/push_sub/xhr_send"
+    body:
+      encoding: UTF-8
+      string: '["{\"subscribe\":{\"state\":true,\"events\":true,\"plugins\":true}}"]'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Mon, 09 Feb 2026 07:53:22 GMT
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, max-age=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 09 Feb 2026 07:53:22 GMT
+recorded_with: VCR 6.3.1
