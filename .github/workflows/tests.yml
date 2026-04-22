@@ -46,7 +46,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@3ff19f5e2baf30647122352b96108b1fbe250c64
+      uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
