@@ -10,6 +10,7 @@ module Octoprint
   # - {Printer::Tool} — set temperatures, select tools, extrude and change the flow rate
   # - {Printer::Bed} — set the heated bed's temperature
   # - {Printer::Chamber} — set the heated chamber's temperature
+  # - {Printer::Sd} — initialize, refresh and release the printer's SD card
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
