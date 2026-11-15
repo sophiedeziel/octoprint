@@ -141,7 +141,7 @@ Octoprint::Printer::Bed.target(60)
 Octoprint::Printer::Command.send_commands(["M106 S255", "M117 Hello"])
 
 # Timelapses
-Octoprint::Timelapse.list(unrendered: true).unrendered.each { |job| Octoprint::Timelapse.render(name: job.name) }
+Octoprint::Timelapse.get(unrendered: true).unrendered.each { |job| Octoprint::Timelapse.render(name: job.name) }
 Octoprint::Timelapse.update_config(type: "timed", interval: 10, save: true)
 
 # Printer profiles

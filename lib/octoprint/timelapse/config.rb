@@ -9,7 +9,7 @@ module Octoprint
     # {#retraction_z_hop} and {#min_delay}, and +timed+ has {#interval}.
     #
     # @example
-    #   config = Octoprint::Timelapse.list.config
+    #   config = Octoprint::Timelapse.get.config
     #   config.type     # => "timed"
     #   config.interval # => 10
     #   config.fps      # => 25
@@ -57,7 +57,7 @@ module Octoprint
       # Whether timelapses are turned off for the next print
       #
       # @example
-      #   Octoprint::Timelapse.list.config.off? # => true
+      #   Octoprint::Timelapse.get.config.off? # => true
       #
       # @return [Boolean]
       sig { returns(T::Boolean) }

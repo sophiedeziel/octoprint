@@ -6,7 +6,7 @@ module Octoprint
     # A rendered timelapse file.
     #
     # @example
-    #   file = Octoprint::Timelapse.list.files.first
+    #   file = Octoprint::Timelapse.get.files.first
     #   file.name      # => "benchy_20261115.mp4"
     #   file.size      # => "2.0MB"
     #   file.bytes     # => 2097152
@@ -56,7 +56,7 @@ module Octoprint
       # The modification date as a Time
       #
       # @example
-      #   Octoprint::Timelapse.list.files.first.modification_time # => 2026-11-15 00:52:35 -0500
+      #   Octoprint::Timelapse.get.files.first.modification_time # => 2026-11-15 00:52:35 -0500
       #
       # @return [Time, nil]
       sig { returns(T.nilable(Time)) }

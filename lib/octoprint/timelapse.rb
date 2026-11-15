@@ -5,23 +5,23 @@ require "erb"
 require "faraday"
 
 module Octoprint
-  # Timelapse API: list, delete and render timelapses, and change the timelapse config.
+  # Timelapse API: get, delete and render timelapses, and change the timelapse config.
   #
-  # {.list}, {.delete_file} and {.update_config} return the server's timelapse list:
+  # {.get}, {.delete_file} and {.update_config} return the timelapses:
   # the current {Config}, the {Rendered} timelapse files and, when requested with
   # +unrendered: true+, the {Unrendered} timelapse jobs.
   #
-  # Permissions: +TIMELAPSE_LIST+ ({.list}), +TIMELAPSE_DELETE+ ({.delete_file}),
+  # Permissions: +TIMELAPSE_LIST+ ({.get}), +TIMELAPSE_DELETE+ ({.delete_file}),
   # +TIMELAPSE_MANAGE_UNRENDERED+ ({.render}, {.delete_unrendered}) and
   # +TIMELAPSE_ADMIN+ ({.update_config}).
   #
   # @example List rendered timelapses
-  #   timelapse = Octoprint::Timelapse.list
+  #   timelapse = Octoprint::Timelapse.get
   #   timelapse.config.type # => "off"
   #   timelapse.files.each { |file| puts "#{file.name} (#{file.size})" }
   #
   # @example Render every unrendered timelapse that isn't being processed
-  #   Octoprint::Timelapse.list(unrendered: true).unrendered.each do |job|
+  #   Octoprint::Timelapse.get(unrendered: true).unrendered.each do |job|
   #     Octoprint::Timelapse.render(name: job.name) unless job.processing
   #   end
   #
@@ -70,31 +70,31 @@ module Octoprint
     class << self
       extend T::Sig
 
-      # Retrieves the list of timelapses and the current timelapse config.
+      # Retrieves the timelapses and the current timelapse config.
       #
-      # @param unrendered [Boolean] Also list the unrendered timelapses
-      # @param force [Boolean] Bypass the server's timelapse list cache
+      # @param unrendered [Boolean] Also include the unrendered timelapses
+      # @param force [Boolean] Bypass the server's timelapse cache
       #
       # @example
-      #   timelapse = Octoprint::Timelapse.list(unrendered: true)
+      #   timelapse = Octoprint::Timelapse.get(unrendered: true)
       #   timelapse.files.map(&:name)      # => ["benchy_20261115.mp4"]
       #   timelapse.unrendered.map(&:name) # => ["cube_20261115"]
       #
-      # @return [Timelapse] The timelapse list
+      # @return [Timelapse] The timelapses and config
       sig { params(unrendered: T::Boolean, force: T::Boolean).returns(Timelapse) }
-      def list(unrendered: false, force: false)
+      def get(unrendered: false, force: false)
         fetch_resource(options: query(unrendered: unrendered, force: force))
       end
 
       # Deletes a rendered timelapse file.
       #
       # @param filename [String] The name of the timelapse file
-      # @param unrendered [Boolean] Also list the unrendered timelapses in the returned list
+      # @param unrendered [Boolean] Also include the unrendered timelapses in the result
       #
       # @example
       #   Octoprint::Timelapse.delete_file(filename: "benchy_20261115.mp4")
       #
-      # @return [Timelapse] The updated timelapse list
+      # @return [Timelapse] The updated timelapses and config
       sig { params(filename: String, unrendered: T::Boolean).returns(Timelapse) }
       def delete_file(filename:, unrendered: false)
         response = delete(path: with_query("#{@path}/#{escape(filename)}", query(unrendered: unrendered)))
@@ -158,7 +158,7 @@ module Octoprint
       # @param render_after_print [String, nil] When to render after a print:
       #   +always+, +success+, +failure+ or +never+
       # @param save [Boolean] Persist the config across server restarts (requires admin rights)
-      # @param unrendered [Boolean] Also list the unrendered timelapses in the returned list
+      # @param unrendered [Boolean] Also include the unrendered timelapses in the result
       #
       # @example Snapshot on every layer change, rendered only for successful prints
       #   Octoprint::Timelapse.update_config(type: "zchange", retraction_z_hop: 0.4, render_after_print: "success")
@@ -166,7 +166,7 @@ module Octoprint
       # @example Turn timelapses off
       #   Octoprint::Timelapse.update_config(type: "off")
       #
-      # @return [Timelapse] The updated timelapse list
+      # @return [Timelapse] The updated timelapses and config
       # @raise [ArgumentError] if the type isn't one of {TYPES}
       # @raise [Octoprint::Exceptions::BadRequestError] if a setting is invalid
       sig do

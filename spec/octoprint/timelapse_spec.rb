@@ -60,7 +60,7 @@ RSpec.describe Octoprint::Timelapse do
     end
   end
 
-  describe ".list" do
+  describe ".get" do
     let(:timelapse) { described_class.new(enabled: true, files: []) }
 
     before do
@@ -68,37 +68,37 @@ RSpec.describe Octoprint::Timelapse do
     end
 
     it "fetches the resource without query options by default" do
-      described_class.list
+      described_class.get
 
       expect(described_class).to have_received(:fetch_resource).with(options: {})
     end
 
     it "requests the unrendered timelapses" do
-      described_class.list(unrendered: true)
+      described_class.get(unrendered: true)
 
       expect(described_class).to have_received(:fetch_resource).with(options: { unrendered: true })
     end
 
     it "forces a refresh of the list" do
-      described_class.list(force: true)
+      described_class.get(force: true)
 
       expect(described_class).to have_received(:fetch_resource).with(options: { force: true })
     end
 
     it "combines the unrendered and force options" do
-      described_class.list(unrendered: true, force: true)
+      described_class.get(unrendered: true, force: true)
 
       expect(described_class).to have_received(:fetch_resource).with(options: { unrendered: true, force: true })
     end
 
     it "omits options that are explicitly false" do
-      described_class.list(unrendered: false, force: false)
+      described_class.get(unrendered: false, force: false)
 
       expect(described_class).to have_received(:fetch_resource).with(options: {})
     end
 
     it "returns the timelapse list" do
-      expect(described_class.list).to be(timelapse)
+      expect(described_class.get).to be(timelapse)
     end
   end
 

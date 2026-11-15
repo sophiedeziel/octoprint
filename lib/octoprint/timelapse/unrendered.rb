@@ -6,7 +6,7 @@ module Octoprint
     # An unrendered timelapse job: the snapshots of a print, not yet rendered to a video.
     #
     # @example
-    #   job = Octoprint::Timelapse.list(unrendered: true).unrendered.first
+    #   job = Octoprint::Timelapse.get(unrendered: true).unrendered.first
     #   job.name       # => "cube_20261115"
     #   job.count      # => 342
     #   job.size       # => "12.3MB"

@@ -5,9 +5,9 @@ RSpec.describe Octoprint::Timelapse, type: :integration do
   include_context "with default Octoprint config"
   use_octoprint_server
 
-  describe ".list" do
-    context "without unrendered timelapses", vcr: { cassette_name: "timelapse/list" } do
-      subject(:timelapse) { described_class.list }
+  describe ".get" do
+    context "without unrendered timelapses", vcr: { cassette_name: "timelapse/get" } do
+      subject(:timelapse) { described_class.get }
 
       it { is_expected.to be_a described_class }
       its(:enabled)    { is_expected.to be true }
@@ -44,8 +44,8 @@ RSpec.describe Octoprint::Timelapse, type: :integration do
       end
     end
 
-    context "with unrendered timelapses", vcr: { cassette_name: "timelapse/list_unrendered" } do
-      subject(:timelapse) { described_class.list(unrendered: true) }
+    context "with unrendered timelapses", vcr: { cassette_name: "timelapse/get_unrendered" } do
+      subject(:timelapse) { described_class.get(unrendered: true) }
 
       it "returns the unrendered timelapses" do
         expect(timelapse.unrendered.map(&:name)).to eq %w[benchy_20261115 stale_job]
@@ -60,8 +60,8 @@ RSpec.describe Octoprint::Timelapse, type: :integration do
       end
     end
 
-    context "when forcing a refresh", vcr: { cassette_name: "timelapse/list_force" } do
-      subject(:timelapse) { described_class.list(force: true) }
+    context "when forcing a refresh", vcr: { cassette_name: "timelapse/get_force" } do
+      subject(:timelapse) { described_class.get(force: true) }
 
       its(:files) { is_expected.to all(be_a Octoprint::Timelapse::Rendered) }
     end
