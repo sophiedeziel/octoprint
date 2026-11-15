@@ -1,0 +1,74 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/timelapse?force=true"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '618'
+      Etag:
+      - '"23678bff4e53caa122cbed6b95ffa1223cf65ab8"'
+      Last-Modified:
+      - Sun, 15 Nov 2026 05:54:40 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "config": {
+            "type": "off"
+          },
+          "enabled": true,
+          "files": [
+            {
+              "bytes": 1024,
+              "date": "2026-11-15 00:52",
+              "name": "old_print_20261101.mp4",
+              "size": "1.0KB",
+              "timestamp": 1794721955.8964324,
+              "url": "/downloads/timelapse/old_print_20261101.mp4"
+            },
+            {
+              "bytes": 2048,
+              "date": "2026-11-15 00:52",
+              "name": "sample_print_20261115.mp4",
+              "size": "2.0KB",
+              "thumbnail": "/downloads/timelapse/sample_print_20261115.mp4.thumb.jpg",
+              "timestamp": 1794721955.893133,
+              "url": "/downloads/timelapse/sample_print_20261115.mp4"
+            }
+          ]
+        }
+  recorded_at: Sun, 15 Nov 2026 05:55:13 GMT
+recorded_with: VCR 6.4.1
