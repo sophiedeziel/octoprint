@@ -26,12 +26,11 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true"
   }
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject do |f|
-      (f == __FILE__) || f.match(%r{\A(?:(?:test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
-    end
+  # Ship only runtime code and top-level docs. lib/tapioca/ is a Tapioca DSL
+  # compiler used to generate RBIs from the repo; it's never needed at runtime.
+  spec.files = Dir.chdir(__dir__) do
+    Dir["lib/**/*.rb", "README.md", "LICENSE.txt", "CHANGELOG.md"]
+      .reject { |f| f.start_with?("lib/tapioca/") }
   end
   spec.require_paths = ["lib"]
 

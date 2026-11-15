@@ -10,9 +10,6 @@ loader = Zeitwerk::Loader.for_gem
 loader.ignore("#{__dir__}/tapioca")
 loader.setup
 
-# Load Tapioca compiler if available
-require_relative "tapioca/dsl/compilers/auto_initializable" if defined?(Tapioca)
-
 # Welcome to the Octoprint Gem!
 #
 # This gem is still under development.
