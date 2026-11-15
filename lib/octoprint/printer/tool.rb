@@ -7,10 +7,11 @@ module Octoprint
     # extrusion and flow rate.
     #
     # Commands may only be sent while the printer is operational, and {.select_tool} and {.extrude}
-    # only while it is not printing. Requires the +CONTROL+ permission for commands and +STATUS+ for {.get}.
+    # only while it is not printing. Requires the +CONTROL+ permission for commands and +STATUS+ for
+    # {.temperatures}.
     #
-    # @example Read the tool temperatures
-    #   Octoprint::Printer::Tool.get.tool(0).actual # => 214.8821
+    # @example Read the first hotend's temperature
+    #   Octoprint::Printer::Tool.temperatures[0].actual # => 214.8821
     #
     # @example Heat up the hotends
     #   Octoprint::Printer::Tool.target(tool0: 220, tool1: 205)
@@ -22,26 +23,58 @@ module Octoprint
     class Tool < BaseResource
       extend T::Sig
       extend HistoryQuery
+      extend TemperatureResponse
+      include AutoInitializable
+      include Deserializable
 
       resource_path("/api/printer/tool")
 
-      # Retrieves the current temperature data of all the printer's tools.
+      # @!attribute [r] actual
+      #   @return [Float, nil] Current temperature
+      auto_attr :actual, type: Float
+
+      # @!attribute [r] target
+      #   @return [Float, nil] Target temperature, nil if no target temperature is set
+      auto_attr :target, type: Float
+
+      # @!attribute [r] offset
+      #   @return [Float, nil] Currently configured temperature offset
+      auto_attr :offset, type: Float
+
+      # @!attribute [r] history
+      #   @return [Array<Printer::TemperatureReading>, nil] This tool's temperature history, only included
+      #     when requested
+      auto_attr :history, type: TemperatureReading, array: true
+
+      # @!attribute [r] extra
+      #   @return [Hash, nil] Any additional fields returned by the API
+      auto_attr :extra, type: Hash
+
+      auto_initialize!
+
+      # Retrieves the current temperature of each of the printer's tools.
       #
       # @param history [Boolean] Whether to include the temperature history
       # @param limit [Integer, nil] Only return the last +limit+ history data points (ignored unless +history+ is true)
       #
-      # @example
-      #   temperature = Octoprint::Printer::Tool.get(history: true, limit: 2)
-      #   temperature.tool(0).target       # => 220.0
-      #   temperature.history.size         # => 2
+      # @example Read the first hotend's temperature
+      #   Octoprint::Printer::Tool.temperatures[0].actual # => 214.8821
       #
-      # @return [Printer::TemperatureState] The tools' temperature state
+      # @example Include each tool's last two history readings
+      #   tools = Octoprint::Printer::Tool.temperatures(history: true, limit: 2)
+      #   tools.map(&:target)              # => [220.0, nil]
+      #   tools[0].history.map(&:actual)   # => [214.8821, 212.32]
+      #
+      # @return [Array<Printer::Tool>] The tools' temperatures, indexed by tool number
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(TemperatureState) }
-      def self.get(history: false, limit: nil)
-        TemperatureState.deserialize(
-          fetch_resource(deserialize: false, options: history_query(history: history, limit: limit))
-        )
+      sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T::Array[Tool]) }
+      def self.temperatures(history: false, limit: nil)
+        response = fetch_resource(deserialize: false, options: history_query(history: history, limit: limit))
+
+        response.keys
+                .grep(TemperatureData::TOOL_KEY)
+                .sort_by { |key| key.to_s.delete_prefix("tool").to_i }
+                .map { |key| from_response(response, key) }
       end
 
       # Issues a tool command.

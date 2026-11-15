@@ -14,7 +14,7 @@ RSpec.describe Octoprint::Printer::Tool do
     end
   end
 
-  describe ".get" do
+  describe ".temperatures" do
     let(:response) do
       {
         tool0: { actual: 214.8821, target: 220.0, offset: 0 },
@@ -27,19 +27,19 @@ RSpec.describe Octoprint::Printer::Tool do
     end
 
     it "fetches the raw resource without options by default" do
-      described_class.get
+      described_class.temperatures
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: {})
     end
 
     it "requests the temperature history" do
-      described_class.get(history: true)
+      described_class.temperatures(history: true)
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: { history: true })
     end
 
     it "requests a limited temperature history" do
-      described_class.get(history: true, limit: 2)
+      described_class.temperatures(history: true, limit: 2)
 
       expect(described_class).to have_received(:fetch_resource).with(
         deserialize: false,
@@ -48,18 +48,51 @@ RSpec.describe Octoprint::Printer::Tool do
     end
 
     it "drops the limit when the history isn't requested" do
-      described_class.get(limit: 2)
+      described_class.temperatures(limit: 2)
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: {})
     end
 
-    it "returns a temperature state" do
-      temperature = described_class.get
+    it "returns the tools' temperatures indexed by tool number" do
+      tools = described_class.temperatures
 
-      expect(temperature).to be_a(Octoprint::Printer::TemperatureState)
-      expect(temperature.tools.keys).to eq(%i[tool0 tool1])
-      expect(temperature.tool(0).actual).to eq(214.8821)
-      expect(temperature.tool(1).target).to be_nil
+      expect(tools).to all(be_a(described_class))
+      expect(tools.size).to eq(2)
+      expect(tools[0].actual).to eq(214.8821)
+      expect(tools[1].actual).to eq(25.3)
+      expect(tools[1].target).to be_nil
+      expect(tools[0].history).to be_nil
+    end
+
+    it "orders the tools numerically" do
+      allow(described_class).to receive(:fetch_resource).and_return(
+        { tool10: { actual: 10.0 }, tool2: { actual: 2.0 }, history: [] }
+      )
+
+      expect(described_class.temperatures.map(&:actual)).to eq([2.0, 10.0])
+    end
+
+    it "splits the history per tool" do
+      allow(described_class).to receive(:fetch_resource).and_return(
+        response.merge(
+          history: [
+            { time: 1_395_651_928, tool0: { actual: 214.8821, target: 220.0 }, tool1: { actual: 25.3, target: nil } },
+            { time: 1_395_651_926, tool0: { actual: 212.32, target: 220.0 }, tool1: { actual: 25.1 } }
+          ]
+        )
+      )
+
+      tools = described_class.temperatures(history: true)
+
+      expect(tools[0].history.map(&:actual)).to eq([214.8821, 212.32])
+      expect(tools[0].history.map(&:time)).to eq([1_395_651_928, 1_395_651_926])
+      expect(tools[1].history.map(&:actual)).to eq([25.3, 25.1])
+    end
+
+    it "returns an empty array when the printer reports no tools" do
+      allow(described_class).to receive(:fetch_resource).and_return({})
+
+      expect(described_class.temperatures).to eq([])
     end
   end
 

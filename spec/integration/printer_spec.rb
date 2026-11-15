@@ -104,28 +104,27 @@ RSpec.describe Octoprint::Printer, type: :integration do
   describe Octoprint::Printer::Tool do
     use_octoprint_server
 
-    describe ".get", vcr: { cassette_name: "printer/tool/get" } do
-      subject(:temperature) { described_class.get }
+    describe ".temperatures", vcr: { cassette_name: "printer/tool/get" } do
+      subject(:tools) { described_class.temperatures }
 
-      it { is_expected.to be_a Octoprint::Printer::TemperatureState }
-
-      it "returns the tools' temperatures only" do
-        expect(temperature.tools.keys).to eq [:tool0]
-        expect(temperature.tool(0).actual).to be_a Float
-        expect(temperature.tool(0).target).to be_a Float
-        expect(temperature.tool(0).offset).to eq 0
-        expect(temperature.bed).to be_nil
-        expect(temperature.chamber).to be_nil
-        expect(temperature.history).to be_nil
+      it "returns the temperature of each tool" do
+        expect(tools.size).to eq 1
+        expect(tools[0]).to be_a described_class
+        expect(tools[0].actual).to be_a Float
+        expect(tools[0].target).to be_a Float
+        expect(tools[0].offset).to eq 0
+        expect(tools[0].history).to be_nil
       end
     end
 
-    describe ".get with history", vcr: { cassette_name: "printer/tool/get_with_history" } do
-      subject(:temperature) { described_class.get(history: true, limit: 2) }
+    describe ".temperatures with history", vcr: { cassette_name: "printer/tool/get_with_history" } do
+      subject(:tools) { described_class.temperatures(history: true, limit: 2) }
 
-      it "returns the limited temperature history" do
-        expect(temperature.history.size).to eq 2
-        expect(temperature.history.first.tool(0).actual).to be_a Float
+      it "returns each tool's limited temperature history" do
+        expect(tools[0].history.size).to eq 2
+        expect(tools[0].history).to all(be_a(Octoprint::Printer::TemperatureReading))
+        expect(tools[0].history.first.actual).to be_a Float
+        expect(tools[0].history.first.time).to be_nil
       end
     end
 
