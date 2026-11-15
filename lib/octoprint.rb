@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "active_support/all"
-require "pry"
 require "zeitwerk"
 require "sorbet-runtime"
 
