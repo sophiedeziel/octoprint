@@ -1,7 +1,24 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Printer::TemperatureResponse do
+RSpec.describe Octoprint::Printer::TemperatureAttributes do
+  describe ".included" do
+    let(:heater_class) { Class.new { include Octoprint::Printer::TemperatureAttributes } }
+
+    it "declares the temperature attributes on the including class" do
+      expect(heater_class.auto_attrs.keys).to eq %i[actual target offset history extra]
+      expect(heater_class.new(actual: 21.3, target: 0.0).actual).to eq 21.3
+    end
+
+    it "makes the including class deserializable" do
+      expect(heater_class.deserialize({ actual: 21.3, unit: "C" }).extra).to eq({ unit: "C" })
+    end
+
+    it "keeps the attributes of each including class separate" do
+      expect(heater_class.auto_attrs).not_to be(Octoprint::Printer::Tool.auto_attrs)
+    end
+  end
+
   describe ".from_response" do
     subject(:heater) { Octoprint::Printer::Tool }
 
