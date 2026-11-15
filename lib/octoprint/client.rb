@@ -7,18 +7,48 @@ require "faraday/multipart"
 module Octoprint
   # The API client object.
   #
+  # @example Configure a client with custom timeouts
+  #   client = Octoprint::Client.new(host: "http://octopi.local", api_key: "key", open_timeout: 1, timeout: 5)
+  #
+  # @example Allow more time for large file uploads
+  #   client = Octoprint::Client.new(host: "http://octopi.local", api_key: "key", timeout: 120)
+  #
   # @attr [String] host
   # @attr [String] api_key
+  # @attr [Numeric, nil] open_timeout  Seconds to wait for the connection to open. nil falls back to `timeout`
+  # @attr [Numeric, nil] timeout       Seconds to wait for a read or a write. nil: adapter default (60s)
   # @attr [Client] client
   class Client
-    attr_reader :host, :api_key, :client
+    extend T::Sig
 
-    def initialize(host:, api_key:)
+    # Default number of seconds to wait for the connection to open
+    DEFAULT_OPEN_TIMEOUT = 2
+    # Default number of seconds to wait for a read or a write
+    DEFAULT_TIMEOUT = 3
+
+    attr_reader :host, :api_key, :open_timeout, :timeout, :client
+
+    # @param host [String, URI]            Server's host address
+    # @param api_key [String]              Server's API key
+    # @param open_timeout [Numeric, nil]   Seconds to wait for the connection to open. nil falls back to `timeout`
+    # @param timeout [Numeric, nil]        Seconds to wait for a read or a write. nil: adapter default (60s)
+    # @raise [Exceptions::MissingCredentialsError] if host or api_key is missing
+    sig do
+      params(
+        host: T.nilable(T.any(String, URI::Generic)),
+        api_key: T.nilable(String),
+        open_timeout: T.nilable(Numeric),
+        timeout: T.nilable(Numeric)
+      ).void
+    end
+    def initialize(host:, api_key:, open_timeout: DEFAULT_OPEN_TIMEOUT, timeout: DEFAULT_TIMEOUT)
       raise Exceptions::MissingCredentialsError if host.nil? || api_key.nil?
 
-      @host    = host
-      @api_key = api_key
-      @client = new_client
+      @host         = host
+      @api_key      = api_key
+      @open_timeout = open_timeout
+      @timeout      = timeout
+      @client       = new_client
     end
 
     # Instantiates an object from a hash. Can be overridden by child classes
@@ -28,6 +58,8 @@ module Octoprint
     # @param [Hash] body                  the body of the request
     # @param [Hash] options               options
     # @return [Hash]
+    # @raise [Exceptions::TimeoutError] if the server doesn't respond within the configured timeouts
+    # @raise [Exceptions::ConnectionError] if the server can't be reached
     def request(path, options_or_http_method = nil, body: nil, headers: {}, options: {}, http_method: :get)
       # Handle both keyword arguments and hash format for backward compatibility
       if options_or_http_method.is_a?(Hash)
@@ -102,6 +134,12 @@ module Octoprint
       else
         client.public_send(http_method, path, body&.to_json, headers)
       end
+    rescue Faraday::TimeoutError => e
+      raise Exceptions::TimeoutError, e.message
+    rescue Faraday::ConnectionFailed, Faraday::SSLError => e
+      # Faraday reports open timeouts (Net::OpenTimeout) as connection failures
+      error_class = e.wrapped_exception.is_a?(Timeout::Error) ? Exceptions::TimeoutError : Exceptions::ConnectionError
+      raise error_class, e.message
     end
 
     def new_client(multipart: false)
@@ -109,6 +147,8 @@ module Octoprint
         client.headers["Authorization"] = "Bearer #{api_key}" unless api_key.nil?
         client.headers["Content-Type"] = multipart ? "multipart/form-data" : "application/json"
         client.request :multipart if multipart
+        client.options.open_timeout = open_timeout
+        client.options.timeout = timeout
       end
     end
   end

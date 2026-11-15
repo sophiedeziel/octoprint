@@ -44,6 +44,24 @@ module Octoprint
       fetch_resource(deserialize: false)
     end
 
+    # Retrieves the webcam settings as a typed object.
+    #
+    # Handles both the multi-webcam settings shape of OctoPrint 1.9+ and the legacy
+    # `webcam` keys of older versions. See {Settings::Webcam.from_settings} to build
+    # it from a settings hash you already fetched.
+    #
+    # @example Get the webcam stream URL
+    #   webcam = Octoprint::Settings.webcam
+    #   puts webcam.stream_url if webcam.enabled
+    #
+    # @return [Settings::Webcam] The webcam settings
+    # @raise [Octoprint::Exceptions::Error] if the request fails
+    # @raise [Octoprint::Exceptions::AuthenticationError] if lacking SETTINGS_READ permission
+    sig { returns(Settings::Webcam) }
+    def self.webcam
+      Webcam.from_settings(get)
+    end
+
     # Saves settings to the OctoPrint server.
     #
     # This method updates OctoPrint settings with the provided values.

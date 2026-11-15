@@ -23,12 +23,24 @@ module Octoprint
 
     # Configure the API client with the server's address and key
     #
-    # @param [String] host      Server's host address
-    # @param [String] api_key   Server's API key
+    # @example
+    #   Octoprint.configure(host: "http://octopi.local", api_key: "key", open_timeout: 2, timeout: 3)
+    #
+    # @param [String] host                  Server's host address
+    # @param [String] api_key               Server's API key
+    # @param [Numeric, nil] open_timeout    Seconds to wait for the connection to open. nil falls back to `timeout`
+    # @param [Numeric, nil] timeout         Seconds to wait for a read or a write. nil: adapter default (60s)
     # @return [nil]
-    sig { params(host: String, api_key: String).void }
-    def configure(host:, api_key:)
-      self.client = Client.new(host: host, api_key: api_key)
+    sig do
+      params(
+        host: String,
+        api_key: String,
+        open_timeout: T.nilable(Numeric),
+        timeout: T.nilable(Numeric)
+      ).void
+    end
+    def configure(host:, api_key:, open_timeout: Client::DEFAULT_OPEN_TIMEOUT, timeout: Client::DEFAULT_TIMEOUT)
+      self.client = Client.new(host: host, api_key: api_key, open_timeout: open_timeout, timeout: timeout)
 
       nil
     end

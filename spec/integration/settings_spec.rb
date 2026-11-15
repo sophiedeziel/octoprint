@@ -37,6 +37,29 @@ RSpec.describe Octoprint::Settings, type: :integration do
     end
   end
 
+  # Same request as `.get`, so it reuses the recorded settings of a vanilla OctoPrint 1.11 server
+  describe ".webcam", vcr: { cassette_name: "settings/get" } do
+    use_octoprint_server
+
+    subject(:webcam) { described_class.webcam }
+
+    it { is_expected.to be_a Octoprint::Settings::Webcam }
+
+    it "returns the default webcam of the multi-webcam settings" do
+      expect(webcam).to have_attributes(
+        enabled: true,
+        name: "classic",
+        display_name: "Classic Webcam",
+        stream_url: "/webcam/?action=stream",
+        snapshot_url: "http://localhost:8080/?action=snapshot",
+        stream_ratio: "16:9",
+        flip_h: false,
+        flip_v: false,
+        rotate90: false
+      )
+    end
+  end
+
   describe ".save", vcr: { cassette_name: "settings/save" } do
     use_octoprint_server
 

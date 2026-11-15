@@ -38,6 +38,14 @@ RSpec.describe Octoprint::Exceptions do
     it "defines NotFoundError as child of Error" do
       expect(described_class::NotFoundError).to be < described_class::Error
     end
+
+    it "defines ConnectionError as child of Error" do
+      expect(described_class::ConnectionError).to be < described_class::Error
+    end
+
+    it "defines TimeoutError as child of ConnectionError" do
+      expect(described_class::TimeoutError).to be < described_class::ConnectionError
+    end
   end
 
   describe "exception behavior" do
@@ -133,7 +141,9 @@ RSpec.describe Octoprint::Exceptions do
         described_class::UnknownError,
         described_class::ConflictError,
         described_class::UnsupportedMediaTypeError,
-        described_class::NotFoundError
+        described_class::NotFoundError,
+        described_class::ConnectionError,
+        described_class::TimeoutError
       ].each do |exception_class|
         expect do
           raise exception_class, "test"
