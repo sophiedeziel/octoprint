@@ -6,7 +6,7 @@ module Octoprint
     # Temperature data of a single heater (tool, bed or chamber).
     #
     # @example
-    #   bed = Octoprint::Printer::Bed.get.bed
+    #   bed = Octoprint::Printer.get.temperature.bed
     #   bed.actual # => 50.221
     #   bed.target # => 70.0
     #   bed.offset # => 5

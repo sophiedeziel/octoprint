@@ -5,11 +5,10 @@ module Octoprint
   class Printer
     # Temperature state of the printer's tools, bed and chamber, with an optional history.
     #
-    # Returned by {Printer.get} (as {Printer#temperature}), {Printer::Tool.get}, {Printer::Bed.get}
-    # and {Printer::Chamber.get}. Only the heaters relevant to the request are populated.
+    # Returned by {Printer.get} as {Printer#temperature}. Only the heaters present on the printer are populated.
     #
     # @example
-    #   temperature = Octoprint::Printer::Tool.get(history: true, limit: 2)
+    #   temperature = Octoprint::Printer.get(history: true, limit: 2).temperature
     #   temperature.tools.keys         # => [:tool0, :tool1]
     #   temperature.tool(0).actual     # => 214.8821
     #   temperature.history.first.time # => 1395651928
@@ -56,7 +55,7 @@ module Octoprint
       # Temperature data of the tool with the given index.
       #
       # @example
-      #   Octoprint::Printer::Tool.get.tool(1).target # => 205.0
+      #   Octoprint::Printer.get.temperature.tool(1).target # => 205.0
       #
       # @param index [Integer] The tool's index, starting at 0
       # @return [Printer::TemperatureData, nil] The tool's temperature data, nil if there is no such tool
