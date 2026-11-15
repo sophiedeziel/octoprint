@@ -7,14 +7,14 @@ module Octoprint
     #
     # Only available if the selected printer profile has a heated bed, otherwise every request
     # raises {Octoprint::Exceptions::ConflictError}. Requires the +CONTROL+ permission for commands
-    # and +STATUS+ for {.get}.
+    # and +STATUS+ for {.temperature}.
     #
     # @example Read the bed temperature
-    #   bed = Octoprint::Printer::Bed.get.bed
+    #   bed = Octoprint::Printer::Bed.temperature
     #   puts "#{bed.actual}°C / #{bed.target}°C"
     #
-    # @example Include the last two history data points
-    #   Octoprint::Printer::Bed.get(history: true, limit: 2).history
+    # @example Include the last two history readings
+    #   Octoprint::Printer::Bed.temperature(history: true, limit: 2).history.map(&:actual) # => [50.221, 49.1123]
     #
     # @example Heat the bed to 75°C
     #   Octoprint::Printer::Bed.target(75)

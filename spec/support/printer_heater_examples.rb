@@ -9,7 +9,7 @@ RSpec.shared_examples "a printer heater" do |heater|
     expect(described_class).to be < Octoprint::Printer::Heater
   end
 
-  describe ".get" do
+  describe ".temperature" do
     let(:response) do
       {
         heater => { actual: 50.221, target: 70.0, offset: 5 },
@@ -25,19 +25,19 @@ RSpec.shared_examples "a printer heater" do |heater|
     end
 
     it "fetches the raw resource without options by default" do
-      described_class.get
+      described_class.temperature
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: {})
     end
 
     it "requests the temperature history" do
-      described_class.get(history: true)
+      described_class.temperature(history: true)
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: { history: true })
     end
 
     it "requests a limited temperature history" do
-      described_class.get(history: true, limit: 2)
+      described_class.temperature(history: true, limit: 2)
 
       expect(described_class).to have_received(:fetch_resource).with(
         deserialize: false,
@@ -46,27 +46,41 @@ RSpec.shared_examples "a printer heater" do |heater|
     end
 
     it "drops the limit when the history isn't requested" do
-      described_class.get(limit: 2)
+      described_class.temperature(limit: 2)
 
       expect(described_class).to have_received(:fetch_resource).with(deserialize: false, options: {})
     end
 
-    it "returns a temperature state with the heater's data" do
-      temperature = described_class.get
+    it "returns the heater's temperature" do
+      temperature = described_class.temperature
 
-      expect(temperature).to be_a(Octoprint::Printer::TemperatureState)
-      expect(temperature.public_send(heater)).to be_a(Octoprint::Printer::TemperatureData)
-      expect(temperature.public_send(heater).actual).to eq(50.221)
-      expect(temperature.public_send(heater).target).to eq(70.0)
-      expect(temperature.public_send(heater).offset).to eq(5)
+      expect(temperature).to be_a(described_class)
+      expect(temperature.actual).to eq(50.221)
+      expect(temperature.target).to eq(70.0)
+      expect(temperature.offset).to eq(5)
     end
 
-    it "deserializes the history data points" do
-      history = described_class.get.history
+    it "returns an empty heater when it is missing from the response" do
+      allow(described_class).to receive(:fetch_resource).and_return({})
 
-      expect(history).to all(be_a(Octoprint::Printer::TemperatureDataPoint))
+      temperature = described_class.temperature
+
+      expect(temperature.actual).to be_nil
+      expect(temperature.history).to be_nil
+    end
+
+    it "collects unknown fields into extra" do
+      allow(described_class).to receive(:fetch_resource).and_return({ heater => { actual: 21.3, unit: "C" } })
+
+      expect(described_class.temperature.extra).to eq({ unit: "C" })
+    end
+
+    it "returns the heater's history readings" do
+      history = described_class.temperature.history
+
+      expect(history).to all(be_a(Octoprint::Printer::TemperatureReading))
       expect(history.map(&:time)).to eq([1_395_651_928, 1_395_651_926])
-      expect(history.last.public_send(heater).actual).to eq(49.1123)
+      expect(history.map(&:actual)).to eq([50.221, 49.1123])
     end
   end
 

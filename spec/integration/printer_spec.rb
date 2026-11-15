@@ -174,23 +174,25 @@ RSpec.describe Octoprint::Printer, type: :integration do
   describe Octoprint::Printer::Bed do
     use_octoprint_server
 
-    describe ".get", vcr: { cassette_name: "printer/bed/get" } do
-      subject(:temperature) { described_class.get }
+    describe ".temperature", vcr: { cassette_name: "printer/bed/get" } do
+      subject(:temperature) { described_class.temperature }
 
-      it "returns the bed temperature only" do
-        expect(temperature.bed).to be_a Octoprint::Printer::TemperatureData
-        expect(temperature.bed.actual).to be_a Float
-        expect(temperature.tools).to eq({})
-        expect(temperature.chamber).to be_nil
+      it "returns the bed temperature" do
+        expect(temperature).to be_a described_class
+        expect(temperature.actual).to be_a Float
+        expect(temperature.target).to be_a Float
+        expect(temperature.offset).to eq 0
+        expect(temperature.history).to be_nil
       end
     end
 
-    describe ".get with history", vcr: { cassette_name: "printer/bed/get_with_history" } do
-      subject(:temperature) { described_class.get(history: true, limit: 2) }
+    describe ".temperature with history", vcr: { cassette_name: "printer/bed/get_with_history" } do
+      subject(:temperature) { described_class.temperature(history: true, limit: 2) }
 
       it "returns the limited temperature history" do
         expect(temperature.history.size).to eq 2
-        expect(temperature.history.first.bed.actual).to be_a Float
+        expect(temperature.history).to all(be_a(Octoprint::Printer::TemperatureReading))
+        expect(temperature.history.first.actual).to be_a Float
       end
     end
 
@@ -210,23 +212,25 @@ RSpec.describe Octoprint::Printer, type: :integration do
   describe Octoprint::Printer::Chamber do
     use_octoprint_server
 
-    describe ".get", vcr: { cassette_name: "printer/chamber/get" } do
-      subject(:temperature) { described_class.get }
+    describe ".temperature", vcr: { cassette_name: "printer/chamber/get" } do
+      subject(:temperature) { described_class.temperature }
 
-      it "returns the chamber temperature only" do
-        expect(temperature.chamber).to be_a Octoprint::Printer::TemperatureData
-        expect(temperature.chamber.actual).to be_a Float
-        expect(temperature.tools).to eq({})
-        expect(temperature.bed).to be_nil
+      it "returns the chamber temperature" do
+        expect(temperature).to be_a described_class
+        expect(temperature.actual).to be_a Float
+        expect(temperature.target).to be_a Float
+        expect(temperature.offset).to eq 0
+        expect(temperature.history).to be_nil
       end
     end
 
-    describe ".get with history", vcr: { cassette_name: "printer/chamber/get_with_history" } do
-      subject(:temperature) { described_class.get(history: true, limit: 2) }
+    describe ".temperature with history", vcr: { cassette_name: "printer/chamber/get_with_history" } do
+      subject(:temperature) { described_class.temperature(history: true, limit: 2) }
 
       it "returns the limited temperature history" do
         expect(temperature.history.size).to eq 2
-        expect(temperature.history.first.chamber.actual).to be_a Float
+        expect(temperature.history).to all(be_a(Octoprint::Printer::TemperatureReading))
+        expect(temperature.history.first.actual).to be_a Float
       end
     end
 

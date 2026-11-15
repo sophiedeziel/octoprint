@@ -7,10 +7,10 @@ module Octoprint
     #
     # Only available if the selected printer profile has a heated chamber, otherwise every request
     # raises {Octoprint::Exceptions::ConflictError}. Requires the +CONTROL+ permission for commands
-    # and +STATUS+ for {.get}.
+    # and +STATUS+ for {.temperature}.
     #
     # @example Read the chamber temperature
-    #   chamber = Octoprint::Printer::Chamber.get.chamber
+    #   chamber = Octoprint::Printer::Chamber.temperature
     #   puts "#{chamber.actual}°C / #{chamber.target}°C"
     #
     # @example Heat the chamber to 50°C
