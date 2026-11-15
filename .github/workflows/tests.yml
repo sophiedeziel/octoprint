@@ -13,6 +13,10 @@ jobs:
 ##
 # latest info: https://endoflife.date/ruby
 #
+# Keep this matrix in sync with `required_ruby_version` in octoprint.gemspec
+# and `TargetRubyVersion` in .rubocop.yml. When a version reaches EOL, drop it
+# from all three.
+#
 # Ruby 4.0
 # status: normal maintenance
 # release date: 2025-12-25
@@ -28,18 +32,12 @@ jobs:
 # release date: 2023-12-25
 # EOL: 2027-03-31 (expected)
 
-# Ruby 3.2
-# status: security maintenance
-# release date: 2022-12-25
-# EOL: 2026-03-31
-
     strategy:
       matrix:
         ruby:
           - 4.0
           - 3.4
           - 3.3
-          - 3.2
 
     steps:
     - name: Checkout code
