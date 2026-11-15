@@ -7,6 +7,7 @@ module Octoprint
   # The printer's components are controlled through dedicated resources:
   #
   # - {Printer::Printhead} — jog, home and change the feed rate of the print head
+  # - {Printer::Tool} — set temperatures, select tools, extrude and change the flow rate
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
