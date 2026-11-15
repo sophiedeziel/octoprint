@@ -275,4 +275,77 @@ RSpec.describe Octoprint::Printer, type: :integration do
       it { expect(release).to be true }
     end
   end
+
+  describe Octoprint::Printer::Command do
+    use_octoprint_server
+
+    describe ".send_command", vcr: { cassette_name: "printer/command/send_command" } do
+      subject(:send_command) { described_class.send_command("M106") }
+
+      it { expect(send_command).to be true }
+    end
+
+    describe ".send_command with parameters", vcr: { cassette_name: "printer/command/send_command_with_parameters" } do
+      subject(:send_command) { described_class.send_command("M106 S%(speed)s", parameters: { speed: 128 }) }
+
+      it { expect(send_command).to be true }
+    end
+
+    describe ".send_commands", vcr: { cassette_name: "printer/command/send_commands" } do
+      subject(:send_commands) { described_class.send_commands(["M18", "M106 S0"]) }
+
+      it { expect(send_commands).to be true }
+    end
+
+    describe ".run_script", vcr: { cassette_name: "printer/command/run_script" } do
+      subject(:run_script) { described_class.run_script("afterPrintCancelled") }
+
+      it { expect(run_script).to be true }
+    end
+
+    describe ".custom_controls", vcr: { cassette_name: "printer/command/custom_controls" } do
+      subject(:controls) { described_class.custom_controls }
+
+      it "returns the configured controls" do
+        expect(controls).to all(be_a(Octoprint::Printer::CustomControl))
+        expect(controls.map(&:name)).to eq ["Fan", "Example for multiple commands", "Reporting"]
+      end
+
+      it "returns containers with their children" do
+        fan = controls.first
+        expect(fan).to be_container
+        expect(fan.layout).to eq "horizontal"
+        expect(fan.children.map(&:name)).to eq ["Enable Fan", "Disable Fan"]
+        expect(fan.children.last.additional_classes).to eq "btn-danger"
+        expect(controls.last.collapsed).to be true
+      end
+
+      it "returns controls with their inputs" do
+        enable_fan = controls.first.children.first
+        expect(enable_fan).not_to be_container
+        expect(enable_fan.command).to eq "M106 S%(speed)s"
+
+        input = enable_fan.input.first
+        expect(input).to be_a Octoprint::Printer::CustomControl::Input
+        expect(input.name).to eq "Speed (0-255)"
+        expect(input.parameter).to eq "speed"
+        expect(input.default).to eq 255
+        expect(input.slider).to eq({ min: 0, max: 255 })
+      end
+
+      it "returns controls with multiple commands and confirmations" do
+        move_x = controls[1].children.first
+        expect(move_x.commands).to eq ["G91", "G1 X10 F3000", "G90"]
+        expect(move_x.confirm).to start_with "You are about to move the X axis"
+      end
+
+      it "returns feedback controls" do
+        position = controls.last.children.first
+        expect(position.regex).to start_with "X:"
+        expect(position.template).to eq "Position: X={0}, Y={1}, Z={2}, E={3}"
+        expect(position.key).to be_a String
+        expect(position.template_key).to be_a String
+      end
+    end
+  end
 end

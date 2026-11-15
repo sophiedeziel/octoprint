@@ -11,6 +11,7 @@ module Octoprint
   # - {Printer::Bed} — set the heated bed's temperature
   # - {Printer::Chamber} — set the heated chamber's temperature
   # - {Printer::Sd} — initialize, refresh and release the printer's SD card
+  # - {Printer::Command} — send arbitrary commands and retrieve custom controls
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
