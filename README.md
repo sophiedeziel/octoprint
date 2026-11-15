@@ -9,7 +9,7 @@ A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbe
 - **📦 Comprehensive API Coverage**: Support for Files, Jobs, Printer Profiles, Connections, Logs, and more
 - **🧪 Exceptional Quality**: 100% test coverage with 556 test examples and 0 failures
 - **🎯 Multi-Printer Support**: Manage multiple OctoPrint instances with thread-safe clients
-- **⚡ Modern Ruby**: Built for Ruby 3.2+ with Zeitwerk autoloading and ActiveSupport integration
+- **⚡ Modern Ruby**: Built for Ruby 3.3+ with Zeitwerk autoloading and ActiveSupport integration
 
 ## Installation
 
