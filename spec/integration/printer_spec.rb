@@ -170,4 +170,76 @@ RSpec.describe Octoprint::Printer, type: :integration do
       it { expect(flowrate).to be true }
     end
   end
+
+  describe Octoprint::Printer::Bed do
+    use_octoprint_server
+
+    describe ".get", vcr: { cassette_name: "printer/bed/get" } do
+      subject(:temperature) { described_class.get }
+
+      it "returns the bed temperature only" do
+        expect(temperature.bed).to be_a Octoprint::Printer::TemperatureData
+        expect(temperature.bed.actual).to be_a Float
+        expect(temperature.tools).to eq({})
+        expect(temperature.chamber).to be_nil
+      end
+    end
+
+    describe ".get with history", vcr: { cassette_name: "printer/bed/get_with_history" } do
+      subject(:temperature) { described_class.get(history: true, limit: 2) }
+
+      it "returns the limited temperature history" do
+        expect(temperature.history.size).to eq 2
+        expect(temperature.history.first.bed.actual).to be_a Float
+      end
+    end
+
+    describe ".target", vcr: { cassette_name: "printer/bed/target" } do
+      subject(:target) { described_class.target(75) }
+
+      it { expect(target).to be true }
+    end
+
+    describe ".offset", vcr: { cassette_name: "printer/bed/offset" } do
+      subject(:offset) { described_class.offset(-5) }
+
+      it { expect(offset).to be true }
+    end
+  end
+
+  describe Octoprint::Printer::Chamber do
+    use_octoprint_server
+
+    describe ".get", vcr: { cassette_name: "printer/chamber/get" } do
+      subject(:temperature) { described_class.get }
+
+      it "returns the chamber temperature only" do
+        expect(temperature.chamber).to be_a Octoprint::Printer::TemperatureData
+        expect(temperature.chamber.actual).to be_a Float
+        expect(temperature.tools).to eq({})
+        expect(temperature.bed).to be_nil
+      end
+    end
+
+    describe ".get with history", vcr: { cassette_name: "printer/chamber/get_with_history" } do
+      subject(:temperature) { described_class.get(history: true, limit: 2) }
+
+      it "returns the limited temperature history" do
+        expect(temperature.history.size).to eq 2
+        expect(temperature.history.first.chamber.actual).to be_a Float
+      end
+    end
+
+    describe ".target", vcr: { cassette_name: "printer/chamber/target" } do
+      subject(:target) { described_class.target(50) }
+
+      it { expect(target).to be true }
+    end
+
+    describe ".offset", vcr: { cassette_name: "printer/chamber/offset" } do
+      subject(:offset) { described_class.offset(-5) }
+
+      it { expect(offset).to be true }
+    end
+  end
 end
