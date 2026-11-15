@@ -59,6 +59,26 @@ RSpec.describe Octoprint::Settings do
       end
     end
 
+    describe ".webcam" do
+      let(:settings_data) do
+        { webcam: { webcam_enabled: true, stream_url: "/webcam/?action=stream" } }
+      end
+
+      before do
+        allow(client).to receive(:request).with("/api/settings", http_method: :get).and_return(settings_data)
+      end
+
+      it "fetches settings from the API" do
+        expect(client).to receive(:request).with("/api/settings", http_method: :get)
+        described_class.webcam
+      end
+
+      it "returns typed webcam settings" do
+        expect(described_class.webcam).to be_a(Octoprint::Settings::Webcam)
+          .and have_attributes(enabled: true, stream_url: "/webcam/?action=stream")
+      end
+    end
+
     describe ".save" do
       let(:settings_to_update) do
         {

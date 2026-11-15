@@ -16,6 +16,79 @@ RSpec.describe Octoprint::Client do
     end.to raise_error Octoprint::Exceptions::MissingCredentialsError
   end
 
+  it "accepts a URI as host" do
+    client = described_class.new(host: URI("http://octopi.local"), api_key: api_key)
+
+    expect(client.client.url_prefix.host).to eq "octopi.local"
+  end
+
+  describe "timeouts" do
+    it "defaults to a 2 seconds open timeout and a 3 seconds timeout" do
+      client = described_class.new(host: host, api_key: api_key)
+
+      expect(client).to have_attributes(open_timeout: 2, timeout: 3)
+      expect(client.client.options).to have_attributes(open_timeout: 2, timeout: 3)
+    end
+
+    it "passes custom timeouts to Faraday" do
+      client = described_class.new(host: host, api_key: api_key, open_timeout: 0.5, timeout: 10)
+
+      expect(client.client.options).to have_attributes(open_timeout: 0.5, timeout: 10)
+    end
+
+    it "leaves nil timeouts to the adapter defaults" do
+      client = described_class.new(host: host, api_key: api_key, open_timeout: nil, timeout: nil)
+
+      expect(client.client.options).to have_attributes(open_timeout: nil, timeout: nil)
+    end
+
+    it "passes the timeouts to the multipart client" do
+      client = described_class.new(host: host, api_key: api_key, open_timeout: 1, timeout: 30)
+
+      expect(client.send(:new_client, multipart: true).options).to have_attributes(open_timeout: 1, timeout: 30)
+    end
+  end
+
+  describe "connection errors" do
+    let(:client) { described_class.new(host: host, api_key: api_key) }
+
+    it "raises a TimeoutError when the server doesn't respond in time" do
+      allow(client.client).to receive(:get).and_raise(Faraday::TimeoutError, "Net::ReadTimeout")
+
+      expect { client.request("/api/version") }
+        .to raise_error(Octoprint::Exceptions::TimeoutError, "Net::ReadTimeout")
+    end
+
+    it "raises a TimeoutError when the connection doesn't open in time" do
+      allow(client.client).to receive(:get).and_raise(Faraday::ConnectionFailed.new(Net::OpenTimeout.new("expired")))
+
+      expect { client.request("/api/version") }.to raise_error(Octoprint::Exceptions::TimeoutError)
+    end
+
+    it "raises a ConnectionError when the server can't be reached" do
+      allow(client.client).to receive(:get)
+        .and_raise(Faraday::ConnectionFailed.new(Errno::ECONNREFUSED.new("connect(2)")))
+
+      expect { client.request("/api/version") }.to raise_error(Octoprint::Exceptions::ConnectionError, /refused/)
+    end
+
+    it "raises a ConnectionError on SSL failures" do
+      allow(client.client).to receive(:get).and_raise(Faraday::SSLError, "certificate verify failed")
+
+      expect { client.request("/api/version") }
+        .to raise_error(Octoprint::Exceptions::ConnectionError, "certificate verify failed")
+    end
+
+    it "raises a TimeoutError from multipart requests" do
+      multipart_client = client.send(:new_client, multipart: true)
+      allow(client).to receive(:new_client).with(multipart: true).and_return(multipart_client)
+      allow(multipart_client).to receive(:post).and_raise(Faraday::TimeoutError)
+
+      expect { client.request("/api/files/local", http_method: :post, body: {}, options: { force_multipart: true }) }
+        .to raise_error(Octoprint::Exceptions::TimeoutError)
+    end
+  end
+
   describe "#use" do
     let(:client) do
       described_class.new(host: host, api_key: api_key)

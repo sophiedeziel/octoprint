@@ -103,6 +103,8 @@ end
 - `UnsupportedMediaTypeError` (415) - Invalid file format
 - `InternalServerError` (500) - Server-side errors
 - `UnknownError` - Fallback for unexpected responses
+- `ConnectionError` - The server can't be reached (connection refused, unreachable host, ...)
+- `TimeoutError` - The server didn't respond within the configured timeouts (a subclass of `ConnectionError`)
 
 ## 📦 Comprehensive API Coverage
 
@@ -172,6 +174,34 @@ end
 cr10.use do
   files << Octoprint::Files.list
 end
+```
+
+#### Timeouts
+
+By default, the client waits up to 2 seconds for the connection to open and up to 3 seconds for each read or write, so an offline printer can't hang your app. Pass `open_timeout:` and `timeout:` (in seconds) to `Octoprint.configure` or `Octoprint::Client.new` to change them. Raise `timeout:` for large file uploads. `nil` falls back to the HTTP adapter's default (60 seconds for Net::HTTP).
+
+```Ruby
+client = Octoprint::Client.new(host: 'http://192.168.0.145', api_key: 'asdf', open_timeout: 1, timeout: 30)
+
+begin
+  client.use { Octoprint::Job.get }
+rescue Octoprint::Exceptions::ConnectionError # also rescues Octoprint::Exceptions::TimeoutError
+  puts "Printer is offline"
+end
+```
+
+#### Webcam settings
+
+`Octoprint::Settings.webcam` returns the webcam settings as a typed object. It supports the multi-webcam settings of OctoPrint 1.9+ (using the default webcam) and the legacy settings of older versions.
+
+```Ruby
+webcam = Octoprint::Settings.webcam # => Octoprint::Settings::Webcam
+webcam.enabled                      # => true
+webcam.stream_url                   # => "/webcam/?action=stream" (can be relative to the host)
+webcam.snapshot_url                 # => "http://localhost:8080/?action=snapshot"
+
+# Already have the settings? Skip the extra request
+Octoprint::Settings::Webcam.from_settings(Octoprint::Settings.get)
 ```
 
 ## 🧪 Testing & Code Quality

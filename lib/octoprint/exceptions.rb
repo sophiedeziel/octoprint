@@ -18,5 +18,9 @@ module Octoprint
     class ConflictError < Error; end
     class UnsupportedMediaTypeError < Error; end
     class NotFoundError < Error; end
+    # The server could not be reached (connection refused, host unreachable, DNS failure, ...)
+    class ConnectionError < Error; end
+    # The server did not open the connection or respond within the configured timeouts
+    class TimeoutError < ConnectionError; end
   end
 end
