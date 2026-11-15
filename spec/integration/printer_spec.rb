@@ -100,4 +100,75 @@ RSpec.describe Octoprint::Printer, type: :integration do
       it { expect { home }.to raise_error(Octoprint::Exceptions::BadRequestError, "[400] axis is invalid") }
     end
   end
+
+  describe Octoprint::Printer::Tool do
+    use_octoprint_server
+
+    describe ".get", vcr: { cassette_name: "printer/tool/get" } do
+      subject(:temperature) { described_class.get }
+
+      it { is_expected.to be_a Octoprint::Printer::TemperatureState }
+
+      it "returns the tools' temperatures only" do
+        expect(temperature.tools.keys).to eq [:tool0]
+        expect(temperature.tool(0).actual).to be_a Float
+        expect(temperature.tool(0).target).to be_a Float
+        expect(temperature.tool(0).offset).to eq 0
+        expect(temperature.bed).to be_nil
+        expect(temperature.chamber).to be_nil
+        expect(temperature.history).to be_nil
+      end
+    end
+
+    describe ".get with history", vcr: { cassette_name: "printer/tool/get_with_history" } do
+      subject(:temperature) { described_class.get(history: true, limit: 2) }
+
+      it "returns the limited temperature history" do
+        expect(temperature.history.size).to eq 2
+        expect(temperature.history.first.tool(0).actual).to be_a Float
+      end
+    end
+
+    describe ".target", vcr: { cassette_name: "printer/tool/target" } do
+      subject(:target) { described_class.target(tool0: 220) }
+
+      it { expect(target).to be true }
+    end
+
+    describe ".offset", vcr: { cassette_name: "printer/tool/offset" } do
+      subject(:offset) { described_class.offset(tool0: 10) }
+
+      it { expect(offset).to be true }
+    end
+
+    describe ".select_tool", vcr: { cassette_name: "printer/tool/select" } do
+      subject(:select_tool) { described_class.select_tool("tool0") }
+
+      it { expect(select_tool).to be true }
+    end
+
+    describe ".select_tool with an invalid tool", vcr: { cassette_name: "printer/tool/select_invalid" } do
+      subject(:select_tool) { described_class.select_tool("hotend") }
+
+      it { expect { select_tool }.to raise_error(Octoprint::Exceptions::BadRequestError) }
+    end
+
+    describe ".extrude", vcr: { cassette_name: "printer/tool/extrude" } do
+      subject(:extrude) { described_class.extrude(5) }
+
+      it { expect(extrude).to be true }
+    end
+
+    describe ".extrude to retract", vcr: { cassette_name: "printer/tool/retract" } do
+      subject(:retract) { described_class.extrude(-3, speed: 300) }
+
+      it { expect(retract).to be true }
+    end
+
+    describe ".flowrate", vcr: { cassette_name: "printer/tool/flowrate" } do
+      subject(:flowrate) { described_class.flowrate(95) }
+
+      it { expect(flowrate).to be true }
+    end
+  end
 end
