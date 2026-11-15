@@ -1,0 +1,103 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/printer/command/custom"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1371'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "controls": [
+            {
+              "children": [
+                {
+                  "command": "M106 S%(speed)s",
+                  "input": [
+                    {
+                      "default": 255,
+                      "name": "Speed (0-255)",
+                      "parameter": "speed",
+                      "slider": {
+                        "max": 255,
+                        "min": 0
+                      }
+                    }
+                  ],
+                  "name": "Enable Fan"
+                },
+                {
+                  "additionalClasses": "btn-danger",
+                  "command": "M107",
+                  "name": "Disable Fan"
+                }
+              ],
+              "layout": "horizontal",
+              "name": "Fan"
+            },
+            {
+              "children": [
+                {
+                  "commands": [
+                    "G91",
+                    "G1 X10 F3000",
+                    "G90"
+                  ],
+                  "confirm": "You are about to move the X axis right by 10mm with 3000mm/min.",
+                  "name": "Move X (static)"
+                }
+              ],
+              "name": "Example for multiple commands"
+            },
+            {
+              "children": [
+                {
+                  "command": "M114",
+                  "key": "eb41c788b3c4d4d1b38a97a12ebe4228",
+                  "name": "Get Position",
+                  "regex": "X:([-+]?[0-9.]+) Y:([-+]?[0-9.]+) Z:([-+]?[0-9.]+) E:([-+]?[0-9.]+)",
+                  "template": "Position: X={0}, Y={1}, Z={2}, E={3}",
+                  "template_key": "5d54d9c91f6e9cf73978708bfa400d3c"
+                }
+              ],
+              "collapsed": true,
+              "name": "Reporting"
+            }
+          ]
+        }
+  recorded_at: Sun, 15 Nov 2026 04:38:48 GMT
+recorded_with: VCR 6.4.1

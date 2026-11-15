@@ -114,6 +114,7 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 |---|---|
 | **Files** | Upload, download, create folders, select/unselect, slice STL files, copy/move |
 | **Jobs** | Current job info, progress tracking, start/stop/pause operations |
+| **Printer** | Printer state, temperatures with history, print head jog/home, tool/bed/chamber temperatures, extrusion, SD card, arbitrary commands, custom controls |
 | **Printer Profiles** | Create, update, delete, and manage printer configurations |
 | **Connection** | Connect/disconnect printer, connection settings and options |
 | **Languages** | Upload, manage, and delete language packs |
@@ -129,6 +130,14 @@ Octoprint::Files.slice("model.stl", slicer: "cura")
 # Job control
 job = Octoprint::Job.current
 Octoprint::Job.start if job.state == "ready"
+
+# Printer control
+printer = Octoprint::Printer.get(history: true, limit: 10)
+printer.temperature.tool(0).actual        # => 214.8
+Octoprint::Printer::Printhead.home(axes: %w[x y])
+Octoprint::Printer::Tool.target(tool0: 220)
+Octoprint::Printer::Bed.target(60)
+Octoprint::Printer::Command.send_commands(["M106 S255", "M117 Hello"])
 
 # Printer profiles
 profile = Octoprint::PrinterProfile.create(
