@@ -6,8 +6,8 @@ A comprehensive, type-safe Ruby wrapper for OctoPrint's REST API with full Sorbe
 
 - **🛡️ Type Safety**: Full Sorbet type annotations with compile-time error checking
 - **🔥 Smart Error Handling**: HTTP status codes mapped to specific exception types
-- **📦 Comprehensive API Coverage**: Support for Files, Jobs, Printer Profiles, Connections, Logs, and more
-- **🧪 Exceptional Quality**: 100% test coverage with 556 test examples and 0 failures
+- **📦 Comprehensive API Coverage**: Files, jobs, printer state and commands, printer profiles, connection, access control, settings, timelapse, logs, system commands and more
+- **🧪 Exceptional Quality**: 100% line coverage, enforced in CI
 - **🎯 Multi-Printer Support**: Manage multiple OctoPrint instances with thread-safe clients
 - **⚡ Modern Ruby**: Built for Ruby 3.3+ with Zeitwerk autoloading and ActiveSupport integration
 
@@ -43,19 +43,21 @@ require 'octoprint'
 Octoprint.configure(host: 'https://octopi.local/', api_key: 'your_api_key')
 
 # List files with full type safety
-files = Octoprint::Files.list                    # => Array<Octoprint::File>
-files.first.name                                 # => String (typed)
-files.first.type_path                            # => Array<String> (typed)
+result = Octoprint::Files.list                   # => Octoprint::Files
+result.files.first.name                          # => String (typed)
+result.files.first.type_path                     # => Array<String> (typed)
 
 # Get current job with progress tracking
-job = Octoprint::Job.current                     # => Octoprint::Job
-puts "#{job.file.name}: #{job.progress.percent}%" if job.progress.percent
+job = Octoprint::Job.get                         # => Octoprint::Job
+puts "#{job.information.file[:name]}: #{job.progress.completion}%" if job.progress.completion
 
-# Upload and start a print job
-Octoprint::Files.upload("awesome_model.gcode", "local")
-Octoprint::Files.select("local", "awesome_model.gcode")
+# Upload and start a print job (location defaults to Octoprint::Location::Local)
+Octoprint::Files.upload("awesome_model.gcode")
+Octoprint::Files.select(filename: "awesome_model.gcode")
 Octoprint::Job.start
 ```
+
+Or select and start printing in one call: `Octoprint::Files.select(filename: "awesome_model.gcode", print: true)`.
 
 To generate an app key on your Octoprint's instance, log in to it, click on the Settings button in the top menu and then go to the "Application Keys".
 
@@ -65,9 +67,9 @@ This gem provides complete type safety with Sorbet integration:
 
 ```ruby
 # All models are fully typed
-job = Octoprint::Job.current
-job.file.name         # => String (typed)
-job.progress.percent  # => Float | nil (typed)
+job = Octoprint::Job.get
+job.information.file           # => Hash | nil (typed), e.g. job.information.file[:name]
+job.progress.completion        # => Float | nil (typed)
 ```
 
 **Benefits:**
@@ -82,20 +84,24 @@ HTTP errors are automatically mapped to specific exception types for clean error
 
 ```ruby
 begin
-  Octoprint::Files.upload(file_path, invalid_target)
-rescue Octoprint::BadRequestError => e
-  # Handle 400 errors specifically
-  puts "Invalid request: #{e.message}"
-rescue Octoprint::AuthenticationError => e
-  # Handle 403 errors specifically
-  puts "Authentication failed: #{e.message}"
-rescue Octoprint::NotFoundError => e
+  Octoprint::Files.select(filename: "missing.gcode")
+rescue Octoprint::Exceptions::NotFoundError => e
   # Handle 404 errors specifically
   puts "Resource not found: #{e.message}"
+rescue Octoprint::Exceptions::BadRequestError => e
+  # Handle 400 errors specifically
+  puts "Invalid request: #{e.message}"
+rescue Octoprint::Exceptions::AuthenticationError => e
+  # Handle 403 errors specifically
+  puts "Authentication failed: #{e.message}"
+rescue Octoprint::Exceptions::Error => e
+  # Catch-all for every error raised by the gem
+  puts "OctoPrint error: #{e.message}"
 end
 ```
 
-**Exception Types:**
+**Exception Types** (all under `Octoprint::Exceptions`):
+- `Error` - Base class of every exception below, handy as a catch-all rescue
 - `AuthenticationError` (403) - Invalid API key or permissions
 - `BadRequestError` (400) - Invalid parameters or request format
 - `NotFoundError` (404) - Resource doesn't exist
@@ -105,6 +111,7 @@ end
 - `UnknownError` - Fallback for unexpected responses
 - `ConnectionError` - The server can't be reached (connection refused, unreachable host, ...)
 - `TimeoutError` - The server didn't respond within the configured timeouts (a subclass of `ConnectionError`)
+- `MissingCredentialsError` - `Octoprint::Client.new` was given a `nil` host or API key
 
 ## 📦 Comprehensive API Coverage
 
@@ -112,25 +119,29 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 
 | **Category** | **Features** |
 |---|---|
-| **Files** | Upload, download, create folders, select/unselect, slice STL files, copy/move |
-| **Jobs** | Current job info, progress tracking, start/stop/pause operations |
+| **Files** | List, get, upload, delete, create folders, select/unselect, slice STL files, copy/move, download URLs |
+| **Jobs** | Current job info, progress tracking, start/cancel/restart/pause/resume |
 | **Printer** | Printer state, temperatures with history, print head jog/home, tool/bed/chamber temperatures, extrusion, SD card, arbitrary commands, custom controls |
-| **Printer Profiles** | Create, update, delete, and manage printer configurations |
+| **Printer Profiles** | List, get, create, update, and delete printer profiles |
 | **Connection** | Connect/disconnect printer, connection settings and options |
-| **Languages** | Upload, manage, and delete language packs |
-| **Logs** | List, view, and manage OctoPrint log files |
+| **Languages** | List, upload, and delete language packs |
+| **Logs** | List and delete log files, download URLs |
 | **Timelapse** | List and delete timelapses, render or delete unrendered ones, change the timelapse config |
-| **Utilities** | Test paths, URLs, addresses, and server connectivity |
-| **Server** | Get server version and system information |
+| **Access** | Users (list, add, get, update, delete, change password, user settings, API keys, current user), groups (list, add, get, update, delete), permissions (list) |
+| **Settings** | Get and save settings, regenerate the API key, fetch templates, typed webcam settings |
+| **System Commands** | List commands (all or by source) and execute them |
+| **Wizard** | Get wizard data and finish wizards |
+| **Utilities** | Test paths, URLs, server connectivity, DNS resolution, and addresses |
+| **Server** | Server version (`ServerVersion`) and server status / safe mode (`ServerInformation`) |
 
 ```ruby
 # File management
-Octoprint::Files.upload("model.gcode", "local")
-Octoprint::Files.slice("model.stl", slicer: "cura")
+Octoprint::Files.upload("model.gcode", location: Octoprint::Location::Local)
+Octoprint::Files.slice(filename: "model.stl", profile: { slicer: "cura" })
 
 # Job control
-job = Octoprint::Job.current
-Octoprint::Job.start if job.state == "ready"
+job = Octoprint::Job.get
+Octoprint::Job.start if job.state == "Operational"
 
 # Printer control
 printer = Octoprint::Printer.get(history: true, limit: 10)
@@ -145,11 +156,9 @@ Octoprint::Timelapse.get(unrendered: true).unrendered.each { |job| Octoprint::Ti
 Octoprint::Timelapse.update_config(type: "timed", interval: 10, save: true)
 
 # Printer profiles
-profile = Octoprint::PrinterProfile.create(
-  id: "ender3",
-  name: "Ender 3 Pro",
-  model: "Ender 3 Pro"
-)
+profile = Octoprint::PrinterProfiles.create(
+  profile: { id: "ender3", name: "Ender 3 Pro", model: "Ender 3 Pro" }
+) # => Octoprint::PrinterProfiles::PrinterProfile
 
 # Connection management
 Octoprint::Connection.connect(port: "/dev/ttyUSB0", baudrate: 115200)
@@ -173,7 +182,7 @@ class PrintersController < ApplicationController
 end
 ```
 
-#### Example 2: Manage multiplie printers in a ruby script
+#### Example 2: Manage multiple printers in a ruby script
 
 ```Ruby
 ender3 = Octoprint::Client.new(host: 'http://192.168.0.145', api_key: 'asdf')
@@ -192,7 +201,7 @@ end
 
 #### Timeouts
 
-By default, the client waits up to 2 seconds for the connection to open and up to 3 seconds for each read or write, so an offline printer can't hang your app. Pass `open_timeout:` and `timeout:` (in seconds) to `Octoprint.configure` or `Octoprint::Client.new` to change them. Raise `timeout:` for large file uploads. `nil` falls back to the HTTP adapter's default (60 seconds for Net::HTTP).
+By default, the client waits up to 2 seconds for the connection to open and up to 3 seconds for each read or write, so an offline printer can't hang your app. Pass `open_timeout:` and `timeout:` (in seconds) to `Octoprint.configure` or `Octoprint::Client.new` to change them. Raise `timeout:` for large file uploads. A `nil` `timeout:` falls back to the HTTP adapter's default (60 seconds for Net::HTTP), and a `nil` `open_timeout:` falls back to `timeout:`.
 
 ```Ruby
 client = Octoprint::Client.new(host: 'http://192.168.0.145', api_key: 'asdf', open_timeout: 1, timeout: 30)
@@ -264,7 +273,7 @@ Enable the virtual printer plugin.
 
 Go to Settings > Application keys and generate a new API key.
 
-Set the `OCTOPRINT_HOST` and `OCTOPRINT_API_KEY` environment variables in your prefered way. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automaticaly load it's content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
+Set the `OCTOPRINT_HOST` and `OCTOPRINT_API_KEY` environment variables in your preferred way. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automatically load its content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
 
 Remember, you should never commit your credentials to git. With the current configuration, you should never have to.
 
@@ -277,9 +286,9 @@ If you need all request to pass through while developing, you can add the `:wip`
 example:
 ```Ruby
     it "calls the API", :wip, vcr: {cassette_name: '/currentuser'} do
-      result = Octoprint.User.current
+      result = Octoprint::Access::User.current
 
-      expect(result).to be_a Octoprint::User
+      expect(result).to be_a Octoprint::Access::User
       expect(result.name).to eq 'sophie'
     end
 ```
