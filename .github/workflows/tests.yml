@@ -51,3 +51,32 @@ jobs:
 
     - name: Run the default task
       run: bundle exec rspec --format RSpec::Github::Formatter --format documentation
+
+  # Builds the gem and loads it outside Bundler, with only its declared runtime
+  # dependencies installed. Fails if lib/ requires a dev-only gem (e.g. pry).
+  Gem-Smoke:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby:
+          - 4.0
+          - 3.4
+          - 3.3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Install Ruby
+      uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: false
+
+    - name: Build, install into a clean GEM_HOME, and require
+      run: |
+        gem build octoprint.gemspec
+        export GEM_HOME="$(mktemp -d)" GEM_PATH="$GEM_HOME"
+        gem install --no-document ./octoprint-*.gem
+        ruby -e 'require "octoprint"; Zeitwerk::Loader.eager_load_all; puts Octoprint::VERSION'
