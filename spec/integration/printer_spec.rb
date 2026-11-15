@@ -66,4 +66,38 @@ RSpec.describe Octoprint::Printer, type: :integration do
       its(:state)       { is_expected.to be_a Octoprint::Printer::State }
     end
   end
+
+  describe Octoprint::Printer::Printhead do
+    use_octoprint_server
+
+    describe ".jog", vcr: { cassette_name: "printer/printhead/jog" } do
+      subject(:jog) { described_class.jog(x: 10, y: -5, z: 0.02) }
+
+      it { expect(jog).to be true }
+    end
+
+    describe ".jog with absolute coordinates", vcr: { cassette_name: "printer/printhead/jog_absolute" } do
+      subject(:jog) { described_class.jog(x: 100, y: 100, absolute: true, speed: 3000) }
+
+      it { expect(jog).to be true }
+    end
+
+    describe ".home", vcr: { cassette_name: "printer/printhead/home" } do
+      subject(:home) { described_class.home(axes: %i[x y]) }
+
+      it { expect(home).to be true }
+    end
+
+    describe ".feedrate", vcr: { cassette_name: "printer/printhead/feedrate" } do
+      subject(:feedrate) { described_class.feedrate(105) }
+
+      it { expect(feedrate).to be true }
+    end
+
+    describe ".home with an invalid axis", vcr: { cassette_name: "printer/printhead/home_invalid" } do
+      subject(:home) { described_class.home(axes: ["w"]) }
+
+      it { expect { home }.to raise_error(Octoprint::Exceptions::BadRequestError, "[400] axis is invalid") }
+    end
+  end
 end
