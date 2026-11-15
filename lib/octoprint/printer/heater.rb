@@ -3,107 +3,112 @@
 
 module Octoprint
   class Printer
-    # Shared behaviour for single heater resources ({Printer::Bed} and {Printer::Chamber}).
+    # Behaviour of the single heater resources ({Printer::Bed} and {Printer::Chamber}): reading the
+    # heater's temperature and setting its target and offset.
     #
-    # @abstract Subclasses must define their +resource_path+.
-    class Heater < BaseResource
+    # Including this module also includes {Printer::TemperatureAttributes}, so the including class gets the
+    # +actual+, +target+, +offset+, +history+ and +extra+ attributes.
+    #
+    # @example
+    #   class Bed < BaseResource
+    #     include Heater
+    #
+    #     resource_path("/api/printer/bed")
+    #   end
+    #
+    #   Bed.temperature.actual # => 50.221
+    #   Bed.target(75)
+    module Heater
       extend T::Sig
-      extend HistoryQuery
-      extend TemperatureResponse
-      include AutoInitializable
-      include Deserializable
+      extend T::Helpers
 
-      # @!attribute [r] actual
-      #   @return [Float, nil] Current temperature
-      auto_attr :actual, type: Float
+      # Class methods added to the including resource.
+      module ClassMethods
+        extend T::Sig
+        extend T::Generic
+        include HistoryQuery
 
-      # @!attribute [r] target
-      #   @return [Float, nil] Target temperature, nil if no target temperature is set
-      auto_attr :target, type: Float
+        has_attached_class!(:out)
 
-      # @!attribute [r] offset
-      #   @return [Float, nil] Currently configured temperature offset
-      auto_attr :offset, type: Float
+        # Retrieves the heater's current temperature.
+        #
+        # @param history [Boolean] Whether to include the temperature history
+        # @param limit [Integer, nil] Only return the last +limit+ history data points (ignored unless +history+
+        #   is true)
+        #
+        # @return [Object] The heater, e.g. a {Printer::Bed}, with its temperature
+        # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
+        #   configured
+        sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T.attached_class) }
+        def temperature(history: false, limit: nil)
+          response = T.unsafe(self).fetch_resource(deserialize: false,
+                                                   options: history_query(history: history, limit: limit))
 
-      # @!attribute [r] history
-      #   @return [Array<Printer::TemperatureReading>, nil] The heater's temperature history, only included
-      #     when requested
-      auto_attr :history, type: TemperatureReading, array: true
+          T.unsafe(self).from_response(response, heater_key)
+        end
 
-      # @!attribute [r] extra
-      #   @return [Hash, nil] Any additional fields returned by the API
-      auto_attr :extra, type: Hash
+        # Issues a heater command.
+        #
+        # @param command [String] The command to issue: +target+ or +offset+
+        # @param options [Hash] Additional command parameters
+        #
+        # @return [Boolean] true on success (204 No Content)
+        # @raise [Octoprint::Exceptions::BadRequestError] if the parameters are invalid
+        # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
+        #   configured
+        sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+        def issue_command(command:, options: {})
+          T.unsafe(self).post(params: { command: command }.merge(options))
+        end
 
-      auto_initialize!
+        # Sets the heater's target temperature. A target of 0 turns the heater off.
+        #
+        # @param temperature [Numeric] The target temperature
+        #
+        # @return [Boolean] true on success (204 No Content)
+        # @raise [Octoprint::Exceptions::BadRequestError] if the temperature is invalid
+        # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
+        #   configured
+        sig { params(temperature: Numeric).returns(T.untyped) }
+        def target(temperature)
+          issue_command(command: "target", options: { target: temperature })
+        end
 
-      # Gives each heater its own copy of the declared attributes, so that deserialization
-      # (including the collection of unknown fields into +extra+) works on subclasses.
+        # Sets the heater's temperature offset.
+        #
+        # @param offset [Numeric] The temperature offset
+        #
+        # @return [Boolean] true on success (204 No Content)
+        # @raise [Octoprint::Exceptions::BadRequestError] if the offset is invalid
+        # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
+        #   configured
+        sig { params(offset: Numeric).returns(T.untyped) }
+        def offset(offset)
+          issue_command(command: "offset", options: { offset: offset })
+        end
+
+        private
+
+        # The heater's key in the API responses, derived from the class name (+:bed+, +:chamber+).
+        #
+        # @return [Symbol] The heater's key
+        sig { returns(Symbol) }
+        def heater_key
+          T.must(T.unsafe(self).name).demodulize.underscore.to_sym
+        end
+      end
+
+      mixes_in_class_methods(ClassMethods)
+
+      # Adds the temperature attributes to the including resource.
       #
-      # @param subclass [Class] The inheriting heater
+      # @param base [Class] The including resource
       # @return [void]
-      def self.inherited(subclass)
+      sig { params(base: Module).void }
+      def self.included(base)
         super
-        subclass.instance_variable_set(:@auto_attrs, auto_attrs.dup)
-      end
 
-      # Retrieves the heater's current temperature.
-      #
-      # @param history [Boolean] Whether to include the temperature history
-      # @param limit [Integer, nil] Only return the last +limit+ history data points (ignored unless +history+ is true)
-      #
-      # @return [Printer::Heater] The heater, e.g. a {Printer::Bed}, with its temperature
-      # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't configured
-      sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T.attached_class) }
-      def self.temperature(history: false, limit: nil)
-        response = fetch_resource(deserialize: false, options: history_query(history: history, limit: limit))
-
-        from_response(response, heater_key)
-      end
-
-      # The heater's key in the API responses, derived from the class name (+:bed+, +:chamber+).
-      #
-      # @return [Symbol] The heater's key
-      sig { returns(Symbol) }
-      def self.heater_key
-        T.must(name).demodulize.underscore.to_sym
-      end
-      private_class_method :heater_key
-
-      # Issues a heater command.
-      #
-      # @param command [String] The command to issue: +target+ or +offset+
-      # @param options [Hash] Additional command parameters
-      #
-      # @return [Boolean] true on success (204 No Content)
-      # @raise [Octoprint::Exceptions::BadRequestError] if the parameters are invalid
-      # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't configured
-      sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
-      def self.issue_command(command:, options: {})
-        post(params: { command: command }.merge(options))
-      end
-
-      # Sets the heater's target temperature. A target of 0 turns the heater off.
-      #
-      # @param temperature [Numeric] The target temperature
-      #
-      # @return [Boolean] true on success (204 No Content)
-      # @raise [Octoprint::Exceptions::BadRequestError] if the temperature is invalid
-      # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't configured
-      sig { params(temperature: Numeric).returns(T.untyped) }
-      def self.target(temperature)
-        issue_command(command: "target", options: { target: temperature })
-      end
-
-      # Sets the heater's temperature offset.
-      #
-      # @param offset [Numeric] The temperature offset
-      #
-      # @return [Boolean] true on success (204 No Content)
-      # @raise [Octoprint::Exceptions::BadRequestError] if the offset is invalid
-      # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't configured
-      sig { params(offset: Numeric).returns(T.untyped) }
-      def self.offset(offset)
-        issue_command(command: "offset", options: { offset: offset })
+        T.unsafe(base).include TemperatureAttributes
       end
     end
   end

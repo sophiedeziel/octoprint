@@ -5,8 +5,8 @@
 #
 # @param heater [Symbol] The heater's key in the temperature responses (:bed or :chamber)
 RSpec.shared_examples "a printer heater" do |heater|
-  it "inherits from Heater" do
-    expect(described_class).to be < Octoprint::Printer::Heater
+  it "includes Heater" do
+    expect(described_class).to include(Octoprint::Printer::Heater)
   end
 
   describe ".temperature" do

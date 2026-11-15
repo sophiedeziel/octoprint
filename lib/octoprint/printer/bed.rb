@@ -23,7 +23,9 @@ module Octoprint
     #   Octoprint::Printer::Bed.offset(-5)
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#issue-a-bed-command
-    class Bed < Heater
+    class Bed < BaseResource
+      include Heater
+
       resource_path("/api/printer/bed")
     end
   end

@@ -20,7 +20,9 @@ module Octoprint
     #   Octoprint::Printer::Chamber.offset(-5)
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#issue-a-chamber-command
-    class Chamber < Heater
+    class Chamber < BaseResource
+      include Heater
+
       resource_path("/api/printer/chamber")
     end
   end
