@@ -4,6 +4,10 @@
 module Octoprint
   # Full state of the printer: temperatures, SD card state and general printer state.
   #
+  # The printer's components are controlled through dedicated resources:
+  #
+  # - {Printer::Printhead} — jog, home and change the feed rate of the print head
+  #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
   #   printer.state.text                    # => "Operational"
