@@ -119,6 +119,7 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 | **Connection** | Connect/disconnect printer, connection settings and options |
 | **Languages** | Upload, manage, and delete language packs |
 | **Logs** | List, view, and manage OctoPrint log files |
+| **Timelapse** | List and delete timelapses, render or delete unrendered ones, change the timelapse config |
 | **Utilities** | Test paths, URLs, addresses, and server connectivity |
 | **Server** | Get server version and system information |
 
@@ -138,6 +139,10 @@ Octoprint::Printer::Printhead.home(axes: %w[x y])
 Octoprint::Printer::Tool.target(tool0: 220)
 Octoprint::Printer::Bed.target(60)
 Octoprint::Printer::Command.send_commands(["M106 S255", "M117 Hello"])
+
+# Timelapses
+Octoprint::Timelapse.list(unrendered: true).unrendered.each { |job| Octoprint::Timelapse.render(name: job.name) }
+Octoprint::Timelapse.update_config(type: "timed", interval: 10, save: true)
 
 # Printer profiles
 profile = Octoprint::PrinterProfile.create(
