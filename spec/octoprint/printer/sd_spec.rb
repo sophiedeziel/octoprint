@@ -19,6 +19,24 @@ RSpec.describe Octoprint::Printer::Sd do
     end
   end
 
+  describe ".get" do
+    let(:sd) { described_class.new(ready: true) }
+
+    before do
+      allow(described_class).to receive(:fetch_resource).and_return(sd)
+    end
+
+    it "fetches the resource with no arguments" do
+      described_class.get
+
+      expect(described_class).to have_received(:fetch_resource).with(no_args)
+    end
+
+    it "returns the SD card state" do
+      expect(described_class.get).to be(sd)
+    end
+  end
+
   describe ".deserialize" do
     it "deserializes the ready flag" do
       expect(described_class.deserialize({ ready: true }).ready).to be(true)
@@ -33,6 +51,58 @@ RSpec.describe Octoprint::Printer::Sd do
       sd = described_class.deserialize({ ready: true, size: 1024 })
 
       expect(sd.extra).to eq({ size: 1024 })
+    end
+  end
+
+  describe ".issue_command" do
+    before do
+      allow(described_class).to receive(:post).and_return(true)
+    end
+
+    it "posts with the correct command" do
+      described_class.issue_command(command: "refresh")
+
+      expect(described_class).to have_received(:post).with(params: { command: "refresh" })
+    end
+
+    it "returns the post result" do
+      expect(described_class.issue_command(command: "refresh")).to be(true)
+    end
+  end
+
+  describe ".init" do
+    before do
+      allow(described_class).to receive(:issue_command).and_return(true)
+    end
+
+    it "delegates to issue_command with init" do
+      described_class.init
+
+      expect(described_class).to have_received(:issue_command).with(command: "init")
+    end
+  end
+
+  describe ".refresh" do
+    before do
+      allow(described_class).to receive(:issue_command).and_return(true)
+    end
+
+    it "delegates to issue_command with refresh" do
+      described_class.refresh
+
+      expect(described_class).to have_received(:issue_command).with(command: "refresh")
+    end
+  end
+
+  describe ".release" do
+    before do
+      allow(described_class).to receive(:issue_command).and_return(true)
+    end
+
+    it "delegates to issue_command with release" do
+      described_class.release
+
+      expect(described_class).to have_received(:issue_command).with(command: "release")
     end
   end
 end

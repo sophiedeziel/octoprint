@@ -246,4 +246,33 @@ RSpec.describe Octoprint::Printer, type: :integration do
       it { expect(offset).to be true }
     end
   end
+
+  describe Octoprint::Printer::Sd do
+    use_octoprint_server
+
+    describe ".get", vcr: { cassette_name: "printer/sd/get" } do
+      subject(:sd) { described_class.get }
+
+      it { is_expected.to be_a described_class }
+      its(:ready) { is_expected.to be true }
+    end
+
+    describe ".init", vcr: { cassette_name: "printer/sd/init" } do
+      subject(:init) { described_class.init }
+
+      it { expect(init).to be true }
+    end
+
+    describe ".refresh", vcr: { cassette_name: "printer/sd/refresh" } do
+      subject(:refresh) { described_class.refresh }
+
+      it { expect(refresh).to be true }
+    end
+
+    describe ".release", vcr: { cassette_name: "printer/sd/release" } do
+      subject(:release) { described_class.release }
+
+      it { expect(release).to be true }
+    end
+  end
 end
