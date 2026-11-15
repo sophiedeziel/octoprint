@@ -8,6 +8,8 @@ module Octoprint
   #
   # - {Printer::Printhead} — jog, home and change the feed rate of the print head
   # - {Printer::Tool} — set temperatures, select tools, extrude and change the flow rate
+  # - {Printer::Bed} — set the heated bed's temperature
+  # - {Printer::Chamber} — set the heated chamber's temperature
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get

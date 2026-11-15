@@ -23,34 +23,9 @@ module Octoprint
     class Tool < BaseResource
       extend T::Sig
       extend HistoryQuery
-      extend TemperatureResponse
-      include AutoInitializable
-      include Deserializable
+      include TemperatureAttributes
 
       resource_path("/api/printer/tool")
-
-      # @!attribute [r] actual
-      #   @return [Float, nil] Current temperature
-      auto_attr :actual, type: Float
-
-      # @!attribute [r] target
-      #   @return [Float, nil] Target temperature, nil if no target temperature is set
-      auto_attr :target, type: Float
-
-      # @!attribute [r] offset
-      #   @return [Float, nil] Currently configured temperature offset
-      auto_attr :offset, type: Float
-
-      # @!attribute [r] history
-      #   @return [Array<Printer::TemperatureReading>, nil] This tool's temperature history, only included
-      #     when requested
-      auto_attr :history, type: TemperatureReading, array: true
-
-      # @!attribute [r] extra
-      #   @return [Hash, nil] Any additional fields returned by the API
-      auto_attr :extra, type: Hash
-
-      auto_initialize!
 
       # Retrieves the current temperature of each of the printer's tools.
       #
