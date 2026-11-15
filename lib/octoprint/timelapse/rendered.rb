@@ -5,6 +5,9 @@ module Octoprint
   class Timelapse
     # A rendered timelapse file.
     #
+    # Has the shared {FileAttributes} (+name+, +size+, +bytes+, +date+, +extra+), plus the
+    # download paths and the modification timestamp.
+    #
     # @example
     #   file = Octoprint::Timelapse.get.files.first
     #   file.name      # => "benchy_20261115.mp4"
@@ -18,22 +21,7 @@ module Octoprint
       extend T::Sig
       include AutoInitializable
       include Deserializable
-
-      # @!attribute [r] name
-      #   @return [String] The file name
-      auto_attr :name, type: String
-
-      # @!attribute [r] size
-      #   @return [String] The formatted file size, e.g. "2.0MB"
-      auto_attr :size, type: String
-
-      # @!attribute [r] bytes
-      #   @return [Integer] The file size in bytes
-      auto_attr :bytes, type: Integer
-
-      # @!attribute [r] date
-      #   @return [String] The formatted modification date, e.g. "2026-11-15 00:52"
-      auto_attr :date, type: String
+      include FileAttributes
 
       # @!attribute [r] timestamp
       #   @return [Float, nil] The modification date as a Unix timestamp
@@ -46,10 +34,6 @@ module Octoprint
       # @!attribute [r] thumbnail
       #   @return [String, nil] The path to download the thumbnail, if there is one
       auto_attr :thumbnail, type: String
-
-      # @!attribute [r] extra
-      #   @return [Hash, nil] Any additional fields returned by the API
-      auto_attr :extra, type: Hash
 
       auto_initialize!
 
