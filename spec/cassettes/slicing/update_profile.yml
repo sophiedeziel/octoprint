@@ -1,0 +1,56 @@
+---
+http_interactions:
+- request:
+    method: patch
+    uri: "<HOST>/api/slicing/curalegacy/profiles/vcr_added"
+    body:
+      encoding: UTF-8
+      string: '{"displayName":"VCR Updated","description":"Updated by the gem tests","default":true,"data":{"layer_height":0.3}}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '202'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=5
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "default": true,
+          "description": "Updated by the gem tests",
+          "displayName": "VCR Updated",
+          "key": "vcr_added",
+          "resource": "<HOST>/api/slicing/curalegacy/profiles/vcr_added"
+        }
+  recorded_at: Mon, 16 Nov 2026 03:22:02 GMT
+recorded_with: VCR 6.4.1

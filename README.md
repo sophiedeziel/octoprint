@@ -123,6 +123,7 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 | **Jobs** | Current job info, progress tracking, start/cancel/restart/pause/resume |
 | **Printer** | Printer state, temperatures with history, print head jog/home, tool/bed/chamber temperatures, extrusion, SD card, arbitrary commands, custom controls, last error |
 | **Printer Profiles** | List, get, create, update, and delete printer profiles |
+| **Slicing** | List slicers and their slicing profiles; get, add, update, and delete slicing profiles |
 | **Connection** | Connect/disconnect printer, connection settings and options |
 | **Languages** | List, upload, and delete language packs |
 | **Logs** | List and delete log files, download URLs |
@@ -159,6 +160,11 @@ Octoprint::Timelapse.update_config(type: "timed", interval: 10, save: true)
 profile = Octoprint::PrinterProfiles.create(
   profile: { id: "ender3", name: "Ender 3 Pro", model: "Ender 3 Pro" }
 ) # => Octoprint::PrinterProfiles::PrinterProfile
+
+# Slicing profiles
+Octoprint::Slicing.list[:curalegacy].profiles.keys # => [:high_quality]
+Octoprint::Slicing.add_profile(slicer: "curalegacy", key: "draft", display_name: "Draft", data: { layer_height: 0.3 })
+Octoprint::Slicing.get_profile(slicer: "curalegacy", key: "draft").data # => { layer_height: 0.3 }
 
 # Connection management
 Octoprint::Connection.connect(port: "/dev/ttyUSB0", baudrate: 115200)
