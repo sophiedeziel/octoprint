@@ -44,14 +44,6 @@ RSpec.describe Octoprint::Files, type: :integration do
       # Octoprint just ignores the unsupported option
       its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
     end
-
-    context "when specifying the SD card", vcr: { cassette_name: "files/list_printer" } do
-      let(:params) { { location: Octoprint::Location::SDCard } }
-
-      its(:files) { are_expected.to all(be_a Octoprint::Files::File) }
-      its(:free) { is_expected.not_to be_nil }
-      its(:total) { is_expected.not_to be_nil }
-    end
   end
 
   describe "Retrieve a specific file's or folder's information", vcr: { cassette_name: "files/get" } do
@@ -83,7 +75,7 @@ RSpec.describe Octoprint::Files, type: :integration do
     its(:size) { is_expected.not_to be_nil }
 
     context "when location is the SD card", vcr: { cassette_name: "files/get_on_sd_card" } do
-      let(:location) { Octoprint::Location::SDCard }
+      let(:location) { Octoprint::Location::Printer }
 
       let(:file_name) { "test_f-1.gco" }
 
@@ -149,9 +141,9 @@ RSpec.describe Octoprint::Files, type: :integration do
 
     it { is_expected.to be_a Octoprint::Files::OperationResult }
     its(:done) { is_expected.to be true }
-    its(:files) { is_expected.to be_a Hash }
-    its(:files) { is_expected.to have_key Octoprint::Location::Local }
-    its(:files) { is_expected.not_to have_key Octoprint::Location::SDCard }
+    its(:file) { is_expected.to be_a Octoprint::Files::File }
+    its("file.origin") { is_expected.to eq Octoprint::Location::Local }
+    its("file.path") { is_expected.to eq "test_folder/test_file.gcode" }
 
     it "has effective_print false" do
       expect(upload.effective_print).to be false
@@ -162,13 +154,12 @@ RSpec.describe Octoprint::Files, type: :integration do
     end
 
     context "when uploading to SD card", vcr: { cassette_name: "files/upload_to_sd" } do
-      let(:location) { Octoprint::Location::SDCard }
+      let(:location) { Octoprint::Location::Printer }
       let(:params) { { location: location } }
 
       its(:done) { is_expected.to be false }
-      its(:files) { is_expected.to be_a Hash }
-      its(:files) { is_expected.to have_key Octoprint::Location::SDCard }
-      its(:files) { is_expected.to have_key Octoprint::Location::Local }
+      its("file.origin") { is_expected.to eq Octoprint::Location::Printer }
+      its("file.refs.resource") { is_expected.to eq "#{host}/api/files/printer//test_f~1.gco" }
       its(:effective_print) { is_expected.to be false }
       its(:effective_select) { is_expected.to be false }
     end
@@ -177,9 +168,8 @@ RSpec.describe Octoprint::Files, type: :integration do
       let(:params) { { location: location, options: { path: "test_folder/lksadjhf" } } }
 
       its(:done) { is_expected.to be true }
-      its(:files) { is_expected.to be_a Hash }
-      its(:files) { is_expected.not_to have_key Octoprint::Location::SDCard }
-      its(:files) { is_expected.to have_key Octoprint::Location::Local }
+      its("file.origin") { is_expected.to eq Octoprint::Location::Local }
+      its("file.path") { is_expected.to eq "test_folder/lksadjhf/test_file.gcode" }
       its(:effective_print) { is_expected.to be false }
       its(:effective_select) { is_expected.to be false }
     end
@@ -206,7 +196,7 @@ RSpec.describe Octoprint::Files, type: :integration do
 
       # this one does not return the passed metadata back, we need to trust that it was set on a sucessful response
       its(:done) { is_expected.to be true }
-      its("files.first.last.userdata") { is_expected.to be_nil }
+      its("file.userdata") { is_expected.to be_nil }
 
       it "sets the metadata" do
         upload

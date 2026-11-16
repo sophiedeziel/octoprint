@@ -14,8 +14,8 @@ class Octoprint::Files::OperationResult
   sig { returns(T::Boolean) }
   def effective_select; end
 
-  sig { returns(T.nilable(::Hash)) }
-  def files; end
+  sig { returns(T.nilable(::Octoprint::Files::File)) }
+  def file; end
 
   sig { returns(T.nilable(::Octoprint::Files::Folder)) }
   def folder; end

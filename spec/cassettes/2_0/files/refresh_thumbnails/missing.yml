@@ -1,0 +1,186 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST_2_0>/api/files/local"
+    body:
+      encoding: UTF-8
+      string: "-------------RubyMultipartPost-2ff76341bbeac50ec201b3aa4dca7e4c\r\nContent-Disposition:
+        form-data; name=\"file\"; filename=\"thumbnail.gcode\"\r\nContent-Length:
+        1141\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding:
+        binary\r\n\r\n; thumbnail begin 16x16 108\n; iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAF0lEQVR4nGP438BAEiJN9aiGUQ1DSg\n;
+        MAnHV/EBlpJJcAAAAASUVORK5CYII=\n; thumbnail end\n;\n;FLAVOR:Marlin\n;TIME:1021\n;Filament
+        used: 0.273093m\n;Layer height: 0.12\n;MINX:126.352\n;MINY:88.919\n;MINZ:0.12\n;MAXX:173.648\n;MAXY:211.081\n;MAXZ:0.36\n;Generated
+        with Cura_SteamEngine 4.11.0\nM140 S50\nM105\nM190 S50\nM104 S200\nM105\nM109
+        S200\nM82 ;absolute extrusion mode\nM201 X500.00 Y500.00 Z100.00 E5000.00
+        ;Setup machine max acceleration\nM203 X500.00 Y500.00 Z10.00 E50.00 ;Setup
+        machine max feedrate\nM204 P500.00 R1000.00 T500.00 ;Setup Print/Retract/Travel
+        acceleration\nM205 X8.00 Y8.00 Z0.40 E5.00 ;Setup Jerk\nM220 S100 ;Reset Feedrate\nM221
+        S100 ;Reset Flowrate\n\nG28 ;Home\n\nG92 E0 ;Reset Extruder\nG1 Z2.0 F3000
+        ;Move Z Axis up\nG1 X10.1 Y20 Z0.28 F5000.0 ;Move to start position\nG1 X10.1
+        Y200.0 Z0.28 F1500.0 E15 ;Draw the first line\nG1 X10.4 Y200.0 Z0.28 F5000.0
+        ;Move to side a little\nG1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line\nG92
+        E0 ;Reset Extruder\nG1 Z2.0 F3000 ;Move Z Axis up\n\nG92 E0\nG92 E0\nG1 F1800
+        E-5\n;LAYER_COUNT:3\n;LAYER:0\nM107\nG0 F6000 X128.348 Y93.622 Z0.12\r\n-------------RubyMultipartPost-2ff76341bbeac50ec201b3aa4dca7e4c--\r\n"
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-2ff76341bbeac50ec201b3aa4dca7e4c
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Content-Length:
+      - '1447'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: CREATED
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '403'
+      Location:
+      - "<HOST_2_0>/api/files/local/thumbnail.gcode"
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=2
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "done": true,
+          "effectivePrint": false,
+          "effectiveSelect": false,
+          "file": {
+            "display": "thumbnail.gcode",
+            "name": "thumbnail.gcode",
+            "origin": "local",
+            "path": "thumbnail.gcode",
+            "refs": {
+              "download": "<HOST_2_0>/downloads/files/local/thumbnail.gcode",
+              "resource": "<HOST_2_0>/api/files/local/thumbnail.gcode"
+            }
+          },
+          "folder": null
+        }
+  recorded_at: Mon, 16 Nov 2026 06:18:24 GMT
+- request:
+    method: post
+    uri: "<HOST_2_0>/api/files/local/missing.gcode"
+    body:
+      encoding: UTF-8
+      string: '{"command":"refresh_thumbnails"}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: NOT FOUND
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '138'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=3
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+        }
+  recorded_at: Mon, 16 Nov 2026 06:18:24 GMT
+- request:
+    method: delete
+    uri: "<HOST_2_0>/api/files/local/thumbnail.gcode"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: NO CONTENT
+    headers:
+      Content-Type:
+      - text/plain
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=2
+      Content-Length:
+      - '0'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 16 Nov 2026 06:18:24 GMT
+recorded_with: VCR 6.4.1

@@ -57,6 +57,9 @@ class Octoprint::Files::File
   sig { returns(T.nilable(T::Array[::String])) }
   def type_path; end
 
+  sig { returns(T.nilable(::String)) }
+  def user; end
+
   sig { returns(T.nilable(::Hash)) }
   def userdata; end
 end

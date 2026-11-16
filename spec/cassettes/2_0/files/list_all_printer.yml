@@ -1,0 +1,121 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/files"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1578'
+      Etag:
+      - '"af7d9473956abb6008ba2a1f00972264758f565a"'
+      Last-Modified:
+      - Mon, 16 Nov 2026 06:18:24 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "local": {
+            "capabilities": {
+              "add_folder": true,
+              "concurrent_printing": true,
+              "copy_file": true,
+              "copy_folder": true,
+              "history": true,
+              "metadata": true,
+              "move_file": true,
+              "move_folder": true,
+              "path_on_disk": true,
+              "read_file": true,
+              "remove_file": true,
+              "remove_folder": true,
+              "thumbnails": true,
+              "write_file": true
+            },
+            "files": [],
+            "key": "local",
+            "name": "Local",
+            "usage": {
+              "free": 517543157760,
+              "total": 994662584320
+            }
+          },
+          "printer": {
+            "capabilities": {
+              "add_folder": false,
+              "concurrent_printing": false,
+              "copy_file": false,
+              "copy_folder": false,
+              "history": false,
+              "metadata": true,
+              "move_file": false,
+              "move_folder": false,
+              "path_on_disk": false,
+              "read_file": false,
+              "remove_file": true,
+              "remove_folder": false,
+              "thumbnails": false,
+              "write_file": true
+            },
+            "files": [
+              {
+                "date": null,
+                "display": "test_f~1.gco",
+                "gcodeAnalysis": null,
+                "name": "test_f~1.gco",
+                "origin": "printer",
+                "path": "test_f~1.gco",
+                "prints": null,
+                "refs": {
+                  "resource": "<HOST_2_0>/api/files/printer/test_f~1.gco"
+                },
+                "size": 409,
+                "statistics": null,
+                "type": "machinecode",
+                "typePath": [
+                  "machinecode",
+                  "gcode"
+                ],
+                "user": null
+              }
+            ],
+            "key": "printer",
+            "name": "Printer",
+            "usage": null
+          }
+        }
+  recorded_at: Mon, 16 Nov 2026 06:18:35 GMT
+recorded_with: VCR 6.4.1
