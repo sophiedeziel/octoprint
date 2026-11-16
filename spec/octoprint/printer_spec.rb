@@ -171,4 +171,17 @@ RSpec.describe Octoprint::Printer do
       end
     end
   end
+
+  describe ".last_error" do
+    let(:error_information) { Octoprint::Printer::ErrorInformation.new(error: "", reason: "") }
+
+    before do
+      allow(Octoprint::Printer::ErrorInformation).to receive(:get).and_return(error_information)
+    end
+
+    it "delegates to ErrorInformation.get" do
+      expect(described_class.last_error).to be(error_information)
+      expect(Octoprint::Printer::ErrorInformation).to have_received(:get).with(no_args)
+    end
+  end
 end
