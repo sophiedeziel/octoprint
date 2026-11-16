@@ -33,6 +33,8 @@ module Octoprint
     DEFAULT_OPEN_TIMEOUT = 2
     # Default number of seconds to wait for a read or a write
     DEFAULT_TIMEOUT = 3
+    # Longest raw body kept in an error message when the server didn't answer with an `error` key
+    MAX_ERROR_BODY_LENGTH = 500
 
     attr_reader :host, :api_key, :open_timeout, :timeout, :requested_api_version, :client
 
@@ -230,7 +232,25 @@ module Octoprint
 
       error_class = errors[response.status] || Exceptions::UnknownError
 
-      raise(error_class, "[#{response.status}] " + parse_response(response).fetch(:error))
+      raise(error_class, "[#{response.status}] #{error_message(response)}")
+    end
+
+    # The message of an error response: OctoPrint's `error` key, else the raw body (e.g. an HTML page from a
+    # reverse proxy), else the HTTP reason phrase.
+    #
+    #: (Faraday::Response) -> String
+    def error_message(response)
+      body = response.body.to_s.strip
+      parsed = begin
+        JSON.parse(body)
+      rescue JSON::ParserError
+        nil
+      end
+      message = parsed["error"] if parsed.is_a?(Hash)
+      return message if message.is_a?(String) && !message.empty?
+      return body.truncate(MAX_ERROR_BODY_LENGTH) unless body.empty?
+
+      response.reason_phrase.to_s.empty? ? "HTTP #{response.status}" : response.reason_phrase.to_s
     end
 
     def parse_response(response)

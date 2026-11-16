@@ -5,11 +5,15 @@ module Octoprint
   module Access
     # Represents a user in the OctoPrint access control system
     #
+    # The model follows the OctoPrint 2.0 shape. OctoPrint 2.0 dropped the `admin`, `user` and `roles` keys
+    # from user records (even without the `X-OctoPrint-Api-Version` header) and added `has_password`.
+    # The dropped attributes are `nil` on 2.0: use {#admin?} and {#groups} instead.
+    #
     # @example
     #   user = Octoprint::Access::User.new(
     #     name: "john_doe",
     #     active: true,
-    #     admin: false,
+    #     has_password: true,
     #     api_key: "ABC123",
     #     settings: {},
     #     groups: ["operators"],
@@ -28,9 +32,12 @@ module Octoprint
       #   @return [Boolean] Whether the user is active
       auto_attr :active, type: Types::Boolean
 
-      # @!attribute [r] admin
-      #   @return [Boolean] Whether the user is an admin (deprecated, use groups)
-      auto_attr :admin, type: Types::Boolean
+      # Deprecated, see {#admin}
+      auto_attr :admin, type: T.nilable(Types::Boolean)
+
+      # @!attribute [r] has_password
+      #   @return [Boolean, nil] Whether the user has a password set. New in OctoPrint 2.0, `nil` on 1.11
+      auto_attr :has_password, type: T.nilable(Types::Boolean)
 
       # @!attribute [r] api_key
       #   @return [String, nil] The user's API key (only in list requests)
@@ -56,13 +63,11 @@ module Octoprint
       #   @return [Hash] Needs information with groups and roles
       auto_attr :needs, type: Hash
 
-      # @!attribute [r] roles
-      #   @return [Array<String>] User roles
+      # Deprecated, see {#roles}
       auto_attr :roles, type: String, array: true
 
-      # @!attribute [r] user
-      #   @return [Boolean, nil] Whether this is a user (vs admin)
-      auto_attr :user, type: Types::Boolean, nilable: true
+      # Deprecated, see {#user}
+      auto_attr :user, type: T.nilable(Types::Boolean)
 
       # @!attribute [r] extra
       #   @return [Hash] Additional attributes from the API
@@ -77,6 +82,62 @@ module Octoprint
           # Handle the needs structure which comes as a hash with group and role arrays
           data[:needs_role] = data[:needs][:role] if data[:needs].is_a?(Hash) && data[:needs][:role]
         end
+      end
+
+      # Whether the user is an admin
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#admin?} instead.
+      # @return [Boolean, nil] `nil` on OctoPrint 2.0
+      #: -> bool?
+      def admin
+        Deprecation.warn_once("Access::User#admin", "use Access::User#admin?")
+        @admin
+      end
+
+      # Roles of the user
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#needs_role} or {#groups} instead.
+      # @return [Array<String>, nil] `nil` on OctoPrint 2.0
+      #: -> Array[String]?
+      def roles
+        Deprecation.warn_once("Access::User#roles", "use Access::User#needs_role or #groups")
+        @roles
+      end
+
+      # Whether the user is in the users group
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#groups} instead.
+      # @return [Boolean, nil] `nil` on OctoPrint 2.0
+      #: -> bool?
+      def user
+        Deprecation.warn_once("Access::User#user", "use Access::User#groups")
+        @user
+      end
+
+      # Key of OctoPrint's built-in admin group
+      ADMIN_GROUP = "admins"
+      # Key of the ADMIN permission, as listed in {#permissions}
+      ADMIN_PERMISSION = "ADMIN"
+      # Role of the ADMIN permission, as listed in {#needs_role}
+      ADMIN_ROLE = "admin"
+
+      # Whether the user is an admin, on OctoPrint 1.11 and 2.0.
+      #
+      # Replaces the `admin` flag that OctoPrint 2.0 removed. A user is an admin when it is in the
+      # `admins` group or has the ADMIN permission: {Users.current} lists it in {#permissions}, while
+      # {Users.list}, {Users.get} and {Users.login} list it in {#needs_role} (which includes the
+      # permissions of every group of the user).
+      #
+      # @example
+      #   Octoprint::Access::Users.get(username: "john_doe").admin? # => false
+      #   Octoprint::Access::Users.current.admin?                   # => true
+      #
+      # @return [Boolean]
+      #: -> bool
+      def admin?
+        Array(groups).include?(ADMIN_GROUP) ||
+          Array(permissions).include?(ADMIN_PERMISSION) ||
+          Array(needs_role).include?(ADMIN_ROLE)
       end
 
       # Convenient class method to get current user (delegates to Users.current)

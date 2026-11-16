@@ -1,0 +1,97 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/currentuser"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1201'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "groups": [
+            "admins"
+          ],
+          "name": "admin",
+          "permissions": [
+            "ADMIN",
+            "STATUS",
+            "CONNECTION",
+            "WEBCAM",
+            "SYSTEM",
+            "FILES_LIST",
+            "FILES_UPLOAD",
+            "FILES_DOWNLOAD",
+            "FILES_DELETE",
+            "FILES_SELECT",
+            "PRINT",
+            "GCODE_VIEWER",
+            "MONITOR_TERMINAL",
+            "CONTROL",
+            "SLICE",
+            "TIMELAPSE_LIST",
+            "TIMELAPSE_DOWNLOAD",
+            "TIMELAPSE_DELETE",
+            "TIMELAPSE_MANAGE_UNRENDERED",
+            "TIMELAPSE_ADMIN",
+            "SETTINGS_READ",
+            "SETTINGS",
+            "PLUGIN_ACHIEVEMENTS_VIEW",
+            "PLUGIN_ACHIEVEMENTS_RESET",
+            "PLUGIN_ACTION_COMMAND_NOTIFICATION_SHOW",
+            "PLUGIN_ACTION_COMMAND_NOTIFICATION_CLEAR",
+            "PLUGIN_ACTION_COMMAND_PROMPT_INTERACT",
+            "PLUGIN_ANNOUNCEMENTS_READ",
+            "PLUGIN_ANNOUNCEMENTS_MANAGE",
+            "PLUGIN_APPKEYS_ADMIN",
+            "PLUGIN_APPKEYS_GRANT",
+            "PLUGIN_BACKUP_CREATE",
+            "PLUGIN_FILE_CHECK_RUN",
+            "PLUGIN_FIRMWARE_CHECK_DISPLAY",
+            "PLUGIN_HEALTH_CHECK_CHECK",
+            "PLUGIN_LOGGING_MANAGE",
+            "PLUGIN_PLUGINMANAGER_LIST",
+            "PLUGIN_PLUGINMANAGER_MANAGE",
+            "PLUGIN_PLUGINMANAGER_INSTALL",
+            "PLUGIN_SOFTWAREUPDATE_CHECK",
+            "PLUGIN_SOFTWAREUPDATE_UPDATE",
+            "PLUGIN_SOFTWAREUPDATE_CONFIGURE"
+          ]
+        }
+  recorded_at: Mon, 16 Nov 2026 06:12:01 GMT
+recorded_with: VCR 6.4.1

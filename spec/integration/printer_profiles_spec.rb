@@ -176,4 +176,29 @@ RSpec.describe Octoprint::PrinterProfiles, type: :integration do
         .to raise_error(Octoprint::Exceptions::ConflictError)
     end
   end
+
+  # OctoPrint 2.0's release notes say an unknown profile now answers 404 instead of falling back to the
+  # default profile. 1.11.8 already answers 404 to a GET, with an error message, and so does 2.0 with or
+  # without the X-OctoPrint-Api-Version header.
+  describe "Get an unknown printer profile" do
+    def expect_not_found
+      expect { described_class.get(identifier: "unknown_profile") }
+        .to raise_error(Octoprint::Exceptions::NotFoundError, /\A\[404\] .*not found/i)
+    end
+
+    on_octoprint_versions do
+      describe ".get", vcr: { cassette_name: "printer_profiles/get_unknown" } do
+        use_octoprint_server
+
+        it("raises NotFoundError with the server's message") { expect_not_found }
+      end
+    end
+
+    describe ".get with the 1.11 API on OctoPrint 2.0",
+             api_version: "1.11", octoprint: "2.0", vcr: { cassette_name: "printer_profiles/get_unknown_api_1_11" } do
+      use_octoprint_server
+
+      it("raises NotFoundError with the server's message") { expect_not_found }
+    end
+  end
 end

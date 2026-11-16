@@ -96,6 +96,7 @@ class Octoprint::Access::LoginResponse
 
   def initialize(**kwargs); end
 
+  def credentials_recheck_supported; end
   def credentials_seen; end
   def is_external_client; end
   def login_mechanism; end
@@ -140,16 +141,28 @@ class Octoprint::Access::User
   def initialize(**kwargs); end
 
   def active; end
+
+  sig { returns(T.nilable(T::Boolean)) }
   def admin; end
+
+  sig { returns(T::Boolean) }
+  def admin?; end
+
   def api_key; end
   def extra; end
   def groups; end
+  def has_password; end
   def name; end
   def needs; end
   def needs_role; end
   def permissions; end
+
+  sig { returns(T.nilable(T::Array[::String])) }
   def roles; end
+
   def settings; end
+
+  sig { returns(T.nilable(T::Boolean)) }
   def user; end
 
   class << self
@@ -158,6 +171,10 @@ class Octoprint::Access::User
   end
 end
 
+Octoprint::Access::User::ADMIN_GROUP = T.let(T.unsafe(nil), String)
+Octoprint::Access::User::ADMIN_PERMISSION = T.let(T.unsafe(nil), String)
+Octoprint::Access::User::ADMIN_ROLE = T.let(T.unsafe(nil), String)
+
 class Octoprint::Access::Users < ::Octoprint::BaseResource
   class << self
     sig do
@@ -165,12 +182,12 @@ class Octoprint::Access::Users < ::Octoprint::BaseResource
         name: ::String,
         password: ::String,
         active: T::Boolean,
-        admin: T::Boolean,
+        admin: T.nilable(T::Boolean),
         groups: T.nilable(T::Array[::String]),
         permissions: T.nilable(T::Array[::String])
       ).returns(T::Array[::Octoprint::Access::User])
     end
-    def add(name:, password:, active:, admin:, groups: T.unsafe(nil), permissions: T.unsafe(nil)); end
+    def add(name:, password:, active:, admin: T.unsafe(nil), groups: T.unsafe(nil), permissions: T.unsafe(nil)); end
 
     sig { params(username: ::String, password: ::String).returns(T.untyped) }
     def change_password(username:, password:); end
@@ -478,6 +495,9 @@ class Octoprint::Client
   sig { returns(::Gem::Version) }
   def detect_server_version; end
 
+  sig { params(response: ::Faraday::Response).returns(::String) }
+  def error_message(response); end
+
   def new_client(multipart: T.unsafe(nil)); end
   def parse_response(response); end
   def process_error(response); end
@@ -495,6 +515,7 @@ end
 
 Octoprint::Client::DEFAULT_OPEN_TIMEOUT = T.let(T.unsafe(nil), Integer)
 Octoprint::Client::DEFAULT_TIMEOUT = T.let(T.unsafe(nil), Integer)
+Octoprint::Client::MAX_ERROR_BODY_LENGTH = T.let(T.unsafe(nil), Integer)
 
 class Octoprint::Connection < ::Octoprint::BaseResource
   include ::Octoprint::AutoInitializable
@@ -538,6 +559,16 @@ class Octoprint::Connection::Settings
   def port; end
   def printer_profile; end
   def state; end
+end
+
+module Octoprint::Deprecation
+  class << self
+    sig { void }
+    def reset!; end
+
+    sig { params(name: ::String, advice: ::String).void }
+    def warn_once(name, advice); end
+  end
 end
 
 module Octoprint::Deserializable

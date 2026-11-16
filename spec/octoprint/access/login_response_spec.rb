@@ -60,6 +60,29 @@ RSpec.describe Octoprint::Access::LoginResponse do
       expect(login.user.extra).to eq({ _future_field: "value" })
     end
 
+    # From spec/cassettes/2_0/access/login_passive.yml (role list shortened), after the client's key transform
+    it "deserializes an OctoPrint 2.0 login response" do
+      login = described_class.deserialize(
+        _credentials_recheck_supported: false,
+        _credentials_seen: "2026-11-16T06:12:01+00:00",
+        _is_external_client: false,
+        _login_mechanism: "apikey",
+        active: true,
+        apikey: "<API_KEY_2_0>",
+        groups: ["admins"],
+        has_password: true,
+        name: "admin",
+        needs: { group: ["admins"], role: %w[admin status] },
+        permissions: [],
+        session: "<SESSION>",
+        settings: {}
+      )
+
+      expect(login.credentials_recheck_supported).to be(false)
+      expect(login.login_mechanism).to eq("apikey")
+      expect(login.user).to have_attributes(name: "admin", has_password: true, admin: nil, admin?: true, extra: nil)
+    end
+
     it "handles a user record without unknown fields" do
       login = described_class.deserialize(name: "sophie", session: "SESSION_KEY", _is_external_client: true)
 

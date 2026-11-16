@@ -1,0 +1,114 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST_2_0>/api/login"
+    body:
+      encoding: UTF-8
+      string: '{"passive":true}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1703'
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "_credentials_recheck_supported": false,
+          "_credentials_seen": "2026-11-16T06:12:01+00:00",
+          "_is_external_client": false,
+          "_login_mechanism": "apikey",
+          "active": true,
+          "apikey": "<API_KEY_2_0>",
+          "groups": [
+            "admins"
+          ],
+          "has_password": true,
+          "name": "admin",
+          "needs": {
+            "group": [
+              "admins"
+            ],
+            "role": [
+              "plugin_logging_manage",
+              "plugin_file_check_run",
+              "plugin_achievements_reset",
+              "plugin_pluginmanager_list",
+              "settings_read",
+              "plugin_announcements_manage",
+              "gcodeviewer",
+              "plugin_softwareupdate_update",
+              "plugin_action_command_notification_show",
+              "files_delete",
+              "files_upload",
+              "timelapse_list",
+              "plugin_appkeys_admin",
+              "plugin_softwareupdate_configure",
+              "webcam",
+              "print",
+              "plugin_action_command_notification_clear",
+              "monitor_terminal",
+              "plugin_softwareupdate_check",
+              "connection",
+              "plugin_pluginmanager_manage",
+              "timelapse_admin",
+              "plugin_appkeys_user",
+              "plugin_announcements_read",
+              "files_select",
+              "admin",
+              "timelapse_delete",
+              "system",
+              "settings",
+              "status",
+              "plugin_achievements_view",
+              "plugin_health_check_check",
+              "plugin_action_command_prompt_interact",
+              "plugin_pluginmanager_install",
+              "files_list",
+              "plugin_backup_create",
+              "timelapse_download",
+              "plugin_firmware_check_display",
+              "timelapse_manage_unrendered",
+              "files_download",
+              "control",
+              "slice"
+            ]
+          },
+          "permissions": [],
+          "session": "<SESSION>",
+          "settings": {}
+        }
+  recorded_at: Mon, 16 Nov 2026 06:12:01 GMT
+recorded_with: VCR 6.4.1
