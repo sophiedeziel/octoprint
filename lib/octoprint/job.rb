@@ -4,10 +4,14 @@
 module Octoprint
   # Information about the current print job.
   #
+  # The model follows the OctoPrint 2.0 response shape whatever the server version: fields the server leaves
+  # out are `nil`. With the 1.x API, {Job::Legacy} drops the `null` fields of the 1.x response the same way.
+  #
   # @example Get current job
   #   job = Octoprint::Job.get
   #   puts "State: #{job.state}"
-  #   puts "Progress: #{job.progress.percent}%"
+  #   puts "File: #{job.information.file.display_name}"
+  #   puts "Progress: #{job.progress.completion}%"
   #
   # @see https://docs.octoprint.org/en/master/api/job.html
   class Job < BaseResource
@@ -17,19 +21,19 @@ module Octoprint
     resource_path("/api/job")
 
     # @!attribute [r] information
-    #   @return [Job::Information] Information about the target file
+    #   @return [Job::Information, nil] Information about the target file (the API's `job` field)
     auto_attr :information, type: Information
 
     # @!attribute [r] progress
-    #   @return [Job::Progress] Information about print progress
+    #   @return [Job::Progress, nil] Information about print progress
     auto_attr :progress, type: Progress
 
     # @!attribute [r] state
-    #   @return [String] Current state of the job
+    #   @return [String, nil] Current state of the job (e.g. `"Operational"`, `"Printing"`, `"Offline"`)
     auto_attr :state, type: String
 
     # @!attribute [r] error
-    #   @return [String, nil] Error message if any
+    #   @return [String, nil] The error message, when the printer is in an error state. Sent by 2.0 servers only.
     auto_attr :error, type: String
 
     # @!attribute [r] extra
@@ -39,8 +43,11 @@ module Octoprint
     auto_initialize!
 
     deserialize_config do
+      nested :progress, Progress
+
       transform do |data|
-        data[:information] = Information.deserialize(data[:job])
+        job = data.delete(:job)
+        data[:information] = Information.deserialize(job) if job
       end
     end
 

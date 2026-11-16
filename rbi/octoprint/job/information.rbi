@@ -6,6 +6,9 @@
 
 class Octoprint::Job::Information
   sig { returns(T.nilable(::Float)) }
+  def average_print_time; end
+
+  sig { returns(T.nilable(::Float)) }
   def estimated_print_time; end
 
   sig { returns(T.nilable(::Hash)) }
@@ -14,9 +17,12 @@ class Octoprint::Job::Information
   sig { returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
   def filament; end
 
-  sig { returns(T.nilable(::Hash)) }
+  sig { returns(T.nilable(::Octoprint::Job::File)) }
   def file; end
 
   sig { returns(T.nilable(::Float)) }
   def last_print_time; end
+
+  sig { returns(T.nilable(::String)) }
+  def user; end
 end

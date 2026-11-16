@@ -14,6 +14,31 @@ RSpec.describe Octoprint::Job do
     end
   end
 
+  describe ".deserialize" do
+    it "reads the 2.0 response of an idle printer, where the empty fields are left out" do
+      job = described_class.deserialize({ job: { file: {} }, progress: {}, state: "Operational" })
+
+      expect(job.information.file).to be_a Octoprint::Job::File
+      expect(job.information.last_print_time).to be_nil
+      expect(job.progress.completion).to be_nil
+      expect(job.extra).to be_nil
+    end
+
+    it "doesn't fail without job information or progress" do
+      job = described_class.deserialize({ state: "Offline" })
+
+      expect(job.information).to be_nil
+      expect(job.progress).to be_nil
+    end
+
+    it "keeps the unknown fields of the job and its progress" do
+      job = described_class.deserialize({ job: { file: {}, origin: "x" }, progress: { layer: 3 }, state: "Printing" })
+
+      expect(job.information.extra).to eq(origin: "x")
+      expect(job.progress.extra).to eq(layer: 3)
+    end
+  end
+
   describe ".issue_command" do
     before do
       allow(described_class).to receive(:post).and_return(true)

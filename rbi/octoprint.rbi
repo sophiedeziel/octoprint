@@ -954,6 +954,50 @@ class Octoprint::Job < ::Octoprint::BaseResource
   end
 end
 
+class Octoprint::Job::File
+  include ::Octoprint::AutoInitializable
+  include ::Octoprint::Deserializable
+  extend ::Octoprint::AutoInitializable::ClassMethods
+  extend ::Octoprint::Deserializable::ClassMethods
+
+  def initialize(**kwargs); end
+
+  sig { params(key: ::Symbol).returns(T.untyped) }
+  def [](key); end
+
+  sig { returns(T.nilable(::Time)) }
+  def date; end
+
+  def date_timestamp; end
+
+  sig { params(keys: T.untyped).returns(T.untyped) }
+  def dig(*keys); end
+
+  def display_name; end
+  def extra; end
+
+  sig { params(_arg0: , _arg1: ).returns(T.untyped) }
+  def fetch(*_arg0, &_arg1); end
+
+  sig { params(key: ::Symbol).returns(T::Boolean) }
+  def key?(key); end
+
+  def name; end
+  def origin; end
+  def path; end
+  def size; end
+
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def to_h; end
+
+  def upload; end
+
+  private
+
+  sig { params(method: ::String).void }
+  def warn_hash_access(method); end
+end
+
 class Octoprint::Job::Information
   include ::Octoprint::AutoInitializable
   include ::Octoprint::Deserializable
@@ -962,11 +1006,30 @@ class Octoprint::Job::Information
 
   def initialize(**kwargs); end
 
+  def average_print_time; end
   def estimated_print_time; end
   def extra; end
   def filament; end
   def file; end
   def last_print_time; end
+  def user; end
+end
+
+module Octoprint::Job::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(response: T.untyped, request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def from_response(response, request); end
+
+    private
+
+    sig { params(file: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def convert_file(file); end
+
+    sig { params(job: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def convert_job(job); end
+  end
 end
 
 class Octoprint::Job::Progress
