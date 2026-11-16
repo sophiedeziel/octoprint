@@ -506,12 +506,75 @@ class Octoprint::Connection < ::Octoprint::BaseResource
   def options; end
 
   class << self
-    def connect(params = T.unsafe(nil)); end
+    sig do
+      params(
+        legacy_params: T::Hash[::Symbol, T.untyped],
+        connector: ::String,
+        parameters: T.nilable(T::Hash[::Symbol, T.untyped]),
+        printer_profile: T.nilable(::String),
+        save: T.nilable(T::Boolean),
+        autoconnect: T.nilable(T::Boolean),
+        legacy_options: T.untyped
+      ).returns(T::Boolean)
+    end
+    def connect(legacy_params = T.unsafe(nil), connector: T.unsafe(nil), parameters: T.unsafe(nil), printer_profile: T.unsafe(nil), save: T.unsafe(nil), autoconnect: T.unsafe(nil), **legacy_options); end
+
+    sig { returns(T::Boolean) }
     def disconnect; end
+
+    sig { returns(T::Boolean) }
     def fake_ack; end
+
+    sig { returns(::Octoprint::Connection) }
     def get; end
+
+    sig { returns(T::Boolean) }
+    def repair; end
+
+    private
+
+    sig { params(options: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def legacy_connect_options(options); end
   end
 end
+
+class Octoprint::Connection::Connector
+  include ::Octoprint::AutoInitializable
+  extend ::Octoprint::AutoInitializable::ClassMethods
+
+  def initialize(**kwargs); end
+
+  def connector; end
+  def name; end
+  def parameters; end
+end
+
+Octoprint::Connection::LEGACY_CONNECT_KEYS = T.let(T.unsafe(nil), Array)
+
+module Octoprint::Connection::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(response: T.untyped, request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def from_response(response, request); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+
+    private
+
+    sig { params(current: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def current(current); end
+
+    sig { params(body: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def legacy_connect(body); end
+
+    sig { params(options: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def options(options); end
+  end
+end
+
+Octoprint::Connection::Legacy::SERIAL_NAME = T.let(T.unsafe(nil), String)
 
 class Octoprint::Connection::Options
   include ::Octoprint::AutoInitializable
@@ -520,13 +583,52 @@ class Octoprint::Connection::Options
   def initialize(**kwargs); end
 
   def autoconnect; end
+
+  sig { returns(T.nilable(::Integer)) }
   def baudrate_preference; end
+
+  sig { returns(T.nilable(T::Array[::Integer])) }
   def baudrates; end
+
+  def connectors; end
+
+  sig { returns(T.nilable(::String)) }
   def port_preference; end
+
+  sig { returns(T.nilable(T::Array[::String])) }
   def ports; end
+
+  def preferred_connector; end
+  def preferred_profile; end
+
+  sig { returns(T.nilable(::String)) }
   def printer_profile_preference; end
+
+  sig { returns(T.nilable(T::Array[T::Hash[T.untyped, T.untyped]])) }
   def printer_profiles; end
+
+  def profiles; end
+
+  private
+
+  sig { returns(T.nilable(::Octoprint::Connection::Connector)) }
+  def serial_connector; end
+
+  sig { params(parameter: ::Symbol).returns(T.untyped) }
+  def serial_preference(parameter); end
 end
+
+class Octoprint::Connection::PreferredConnector
+  include ::Octoprint::AutoInitializable
+  extend ::Octoprint::AutoInitializable::ClassMethods
+
+  def initialize(**kwargs); end
+
+  def connector; end
+  def parameters; end
+end
+
+Octoprint::Connection::SERIAL = T.let(T.unsafe(nil), String)
 
 class Octoprint::Connection::Settings
   include ::Octoprint::AutoInitializable
@@ -534,10 +636,31 @@ class Octoprint::Connection::Settings
 
   def initialize(**kwargs); end
 
+  sig { returns(T.nilable(::Integer)) }
   def baudrate; end
+
+  def capabilities; end
+  def connector; end
+  def parameters; end
+
+  sig { returns(T.nilable(::String)) }
   def port; end
+
+  sig { returns(T.nilable(::String)) }
   def printer_profile; end
+
+  def profile; end
   def state; end
+end
+
+module Octoprint::Deprecation
+  class << self
+    sig { void }
+    def reset!; end
+
+    sig { params(name: ::String, advice: ::String).void }
+    def warn_once(name, advice); end
+  end
 end
 
 module Octoprint::Deserializable
