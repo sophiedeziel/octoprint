@@ -1,0 +1,64 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/files/sdcard"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '367'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "files": [
+            {
+              "display": "/test_f-1.gco",
+              "name": "test_f-1.gco",
+              "origin": "sdcard",
+              "path": "test_f-1.gco",
+              "refs": {
+                "resource": "<HOST>/api/files/sdcard/test_f-1.gco"
+              },
+              "size": 409,
+              "type": "machinecode",
+              "typePath": [
+                "machinecode",
+                "gcode"
+              ]
+            }
+          ]
+        }
+  recorded_at: Mon, 16 Nov 2026 06:18:34 GMT
+recorded_with: VCR 6.4.1

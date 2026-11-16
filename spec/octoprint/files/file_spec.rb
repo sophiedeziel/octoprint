@@ -2,6 +2,23 @@
 # frozen_string_literal: true
 
 RSpec.describe Octoprint::Files::File do
+  describe "#user" do
+    it "is the user who uploaded the file" do
+      file = described_class.deserialize(
+        { name: "test_file.gcode", origin: "local", path: "test_file.gcode", user: "admin" }
+      )
+
+      expect(file.user).to eq("admin")
+    end
+
+    it "is nil for a printer file" do
+      file = described_class.deserialize({ name: "test_f-1.gco", origin: "printer", path: "test_f-1.gco" })
+
+      expect(file.user).to be_nil
+      expect(file.origin).to eq(Octoprint::Location::Printer)
+    end
+  end
+
   describe "#date" do
     it "returns nil when date_timestamp is nil" do
       file = described_class.new(name: "test.gcode", origin: Octoprint::Location::Local, path: "test.gcode")

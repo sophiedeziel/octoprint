@@ -540,6 +540,16 @@ class Octoprint::Connection::Settings
   def state; end
 end
 
+module Octoprint::Deprecation
+  class << self
+    sig { void }
+    def reset!; end
+
+    sig { params(name: ::String, advice: ::String).void }
+    def warn_once(name, advice); end
+  end
+end
+
 module Octoprint::Deserializable
   mixes_in_class_methods ::Octoprint::Deserializable::ClassMethods
 end
@@ -639,15 +649,51 @@ class Octoprint::Exceptions::UnsupportedFeatureError < ::Octoprint::Exceptions::
 class Octoprint::Exceptions::UnsupportedMediaTypeError < ::Octoprint::Exceptions::Error; end
 
 class Octoprint::Files < ::Octoprint::BaseResource
-  def initialize(files:, free: T.unsafe(nil), total: T.unsafe(nil)); end
+  sig do
+    params(
+      files: T::Array[T::Hash[::Symbol, T.untyped]],
+      key: T.nilable(::String),
+      name: T.nilable(::String),
+      capabilities: T.nilable(T::Hash[::Symbol, T::Boolean]),
+      usage: T.nilable(T.any(::Octoprint::Files::Usage, T::Hash[::Symbol, T.untyped])),
+      free: T.nilable(::Integer),
+      total: T.nilable(::Integer),
+      _extra: T.untyped
+    ).void
+  end
+  def initialize(files:, key: T.unsafe(nil), name: T.unsafe(nil), capabilities: T.unsafe(nil), usage: T.unsafe(nil), free: T.unsafe(nil), total: T.unsafe(nil), **_extra); end
 
+  sig { returns(T.nilable(T::Hash[::Symbol, T::Boolean])) }
+  def capabilities; end
+
+  sig { returns(T::Array[::Octoprint::Files::File]) }
   def files; end
+
+  sig { returns(T.nilable(::Integer)) }
   def free; end
+
+  sig { returns(T.nilable(::String)) }
+  def key; end
+
+  sig { returns(T.nilable(::String)) }
+  def name; end
+
+  sig { returns(T.nilable(::Integer)) }
   def total; end
 
+  sig { returns(T.nilable(::Octoprint::Files::Usage)) }
+  def usage; end
+
   class << self
-    sig { params(filename: ::String, destination: ::String, location: ::Octoprint::Location).returns(T.untyped) }
-    def copy(filename:, destination:, location: T.unsafe(nil)); end
+    sig do
+      params(
+        filename: ::String,
+        destination: ::String,
+        location: ::Octoprint::Location,
+        storage: T.nilable(::Octoprint::Location)
+      ).returns(T.untyped)
+    end
+    def copy(filename:, destination:, location: T.unsafe(nil), storage: T.unsafe(nil)); end
 
     sig do
       params(
@@ -684,8 +730,28 @@ class Octoprint::Files < ::Octoprint::BaseResource
     sig { params(location: ::Octoprint::Location, options: T::Hash[::Symbol, T.untyped]).returns(::Octoprint::Files) }
     def list(location: T.unsafe(nil), options: T.unsafe(nil)); end
 
-    sig { params(filename: ::String, destination: ::String, location: ::Octoprint::Location).returns(T.untyped) }
-    def move(filename:, destination:, location: T.unsafe(nil)); end
+    sig { params(options: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, ::Octoprint::Files]) }
+    def list_all(options: T.unsafe(nil)); end
+
+    sig do
+      params(
+        filename: ::String,
+        destination: ::String,
+        location: ::Octoprint::Location,
+        storage: T.nilable(::Octoprint::Location)
+      ).returns(T.untyped)
+    end
+    def move(filename:, destination:, location: T.unsafe(nil), storage: T.unsafe(nil)); end
+
+    sig do
+      params(
+        filename: T.nilable(::String),
+        location: ::Octoprint::Location,
+        force: T.nilable(T::Boolean),
+        recursive: T.nilable(T::Boolean)
+      ).returns(T.untyped)
+    end
+    def refresh_thumbnails(filename: T.unsafe(nil), location: T.unsafe(nil), force: T.unsafe(nil), recursive: T.unsafe(nil)); end
 
     sig do
       params(
@@ -717,6 +783,17 @@ class Octoprint::Files < ::Octoprint::BaseResource
       ).returns(::Octoprint::Files::OperationResult)
     end
     def upload(file_path, location: T.unsafe(nil), options: T.unsafe(nil)); end
+
+    private
+
+    sig do
+      params(
+        destination: ::String,
+        location: ::Octoprint::Location,
+        storage: T.nilable(::Octoprint::Location)
+      ).returns(T::Hash[::Symbol, T.untyped])
+    end
+    def transfer_options(destination, location, storage); end
   end
 end
 
@@ -749,6 +826,7 @@ class Octoprint::Files::File
   def statistics; end
   def type; end
   def type_path; end
+  def user; end
   def userdata; end
 end
 
@@ -767,6 +845,53 @@ class Octoprint::Files::Folder
   def refs; end
 end
 
+module Octoprint::Files::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(response: T.untyped, request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def from_response(response, request); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+
+    private
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def rename_printer(value); end
+
+    sig { params(key: ::Symbol, value: T.untyped).returns(T.untyped) }
+    def rename_printer_value(key, value); end
+
+    sig do
+      params(
+        http_method: ::Symbol,
+        storage: ::String,
+        response: T::Hash[::Symbol, T.untyped]
+      ).returns(T::Hash[::Symbol, T.untyped])
+    end
+    def reshape_storage_response(http_method, storage, response); end
+
+    sig { params(storage: ::String, response: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def storage_data(storage, response); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(T.nilable(::String)) }
+    def storage_of(request); end
+
+    sig { params(response: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def storages(response); end
+
+    sig { params(storage: ::String, response: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def upload_result(storage, response); end
+  end
+end
+
+Octoprint::Files::Legacy::FILES_PATH = T.let(T.unsafe(nil), String)
+Octoprint::Files::Legacy::LEGACY_PRINTER = T.let(T.unsafe(nil), String)
+Octoprint::Files::Legacy::LEGACY_PRINTER_URL = T.let(T.unsafe(nil), Regexp)
+Octoprint::Files::Legacy::PRINTER = T.let(T.unsafe(nil), String)
+Octoprint::Files::Legacy::PRINTER_PATH = T.let(T.unsafe(nil), Regexp)
+
 class Octoprint::Files::OperationResult
   include ::Octoprint::Deserializable
   include ::Octoprint::AutoInitializable
@@ -778,12 +903,18 @@ class Octoprint::Files::OperationResult
   def done; end
   def effective_print; end
   def effective_select; end
+  def file; end
+
+  sig { returns(T.nilable(T::Hash[::Octoprint::Location, ::Octoprint::Files::File])) }
   def files; end
+
   def folder; end
 end
 
 class Octoprint::Files::Refs
+  include ::Octoprint::Deserializable
   include ::Octoprint::AutoInitializable
+  extend ::Octoprint::Deserializable::ClassMethods
   extend ::Octoprint::AutoInitializable::ClassMethods
 
   def initialize(**kwargs); end
@@ -791,6 +922,20 @@ class Octoprint::Files::Refs
   def download; end
   def model; end
   def resource; end
+  def thumbnail; end
+  def thumbnails; end
+end
+
+Octoprint::Files::Refs::THUMBNAIL_PREFIX = T.let(T.unsafe(nil), String)
+
+class Octoprint::Files::Usage
+  include ::Octoprint::AutoInitializable
+  extend ::Octoprint::AutoInitializable::ClassMethods
+
+  def initialize(**kwargs); end
+
+  def free; end
+  def total; end
 end
 
 class Octoprint::Job < ::Octoprint::BaseResource
@@ -915,12 +1060,14 @@ end
 class Octoprint::Location < ::T::Enum
   enums do
     Local = new
-    SDCard = new
+    Printer = new
   end
 
   sig { returns(::String) }
   def to_s; end
 end
+
+Octoprint::Location::LEGACY_PRINTER = T.let(T.unsafe(nil), String)
 
 class Octoprint::Logs < ::Octoprint::BaseResource
   include ::Octoprint::Deserializable

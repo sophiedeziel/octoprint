@@ -14,4 +14,10 @@ class Octoprint::Files::Refs
 
   sig { returns(T.nilable(::String)) }
   def resource; end
+
+  sig { returns(T.nilable(::String)) }
+  def thumbnail; end
+
+  sig { returns(T.nilable(::Hash)) }
+  def thumbnails; end
 end

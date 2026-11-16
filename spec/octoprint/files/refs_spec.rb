@@ -81,14 +81,58 @@ RSpec.describe Octoprint::Files::Refs do
     end
   end
 
+  describe ".deserialize" do
+    it "groups the thumbnail sizes into thumbnails" do
+      refs = described_class.deserialize(
+        {
+          resource: "http://octopi.local/api/files/local/benchy.gcode",
+          thumbnail: "http://octopi.local/downloads/thumbs/local/benchy.gcode",
+          thumbnail_16x16: "http://octopi.local/downloads/thumbs/local/benchy.gcode?size=16x16",
+          thumbnail_32x32: "http://octopi.local/downloads/thumbs/local/benchy.gcode?size=32x32"
+        }
+      )
+
+      expect(refs.resource).to eq("http://octopi.local/api/files/local/benchy.gcode")
+      expect(refs.thumbnail).to eq("http://octopi.local/downloads/thumbs/local/benchy.gcode")
+      expect(refs.thumbnails).to eq(
+        "16x16" => "http://octopi.local/downloads/thumbs/local/benchy.gcode?size=16x16",
+        "32x32" => "http://octopi.local/downloads/thumbs/local/benchy.gcode?size=32x32"
+      )
+    end
+
+    it "has no thumbnails without thumbnail refs" do
+      refs = described_class.deserialize(
+        {
+          resource: "http://octopi.local/api/files/local/benchy.gcode",
+          download: "http://octopi.local/downloads/files/local/benchy.gcode"
+        }
+      )
+
+      expect(refs.download).to eq("http://octopi.local/downloads/files/local/benchy.gcode")
+      expect(refs.thumbnail).to be_nil
+      expect(refs.thumbnails).to be_nil
+    end
+
+    it "has no thumbnails with only the largest thumbnail" do
+      refs = described_class.deserialize({ thumbnail: "http://octopi.local/downloads/thumbs/local/benchy.gcode" })
+
+      expect(refs.thumbnail).to eq("http://octopi.local/downloads/thumbs/local/benchy.gcode")
+      expect(refs.thumbnails).to be_nil
+    end
+  end
+
   describe "inheritance and modules" do
     it "includes AutoInitializable" do
       expect(described_class.included_modules).to include(Octoprint::AutoInitializable)
     end
 
+    it "includes Deserializable" do
+      expect(described_class.included_modules).to include(Octoprint::Deserializable)
+    end
+
     it "has auto_attrs defined" do
       expect(described_class.auto_attrs).to include(
-        :resource, :download, :model
+        :resource, :download, :model, :thumbnail, :thumbnails
       )
     end
   end
