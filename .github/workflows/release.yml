@@ -1,12 +1,12 @@
 name: Release
 
-# Publishes the gem to rubygems.org when a `vX.Y.Z` tag is pushed, through
-# RubyGems trusted publishing (OIDC): no API key is stored in the repo. See the
-# "Releasing" section of the README.
+# Publishes the gem to rubygems.org when a GitHub Release is published for a
+# `vX.Y.Z` tag, through RubyGems trusted publishing (OIDC): no API key is stored
+# in the repo. See the "Releasing" section of the README.
 
 on:
-  push:
-    tags: [ 'v*' ]
+  release:
+    types: [ published ]
 
 permissions:
   contents: read
@@ -25,7 +25,7 @@ jobs:
     environment: rubygems
     permissions:
       id-token: write # OIDC token for trusted publishing
-      contents: write # create the GitHub Release
+      contents: write # update the GitHub Release notes and attach the gem
 
     steps:
     - name: Checkout code
@@ -58,7 +58,11 @@ jobs:
     - name: Publish to rubygems.org
       uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
 
-    - name: Create GitHub Release
+    # The CHANGELOG is the source of truth: it replaces the notes typed in the
+    # GitHub UI.
+    - name: Update GitHub Release
       env:
         GH_TOKEN: ${{ github.token }}
-      run: gh release create "$GITHUB_REF_NAME" pkg/*.gem --verify-tag --title "$GITHUB_REF_NAME" --notes-file "${RUNNER_TEMP}/notes.md"
+      run: |
+        gh release edit "$GITHUB_REF_NAME" --notes-file "${RUNNER_TEMP}/notes.md"
+        gh release upload "$GITHUB_REF_NAME" pkg/*.gem

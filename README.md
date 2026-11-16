@@ -310,17 +310,14 @@ However, it is not realistic to apply this strictly, some exceptions exist. It i
 
 ### Releasing
 
-Pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml`. It runs the lint and test workflows, checks that the tag matches `Octoprint::VERSION`, publishes the gem to [rubygems.org](https://rubygems.org) through [trusted publishing](https://guides.rubygems.org/trusted-publishing/) (no API key), and creates a GitHub Release with the version's CHANGELOG section as notes and the `.gem` attached.
+Publishing a GitHub Release for a `vX.Y.Z` tag runs `.github/workflows/release.yml`. It runs the lint and test workflows, checks that the tag matches `Octoprint::VERSION`, publishes the gem to [rubygems.org](https://rubygems.org) through [trusted publishing](https://guides.rubygems.org/trusted-publishing/) (no API key), replaces the release notes with the version's CHANGELOG section and attaches the `.gem`.
 
 1. Bump `VERSION` in `lib/octoprint/version.rb`.
 2. In `CHANGELOG.md`, move the entries under `## [X.Y.Z] - YYYY-MM-DD`. The heading must contain `[X.Y.Z]` or the release stops before publishing.
 3. Open a PR and merge it into `main`.
-4. Tag the merge commit on `main` and push the tag:
+4. On GitHub, draft a new release: create the tag `vX.Y.Z` on `main`, and publish it. Saving a draft doesn't trigger anything.
 
-   ```bash
-   git tag -a vX.Y.Z -m "vX.Y.Z"
-   git push origin vX.Y.Z
-   ```
+The release is public before CI finishes. If lint, tests or the version and CHANGELOG checks fail, nothing is published: fix the problem on `main`, delete the release and its tag, and publish it again.
 
 Don't run `bundle exec rake release` locally.
 
