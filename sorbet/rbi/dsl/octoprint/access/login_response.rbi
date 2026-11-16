@@ -6,6 +6,9 @@
 
 
 class Octoprint::Access::LoginResponse
+  sig { returns(T::Boolean) }
+  def credentials_recheck_supported; end
+
   sig { returns(T.nilable(::String)) }
   def credentials_seen; end
 

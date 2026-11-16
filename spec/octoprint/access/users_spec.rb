@@ -155,6 +155,22 @@ RSpec.describe Octoprint::Access::Users do
       expect(user.active).to be(false)
       expect(user.admin).to be(true)
     end
+
+    it "omits admin from the payload when it isn't given (OctoPrint 2.0 removed it)" do
+      api_response = {
+        users: [{ name: "test_user", active: true, apikey: nil, groups: ["users"], has_password: true,
+                  needs: { group: ["users"], role: ["files_list"] }, permissions: [], settings: {} }]
+      }
+
+      allow(client).to receive(:request)
+        .with("/api/access/users", { http_method: :post,
+                                     params: { name: "test_user", password: "password", active: true } })
+        .and_return(api_response)
+
+      user = described_class.add(name: "test_user", password: "password", active: true).first
+
+      expect(user).to have_attributes(name: "test_user", admin: nil, has_password: true, admin?: false)
+    end
   end
 
   describe ".get" do

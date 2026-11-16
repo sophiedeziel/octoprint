@@ -21,7 +21,9 @@ module Octoprint
       include Deserializable
 
       # Fields of the login response that are not part of the user record
-      LOGIN_FIELDS = %i[session is_external_client login_mechanism credentials_seen].freeze
+      LOGIN_FIELDS = %i[
+        session is_external_client login_mechanism credentials_seen credentials_recheck_supported
+      ].freeze
 
       # @!attribute [r] user
       #   @return [User] The user tied to the session or the API key
@@ -45,12 +47,19 @@ module Octoprint
       #     Not in the 1.11.8 docs, but sent by OctoPrint 1.11.8
       auto_attr :credentials_seen, type: String
 
+      # @!attribute [r] credentials_recheck_supported
+      #   @return [Boolean, nil] Whether OctoPrint can ask this session to enter its password again before
+      #     sensitive actions (false for an API key login). New in OctoPrint 2.0 (with and without the API
+      #     version header), `nil` on 1.11
+      auto_attr :credentials_recheck_supported, type: Types::Boolean
+
       auto_initialize!
 
       deserialize_config do
         rename _is_external_client: :is_external_client,
                _login_mechanism: :login_mechanism,
-               _credentials_seen: :credentials_seen
+               _credentials_seen: :credentials_seen,
+               _credentials_recheck_supported: :credentials_recheck_supported
         transform do |data|
           # Everything that isn't a login field belongs to the user record
           user_data = data.except(*LOGIN_FIELDS)

@@ -236,6 +236,61 @@ RSpec.describe Octoprint::Client do
           client.send(:process_error, response)
         end.to raise_error(Octoprint::Exceptions::UnknownError, "[418] Unknown error")
       end
+
+      def error_response(status:, body:, reason_phrase: nil)
+        instance_double(Faraday::Response, status: status, body: body, reason_phrase: reason_phrase)
+      end
+
+      it "falls back to the raw body when the JSON body has no error key" do
+        response = error_response(status: 404, body: '{"message":"nope"}')
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::NotFoundError, '[404] {"message":"nope"}')
+      end
+
+      it "falls back to the raw body when the error key isn't a message" do
+        response = error_response(status: 400, body: '{"error":null}')
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::BadRequestError, '[400] {"error":null}')
+      end
+
+      it "falls back to the raw body when the body isn't JSON" do
+        response = error_response(status: 500, body: "<html><body>Bad Gateway</body></html>\n")
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::InternalServerError, "[500] <html><body>Bad Gateway</body></html>")
+      end
+
+      it "falls back to the raw body when the JSON body isn't an object" do
+        response = error_response(status: 409, body: '["conflict"]')
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::ConflictError, '[409] ["conflict"]')
+      end
+
+      it "truncates a long raw body" do
+        response = error_response(status: 502, body: "x" * 1000)
+
+        expect { client.send(:process_error, response) }.to raise_error(Octoprint::Exceptions::UnknownError) do |error|
+          expect(error.message.length).to eq("[502] ".length + described_class::MAX_ERROR_BODY_LENGTH)
+          expect(error.message).to end_with("...")
+        end
+      end
+
+      it "falls back to the reason phrase when the body is empty" do
+        response = error_response(status: 403, body: "", reason_phrase: "FORBIDDEN")
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::AuthenticationError, "[403] FORBIDDEN")
+      end
+
+      it "falls back to the status when the body and the reason phrase are empty" do
+        response = error_response(status: 502, body: nil, reason_phrase: nil)
+
+        expect { client.send(:process_error, response) }
+          .to raise_error(Octoprint::Exceptions::UnknownError, "[502] HTTP 502")
+      end
     end
   end
 

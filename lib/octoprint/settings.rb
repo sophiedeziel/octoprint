@@ -14,8 +14,8 @@ module Octoprint
   # @example Update settings
   #   Octoprint::Settings.save(appearance: { color: "blue" })
   #
-  # @example Regenerate API key
-  #   new_key = Octoprint::Settings.regenerate_api_key
+  # @example Regenerate the global API key (deprecated, removed in OctoPrint 2.1)
+  #   new_key = Octoprint::Settings.regenerate_api_key[:apikey]
   #   puts "New API key: #{new_key}"
   class Settings < BaseResource
     resource_path("/api/settings")
@@ -95,12 +95,18 @@ module Octoprint
     # Note that after calling this method, the current API key will be invalidated
     # and you'll need to use the new key for subsequent requests.
     #
+    # The global API key is deprecated: OctoPrint 2.0 no longer generates one at startup (the `api.key`
+    # setting may be empty) and OctoPrint 2.1 removes it. Authenticate with a user or application key
+    # instead (see {Access::Users.generate_api_key}).
+    #
+    # @deprecated The global API key stops working in OctoPrint 2.1. Use a user or application API key.
+    #
     # @example Regenerate API key
     #   result = Octoprint::Settings.regenerate_api_key
-    #   new_key = result[:api_key]
+    #   new_key = result[:apikey]
     #   puts "New API key: #{new_key}"
     #
-    # @return [Hash] Hash containing the new API key ({ api_key: "new_key_value" })
+    # @return [Hash] Hash containing the new API key ({ apikey: "new_key_value" })
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking admin rights
     #: -> Hash[Symbol, String]

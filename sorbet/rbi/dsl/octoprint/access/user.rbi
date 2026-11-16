@@ -21,6 +21,9 @@ class Octoprint::Access::User
   sig { returns(T.nilable(T::Array[::String])) }
   def groups; end
 
+  sig { returns(T::Boolean) }
+  def has_password; end
+
   sig { returns(T.nilable(::String)) }
   def name; end
 

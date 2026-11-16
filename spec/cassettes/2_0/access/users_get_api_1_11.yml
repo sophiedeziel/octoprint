@@ -1,0 +1,91 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/access/users/vcruser"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '997'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "active": true,
+          "apikey": null,
+          "groups": [
+            "users"
+          ],
+          "has_password": true,
+          "name": "vcruser",
+          "needs": {
+            "group": [
+              "users"
+            ],
+            "role": [
+              "plugin_softwareupdate_check",
+              "connection",
+              "plugin_file_check_run",
+              "timelapse_admin",
+              "plugin_pluginmanager_list",
+              "settings_read",
+              "gcodeviewer",
+              "plugin_appkeys_user",
+              "files_select",
+              "plugin_action_command_notification_show",
+              "timelapse_delete",
+              "files_delete",
+              "files_upload",
+              "timelapse_list",
+              "status",
+              "plugin_achievements_view",
+              "plugin_action_command_prompt_interact",
+              "files_list",
+              "timelapse_download",
+              "webcam",
+              "print",
+              "timelapse_manage_unrendered",
+              "plugin_firmware_check_display",
+              "plugin_action_command_notification_clear",
+              "files_download",
+              "control",
+              "slice",
+              "monitor_terminal"
+            ]
+          },
+          "permissions": [],
+          "settings": {}
+        }
+  recorded_at: Mon, 16 Nov 2026 06:12:01 GMT
+recorded_with: VCR 6.4.1

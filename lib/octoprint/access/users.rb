@@ -39,13 +39,17 @@ module Octoprint
       #     name: "john_doe",
       #     password: "secure_password",
       #     active: true,
-      #     admin: false
+      #     groups: ["users"]
       #   )
+      #
+      # @example Create an admin
+      #   Octoprint::Access::Users.add(name: "jane", password: "secret", active: true, groups: ["admins"])
       #
       # @param name [String] The user's login name
       # @param password [String] The user's password
       # @param active [Boolean] Whether the user should be active
-      # @param admin [Boolean] Whether the user should be an admin (deprecated)
+      # @param admin [Boolean, nil] Deprecated and optional: OctoPrint 1.11 and 2.0 ignore it, and it is only
+      #   sent when given. Put the user in the `admins` group instead (see {User#admin?}).
       # @param groups [Array<String>, nil] Groups to assign the user to
       # @param permissions [Array<String>, nil] Additional permissions
       # @return [Array<User>] An array of User objects
@@ -53,17 +57,17 @@ module Octoprint
       #|   name: String,
       #|   password: String,
       #|   active: bool,
-      #|   admin: bool,
+      #|   ?admin: bool?,
       #|   ?groups: Array[String]?,
       #|   ?permissions: Array[String]?
       #| ) -> Array[User]
-      def self.add(name:, password:, active:, admin:, groups: nil, permissions: nil)
+      def self.add(name:, password:, active:, admin: nil, groups: nil, permissions: nil)
         params = {
           name: name,
           password: password,
-          active: active,
-          admin: admin
+          active: active
         }
+        params[:admin] = admin unless admin.nil?
         params[:groups] = groups if groups
         params[:permissions] = permissions if permissions
 

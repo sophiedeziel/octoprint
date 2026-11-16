@@ -97,5 +97,51 @@ RSpec.describe Octoprint::Access::User do
       expect(user.api_key).to eq("XYZ789")
       expect(user.needs_role).to eq(["admin"])
     end
+
+    # From spec/cassettes/2_0/access/users_get.yml (role list shortened), after the client's key transform
+    it "deserializes an OctoPrint 2.0 user record" do
+      user = described_class.deserialize(
+        active: true,
+        apikey: nil,
+        groups: ["users"],
+        has_password: true,
+        name: "vcruser",
+        needs: { group: ["users"], role: %w[connection files_list print] },
+        permissions: [],
+        settings: {}
+      )
+
+      expect(user).to have_attributes(name: "vcruser", active: true, has_password: true, groups: ["users"],
+                                      needs_role: %w[connection files_list print], extra: nil)
+      expect(user).to have_attributes(admin: nil, user: nil, roles: nil, admin?: false)
+    end
+  end
+
+  describe "#admin?" do
+    it "is true for a member of the admins group" do
+      expect(described_class.new(groups: %w[users admins]).admin?).to be(true)
+    end
+
+    it "is true with the ADMIN permission (current user)" do
+      expect(described_class.new(groups: ["custom"], permissions: %w[STATUS ADMIN]).admin?).to be(true)
+    end
+
+    it "is true with the admin role from another group (users list)" do
+      expect(described_class.new(groups: ["custom"], permissions: [], needs_role: %w[status admin]).admin?).to be(true)
+    end
+
+    it "is false for a regular user" do
+      user = described_class.new(groups: ["users"], permissions: ["FILES_LIST"], needs_role: ["files_list"])
+
+      expect(user.admin?).to be(false)
+    end
+
+    it "is false without groups, permissions or roles" do
+      expect(described_class.new(name: "guest").admin?).to be(false)
+    end
+
+    it "ignores the deprecated admin flag" do
+      expect(described_class.new(admin: true, groups: ["users"]).admin?).to be(false)
+    end
   end
 end
