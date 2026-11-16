@@ -79,11 +79,14 @@ def octoprint_login_password
   ENV.fetch("OCTOPRINT_LOGIN_PASSWORD", "fake_password")
 end
 
-# Host and API key of the server picked by the `octoprint:` metadata (1.11 when missing)
+# Host and API key of the server picked by the `octoprint:` metadata (1.11 when missing), and the client's
+# `api_version:`: the `api_version:` metadata, or the server's own version. Tag a 2.0 spec with
+# `api_version: "1.11"` to talk to the 2.0 server without the version header.
 RSpec.shared_context "with default Octoprint config" do
   let(:octoprint_server) { OctoprintVersions.server(RSpec.current_example.metadata[:octoprint]) }
-  let(:host)    { octoprint_server.host }
-  let(:api_key) { octoprint_server.api_key }
+  let(:host)        { octoprint_server.host }
+  let(:api_key)     { octoprint_server.api_key }
+  let(:api_version) { RSpec.current_example.metadata.fetch(:api_version) { octoprint_server.version } }
 end
 
 VCR.configure do |config|
@@ -109,6 +112,6 @@ end
 
 def use_octoprint_server
   before do
-    Octoprint.configure(host: host, api_key: api_key)
+    Octoprint.configure(host: host, api_key: api_key, api_version: api_version)
   end
 end

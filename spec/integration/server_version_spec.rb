@@ -25,7 +25,7 @@ RSpec.describe Octoprint::ServerVersion, type: :integration do
     its(:text)   { is_expected.to eq "OctoPrint 1.9.1" }
   end
 
-  describe ".get against every supported server" do
+  describe ".get against every supported server with the 1.11 API", api_version: "1.11" do
     on_octoprint_versions do |version|
       describe ".get", vcr: { cassette_name: "server_version/get_by_version" } do
         subject { described_class.get }
@@ -42,5 +42,17 @@ RSpec.describe Octoprint::ServerVersion, type: :integration do
         its(:api)    { is_expected.to eq "0.1" }
       end
     end
+  end
+
+  describe ".get with the 2.0 API", octoprint: "2.0", vcr: { cassette_name: "server_version/get_api_2_0" } do
+    subject { described_class.get }
+
+    use_octoprint_server
+
+    its(:server) { is_expected.to eq "2.0.0rc7" }
+    its(:text)   { is_expected.to eq "OctoPrint 2.0.0rc7" }
+
+    # The 2.0 API dropped the api key
+    its(:api)    { is_expected.to be_nil }
   end
 end

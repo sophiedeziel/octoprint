@@ -31,6 +31,18 @@ RSpec.describe Octoprint do
       expect(described_class.client).to have_attributes(open_timeout: 1, timeout: nil)
     end
 
+    it "uses the 1.11 API by default" do
+      described_class.configure(host: host, api_key: api_key)
+
+      expect(described_class.client.requested_api_version).to eq "1.11"
+    end
+
+    it "passes the API version to the client" do
+      described_class.configure(host: host, api_key: api_key, api_version: "2.0")
+
+      expect(described_class.client.api_version).to eq Octoprint::ApiVersion::V2_0
+    end
+
     it "returns nil" do
       result = described_class.configure(host: host, api_key: api_key)
 

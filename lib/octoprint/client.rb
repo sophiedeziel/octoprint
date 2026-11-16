@@ -13,10 +13,20 @@ module Octoprint
   # @example Allow more time for large file uploads
   #   client = Octoprint::Client.new(host: "http://octopi.local", api_key: "key", timeout: 120)
   #
+  # @example Talk to servers that speak different API versions
+  #   ender3 = Octoprint::Client.new(host: "http://ender3.local", api_key: "key")                    # 1.11 API
+  #   mk4    = Octoprint::Client.new(host: "http://mk4.local", api_key: "key", api_version: "2.0")   # 2.0 API
+  #   fleet  = Octoprint::Client.new(host: "http://any.local", api_key: "key", api_version: :auto)  # detected
+  #
+  #   mk4.use { Octoprint::Job.get }
+  #   fleet.api_version     # => Gem::Version "2.0" against an OctoPrint 2.0 server (asks the server once)
+  #   fleet.server_version  # => Gem::Version "2.0.0rc7"
+  #
   # @attr [String] host
   # @attr [String] api_key
   # @attr [Numeric, nil] open_timeout  Seconds to wait for the connection to open. nil falls back to `timeout`
   # @attr [Numeric, nil] timeout       Seconds to wait for a read or a write. nil: adapter default (60s)
+  # @attr [String, Symbol] requested_api_version  The `api_version:` the client was created with
   # @attr [Client] client
   class Client
     # Default number of seconds to wait for the connection to open
@@ -24,27 +34,106 @@ module Octoprint
     # Default number of seconds to wait for a read or a write
     DEFAULT_TIMEOUT = 3
 
-    attr_reader :host, :api_key, :open_timeout, :timeout, :client
+    attr_reader :host, :api_key, :open_timeout, :timeout, :requested_api_version, :client
 
     # @param host [String, URI]            Server's host address
     # @param api_key [String]              Server's API key
     # @param open_timeout [Numeric, nil]   Seconds to wait for the connection to open. nil falls back to `timeout`
     # @param timeout [Numeric, nil]        Seconds to wait for a read or a write. nil: adapter default (60s)
+    # @param api_version [String, Symbol]  The OctoPrint API to speak: `"1.11"` (default), `"2.0"` (OctoPrint 2.0
+    #                                      servers only) or `:auto` (asks the server once). See {ApiVersion}.
     # @raise [Exceptions::MissingCredentialsError] if host or api_key is missing
+    # @raise [ArgumentError] if api_version isn't one of the accepted values
     #: (
     #|   host: (String | URI::Generic)?,
     #|   api_key: String?,
     #|   ?open_timeout: Numeric?,
-    #|   ?timeout: Numeric?
+    #|   ?timeout: Numeric?,
+    #|   ?api_version: (String | Symbol)
     #| ) -> void
-    def initialize(host:, api_key:, open_timeout: DEFAULT_OPEN_TIMEOUT, timeout: DEFAULT_TIMEOUT)
+    def initialize(host:, api_key:, open_timeout: DEFAULT_OPEN_TIMEOUT, timeout: DEFAULT_TIMEOUT,
+                   api_version: ApiVersion::DEFAULT)
       raise Exceptions::MissingCredentialsError if host.nil? || api_key.nil?
 
-      @host         = host
-      @api_key      = api_key
-      @open_timeout = open_timeout
-      @timeout      = timeout
-      @client       = new_client
+      @host                  = host
+      @api_key               = api_key
+      @open_timeout          = open_timeout
+      @timeout               = timeout
+      @requested_api_version = validate_api_version(api_version)
+      @server_version        = nil #: Gem::Version?
+      @version_mutex         = Mutex.new
+      @client                = new_client
+    end
+
+    # The API version the client speaks.
+    #
+    # With `api_version: :auto`, the first call asks the server for its version (`GET /api/version`, once per
+    # client) and picks the latest API both sides support. A failed detection isn't remembered: the next call
+    # tries again.
+    #
+    # @return [Gem::Version] {ApiVersion::V1_11} or {ApiVersion::V2_0}
+    # @raise [Exceptions::ConnectionError] if `:auto` can't reach the server
+    #: -> Gem::Version
+    def api_version
+      requested = requested_api_version
+      return ApiVersion::REQUESTABLE.fetch(requested.to_s) unless requested == ApiVersion::AUTO
+
+      ApiVersion.for_server(detect_server_version)
+    end
+
+    # The server's version, once `api_version: :auto` has detected it.
+    #
+    # @return [Gem::Version, nil] nil until detected, and always nil for a client with a pinned `api_version:`
+    #: -> Gem::Version?
+    def server_version
+      @version_mutex.synchronize { @server_version }
+    end
+
+    # Forgets the detected server version, so an `api_version: :auto` client asks again on its next request.
+    # Use it after the server was upgraded.
+    #
+    # @return [nil]
+    #: -> void
+    def refresh_version!
+      @version_mutex.synchronize { @server_version = nil }
+
+      nil
+    end
+
+    # Whether the client's API version answers with the 1.x response shapes
+    #
+    # @return [Boolean]
+    #: -> bool
+    def legacy_api?
+      ApiVersion.legacy?(api_version)
+    end
+
+    # Whether the client's API version has a feature.
+    #
+    # @example
+    #   client.supports?(:connectors) # => false with the 1.11 API
+    #
+    # @param feature [Symbol] A key of {ApiVersion::FEATURES}
+    # @return [Boolean]
+    # @raise [ArgumentError] for an unknown feature
+    #: (Symbol) -> bool
+    def supports?(feature)
+      api_version >= ApiVersion.required_for(feature)
+    end
+
+    # Raises unless the client's API version has a feature.
+    #
+    # @param feature [Symbol] A key of {ApiVersion::FEATURES}
+    # @return [void]
+    # @raise [Exceptions::UnsupportedFeatureError] if the client's API version doesn't have the feature
+    # @raise [ArgumentError] for an unknown feature
+    #: (Symbol) -> void
+    def require_feature!(feature)
+      return if supports?(feature)
+
+      raise Exceptions::UnsupportedFeatureError,
+            "#{feature} needs the OctoPrint #{ApiVersion.required_for(feature)} API, " \
+            "but this client uses the #{api_version} API#{server_version_suffix}"
     end
 
     # Instantiates an object from a hash. Can be overridden by child classes
@@ -92,6 +181,43 @@ module Octoprint
 
     private
 
+    #: ((String | Symbol)) -> (String | Symbol)
+    def validate_api_version(api_version)
+      return api_version if api_version == ApiVersion::AUTO || ApiVersion::REQUESTABLE.key?(api_version)
+
+      accepted = [*ApiVersion::REQUESTABLE.keys, ApiVersion::AUTO].map(&:inspect).join(", ")
+      raise ArgumentError, "Unknown api_version #{api_version.inspect}. Use one of #{accepted}"
+    end
+
+    # Asks the server for its version once. Never remembers a failure.
+    #
+    #: -> Gem::Version
+    def detect_server_version
+      @version_mutex.synchronize do
+        detected = @server_version
+        next detected if detected
+
+        # Without the version header: every OctoPrint version answers this one
+        response = send_raw(:get, "/api/version", nil, {})
+        process_error(response) if response.status >= 400
+        @server_version = ApiVersion.parse(parse_response(response).fetch(:server))
+      end
+    end
+
+    #: -> String
+    def server_version_suffix
+      version = server_version
+      version ? " (OctoPrint #{version})" : ""
+    end
+
+    # Headers that select the API version, empty for the 1.x API
+    #
+    #: -> Hash[String, String]
+    def api_version_headers
+      value = ApiVersion.header_value(api_version)
+      value ? { ApiVersion::HEADER => value } : {}
+    end
+
     def process_error(response)
       errors = {
         400 => Exceptions::BadRequestError,
@@ -124,6 +250,10 @@ module Octoprint
     end
 
     def request_with_client(http_method, path, body, headers, force_multipart: false)
+      send_raw(http_method, path, body, api_version_headers.merge(headers || {}), force_multipart: force_multipart)
+    end
+
+    def send_raw(http_method, path, body, headers, force_multipart: false)
       if force_multipart || body&.any? { |_key, value| value.is_a?(Faraday::UploadIO) }
         file_client = new_client(multipart: true)
         file_client.public_send(http_method, path, body, headers)

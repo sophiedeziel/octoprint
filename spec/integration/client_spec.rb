@@ -20,6 +20,33 @@ RSpec.describe Octoprint::Client, type: :integration do
     end
   end
 
+  describe "API version detection" do
+    on_octoprint_versions do |version|
+      describe "with api_version: :auto", vcr: { cassette_name: "client/auto_detection" } do
+        let(:client) { described_class.new(host: host, api_key: api_key, api_version: :auto) }
+        let(:detected) { { "1.11" => %w[1.11.8 1.11], "2.0" => %w[2.0.0rc7 2.0] }.fetch(version) }
+
+        it "asks the server for its version on the first request, once" do
+          allow(client.client).to receive(:get).and_call_original
+
+          2.times { client.request("/api/version") }
+
+          # One detection request, then the two requests
+          expect(client.client).to have_received(:get).with("/api/version", nil, anything).exactly(3).times
+          expect(client.server_version).to eq Gem::Version.new(detected.first)
+        end
+
+        it "speaks the latest API the server supports" do
+          response = client.request("/api/version")
+
+          expect(client.api_version).to eq Gem::Version.new(detected.last)
+          # The 2.0 API dropped the api key, so the header was sent to the 2.0 server only
+          expect(response.key?(:api)).to eq(version == "1.11")
+        end
+      end
+    end
+  end
+
   describe "timeouts" do
     include WebMock::API
 

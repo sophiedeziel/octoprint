@@ -63,6 +63,21 @@ A group tagged with a non-default version must give an explicit `cassette_name`.
     - For example, if a test deletes a file on the server, you have to upload it first so it can be deleted.
 - The `:wip` tag turns VCR **off** (real requests, nothing recorded). Use it to debug against a live server, not to record. Its configuration is in `spec/spec_helper.rb`
 
+## OctoPrint API versions (1.11 and 2.0)
+
+The gem talks to OctoPrint 1.11.x and 2.0.x servers. Each `Octoprint::Client` picks its API with `api_version:`: `"1.11"` (default, no header), `"2.0"` (sends `X-OctoPrint-Api-Version: 2.0.0`) or `:auto` (one `GET /api/version` per client, then the latest API both sides support). See `lib/octoprint/api_version.rb` and issue #265.
+
+**Models follow the 2.0 response shapes.** When the client speaks the 1.x API, a resource whose 1.x requests or responses differ converts them with a legacy converter:
+
+- Put it in `lib/octoprint/<resource>/legacy.rb` as `Octoprint::<Resource>::Legacy` (e.g. `Octoprint::Connection::Legacy`, `Octoprint::Printer::Storage::Legacy`). `BaseResource` finds it by name, and it isn't inherited by subclasses. Don't touch `BaseResource` to add one.
+- `extend LegacyConverter` and override what differs. Both methods default to returning their input:
+  - `self.to_request(request)` gets the 2.0-style `ApiRequest` (`http_method`, `path`, `query`, `body`, `headers`, `options`) and returns the 1.x request to send. Use `request.with(path: ...)`.
+  - `self.from_response(response, request)` gets the parsed 1.x response and the **original** 2.0-style request, and returns the response in the 2.0 shape. A 204 response is `true`.
+- Converters only run for requests made with `fetch_resource`, `post`, `put`, `patch` and `delete`. A resource that calls `client.request` directly (e.g. `Access::Users`) bypasses them.
+- Never branch on the version inside a resource (`if client.api_version >= ...`). Put the 1.x differences in the converter.
+- Features that only exist in the 2.0 API go in `ApiVersion::FEATURES`. Call `require_feature!(:feature)` in the resource method before the request, so a 1.x client gets `Exceptions::UnsupportedFeatureError` without reaching the server. When a 1.x equivalent exists, convert to it instead of raising.
+- Test both: unit-test the converter with hashes taken from recorded cassettes, and run the integration specs against both servers with `on_octoprint_versions`. The `octoprint:` metadata also sets the client's `api_version:` (via `use_octoprint_server`); tag a group with `api_version: "1.11"` to talk to the 2.0 server without the header.
+
 ## Running Quality Gates
 
 Before committing, ensure your code passes all quality checks:
@@ -98,8 +113,8 @@ Method signatures are inline RBS comments that Sorbet checks statically. They do
 The project uses SimpleCov to track test coverage. Coverage reports are generated automatically when running tests and saved to `coverage/index.html`.
 
 - **Minimum coverage threshold**: 90%
-- **Current coverage**: 100.0% (1448/1448 lines covered) - Outstanding coverage achieved!
-- **Total test examples**: 1231 examples, 0 failures
+- **Current coverage**: 100.0% (1557/1557 lines covered) - Outstanding coverage achieved!
+- **Total test examples**: 1305 examples, 0 failures
 - **Coverage groups**: Core, Resources, Files, Libraries
 
 The coverage report excludes:

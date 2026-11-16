@@ -282,4 +282,93 @@ RSpec.describe Octoprint::BaseResource do
       expect { test_class.new(name: "test", value: 123) }.not_to raise_error
     end
   end
+
+  describe "legacy converters" do
+    let(:converter) do
+      Module.new do
+        extend Octoprint::LegacyConverter
+
+        def self.to_request(request)
+          request.with(path: "#{request.path}/legacy", body: request.body&.merge(legacy: true))
+        end
+
+        def self.from_response(response, request)
+          { converted: response, requested: request.path }
+        end
+      end
+    end
+
+    before do
+      test_class.const_set(:Legacy, converter)
+      allow(client).to receive(:request).and_return({ raw: true })
+    end
+
+    it "finds the resource's Legacy converter" do
+      expect(test_class.legacy_converter).to be converter
+    end
+
+    it "doesn't inherit a parent's converter" do
+      expect(Class.new(test_class).legacy_converter).to be_nil
+    end
+
+    context "with the 1.11 API" do
+      it "converts GET requests and responses" do
+        result = test_class.fetch_resource(deserialize: false, options: { exclude: "sd" })
+
+        expect(client).to have_received(:request).with("/api/test/legacy?exclude=sd", http_method: :get)
+        expect(result).to eq(converted: { raw: true }, requested: "/api/test")
+      end
+
+      it "converts the response before deserializing it" do
+        allow(test_class).to receive(:deserialize).and_return("deserialized")
+
+        test_class.fetch_resource
+
+        expect(test_class).to have_received(:deserialize).with(converted: { raw: true }, requested: "/api/test")
+      end
+
+      %i[post put patch delete].each do |verb|
+        it "converts #{verb.upcase} requests" do
+          test_class.public_send(verb, params: { command: "connect" })
+
+          expect(client).to have_received(:request).with(
+            "/api/test/legacy", http_method: verb, body: { command: "connect", legacy: true }, headers: {}, options: {}
+          )
+        end
+      end
+    end
+
+    context "with the 2.0 API" do
+      let(:client) { Octoprint::Client.new(host: "http://test.local", api_key: "test_key", api_version: "2.0") }
+
+      it "sends requests and returns responses unchanged" do
+        result = test_class.fetch_resource(deserialize: false)
+
+        expect(client).to have_received(:request).with("/api/test", http_method: :get)
+        expect(result).to eq(raw: true)
+      end
+    end
+  end
+
+  describe "resources without a converter" do
+    let(:client) { instance_double(Octoprint::Client, request: { raw: true }) }
+
+    it "don't ask the client for its API version" do
+      expect(test_class.fetch_resource(deserialize: false)).to eq(raw: true)
+    end
+  end
+
+  describe ".require_feature!" do
+    it "raises when the client's API version lacks the feature" do
+      expect { test_class.send(:require_feature!, :connectors) }
+        .to raise_error(Octoprint::Exceptions::UnsupportedFeatureError)
+    end
+
+    it "passes with an API version that has it" do
+      allow(test_class).to receive(:client)
+        .and_return(Octoprint::Client.new(host: "http://test.local", api_key: "key", api_version: "2.0"))
+
+      expect { test_class.send(:require_feature!, :connectors) }.not_to raise_error
+    end
+  end
 end

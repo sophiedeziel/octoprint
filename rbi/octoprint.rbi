@@ -16,10 +16,11 @@ module Octoprint
         host: ::String,
         api_key: ::String,
         open_timeout: T.nilable(::Numeric),
-        timeout: T.nilable(::Numeric)
+        timeout: T.nilable(::Numeric),
+        api_version: T.any(::String, ::Symbol)
       ).void
     end
-    def configure(host:, api_key:, open_timeout: T.unsafe(nil), timeout: T.unsafe(nil)); end
+    def configure(host:, api_key:, open_timeout: T.unsafe(nil), timeout: T.unsafe(nil), api_version: T.unsafe(nil)); end
   end
 end
 
@@ -251,6 +252,85 @@ class Octoprint::Access::Users < ::Octoprint::BaseResource
   end
 end
 
+class Octoprint::ApiRequest
+  sig do
+    params(
+      http_method: ::Symbol,
+      path: ::String,
+      query: T::Hash[::Symbol, T.untyped],
+      body: T.nilable(T::Hash[::Symbol, T.untyped]),
+      headers: T::Hash[::Symbol, T.untyped],
+      options: T::Hash[::Symbol, T.untyped]
+    ).void
+  end
+  def initialize(http_method:, path:, query: T.unsafe(nil), body: T.unsafe(nil), headers: T.unsafe(nil), options: T.unsafe(nil)); end
+
+  sig { params(other: T.untyped).returns(T::Boolean) }
+  def ==(other); end
+
+  sig { returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
+  def body; end
+
+  sig { params(other: T.untyped).returns(T::Boolean) }
+  def eql?(other); end
+
+  sig { returns(::String) }
+  def full_path; end
+
+  sig { returns(::Integer) }
+  def hash; end
+
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def headers; end
+
+  sig { returns(::Symbol) }
+  def http_method; end
+
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def options; end
+
+  sig { returns(::String) }
+  def path; end
+
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def query; end
+
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def to_h; end
+
+  sig { params(changes: T.untyped).returns(::Octoprint::ApiRequest) }
+  def with(**changes); end
+end
+
+module Octoprint::ApiVersion
+  class << self
+    sig { params(server_version: ::Gem::Version).returns(::Gem::Version) }
+    def for_server(server_version); end
+
+    sig { params(api_version: ::Gem::Version).returns(T.nilable(::String)) }
+    def header_value(api_version); end
+
+    sig { params(api_version: ::Gem::Version).returns(T::Boolean) }
+    def legacy?(api_version); end
+
+    sig { params(version: ::String).returns(::Gem::Version) }
+    def parse(version); end
+
+    sig { params(feature: ::Symbol).returns(::Gem::Version) }
+    def required_for(feature); end
+  end
+end
+
+Octoprint::ApiVersion::AUTO = T.let(T.unsafe(nil), Symbol)
+Octoprint::ApiVersion::DEFAULT = T.let(T.unsafe(nil), String)
+Octoprint::ApiVersion::FEATURES = T.let(T.unsafe(nil), Hash)
+Octoprint::ApiVersion::HEADER = T.let(T.unsafe(nil), String)
+Octoprint::ApiVersion::HEADER_VALUES = T.let(T.unsafe(nil), Hash)
+Octoprint::ApiVersion::MINIMUM_2_0 = T.let(T.unsafe(nil), Gem::Version)
+Octoprint::ApiVersion::REQUESTABLE = T.let(T.unsafe(nil), Hash)
+Octoprint::ApiVersion::V1_11 = T.let(T.unsafe(nil), Gem::Version)
+Octoprint::ApiVersion::V2_0 = T.let(T.unsafe(nil), Gem::Version)
+
 module Octoprint::AutoInitializable
   mixes_in_class_methods ::Octoprint::AutoInitializable::ClassMethods
 end
@@ -296,6 +376,9 @@ class Octoprint::BaseResource
     def deserialize(attrs); end
     def fetch_resource(path = T.unsafe(nil), deserialize: T.unsafe(nil), options: T.unsafe(nil)); end
 
+    sig { returns(T.nilable(::Octoprint::LegacyConverter)) }
+    def legacy_converter; end
+
     sig do
       params(
         path: ::String,
@@ -332,6 +415,15 @@ class Octoprint::BaseResource
 
     sig { returns(::Octoprint::Client) }
     def client; end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def perform(request); end
+
+    sig { params(feature: ::Symbol).void }
+    def require_feature!(feature); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def send_request(request); end
   end
 end
 
@@ -341,26 +433,64 @@ class Octoprint::Client
       host: T.nilable(T.any(::String, ::URI::Generic)),
       api_key: T.nilable(::String),
       open_timeout: T.nilable(::Numeric),
-      timeout: T.nilable(::Numeric)
+      timeout: T.nilable(::Numeric),
+      api_version: T.any(::String, ::Symbol)
     ).void
   end
-  def initialize(host:, api_key:, open_timeout: T.unsafe(nil), timeout: T.unsafe(nil)); end
+  def initialize(host:, api_key:, open_timeout: T.unsafe(nil), timeout: T.unsafe(nil), api_version: T.unsafe(nil)); end
 
   def api_key; end
+
+  sig { returns(::Gem::Version) }
+  def api_version; end
+
   def client; end
   def host; end
+
+  sig { returns(T::Boolean) }
+  def legacy_api?; end
+
   def open_timeout; end
+
+  sig { void }
+  def refresh_version!; end
+
   def request(path, options_or_http_method = T.unsafe(nil), body: T.unsafe(nil), headers: T.unsafe(nil), options: T.unsafe(nil), http_method: T.unsafe(nil)); end
+  def requested_api_version; end
+
+  sig { params(feature: ::Symbol).void }
+  def require_feature!(feature); end
+
+  sig { returns(T.nilable(::Gem::Version)) }
+  def server_version; end
+
+  sig { params(feature: ::Symbol).returns(T::Boolean) }
+  def supports?(feature); end
+
   def timeout; end
   def use; end
 
   private
 
+  sig { returns(T::Hash[::String, ::String]) }
+  def api_version_headers; end
+
+  sig { returns(::Gem::Version) }
+  def detect_server_version; end
+
   def new_client(multipart: T.unsafe(nil)); end
   def parse_response(response); end
   def process_error(response); end
   def request_with_client(http_method, path, body, headers, force_multipart: T.unsafe(nil)); end
+  def send_raw(http_method, path, body, headers, force_multipart: T.unsafe(nil)); end
+
+  sig { returns(::String) }
+  def server_version_suffix; end
+
   def transform_keys_recursively(obj); end
+
+  sig { params(api_version: T.any(::String, ::Symbol)).returns(T.any(::String, ::Symbol)) }
+  def validate_api_version(api_version); end
 end
 
 Octoprint::Client::DEFAULT_OPEN_TIMEOUT = T.let(T.unsafe(nil), Integer)
@@ -505,6 +635,7 @@ class Octoprint::Exceptions::MissingCredentialsError < ::Octoprint::Exceptions::
 class Octoprint::Exceptions::NotFoundError < ::Octoprint::Exceptions::Error; end
 class Octoprint::Exceptions::TimeoutError < ::Octoprint::Exceptions::ConnectionError; end
 class Octoprint::Exceptions::UnknownError < ::Octoprint::Exceptions::Error; end
+class Octoprint::Exceptions::UnsupportedFeatureError < ::Octoprint::Exceptions::Error; end
 class Octoprint::Exceptions::UnsupportedMediaTypeError < ::Octoprint::Exceptions::Error; end
 
 class Octoprint::Files < ::Octoprint::BaseResource
@@ -771,6 +902,14 @@ class Octoprint::Languages::LanguagePack
   def extra; end
   def identifier; end
   def languages; end
+end
+
+module Octoprint::LegacyConverter
+  sig { params(response: T.untyped, _request: ::Octoprint::ApiRequest).returns(T.untyped) }
+  def from_response(response, _request); end
+
+  sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+  def to_request(request); end
 end
 
 class Octoprint::Location < ::T::Enum

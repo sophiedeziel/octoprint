@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "webmock/rspec/matchers"
+
 RSpec.describe Octoprint::Client do
   include_context "with default Octoprint config"
 
@@ -233,6 +235,203 @@ RSpec.describe Octoprint::Client do
         expect do
           client.send(:process_error, response)
         end.to raise_error(Octoprint::Exceptions::UnknownError, "[418] Unknown error")
+      end
+    end
+  end
+
+  describe "API versions" do
+    include WebMock::API
+    include WebMock::Matchers
+
+    let(:base) { "http://test.local" }
+    let(:version_body) { ->(server) { { status: 200, body: { server: server, text: "OctoPrint #{server}" }.to_json } } }
+
+    after { WebMock.reset! }
+
+    def new_client(api_version = nil)
+      return described_class.new(host: base, api_key: "key") if api_version.nil?
+
+      described_class.new(host: base, api_key: "key", api_version: api_version)
+    end
+
+    def header_sent?(request)
+      request.headers.key?("X-Octoprint-Api-Version")
+    end
+
+    describe "api_version: option" do
+      it "defaults to the 1.11 API" do
+        client = new_client
+
+        expect(client.requested_api_version).to eq "1.11"
+        expect(client.api_version).to eq Octoprint::ApiVersion::V1_11
+        expect(client).to be_legacy_api
+      end
+
+      it "speaks the 2.0 API when asked to" do
+        client = new_client("2.0")
+
+        expect(client.api_version).to eq Octoprint::ApiVersion::V2_0
+        expect(client).not_to be_legacy_api
+      end
+
+      ["2.0.0", "1.9", :legacy, nil].each do |value|
+        it "rejects #{value.inspect}" do
+          expect { new_client(value || "") }
+            .to raise_error(ArgumentError, /Unknown api_version .*Use one of "1.11", "2.0", :auto/)
+        end
+      end
+
+      it "never asks a pinned client's server for its version" do
+        client = new_client("2.0")
+        client.api_version
+
+        expect(client.server_version).to be_nil
+      end
+    end
+
+    describe "X-OctoPrint-Api-Version header" do
+      it "isn't sent with the 1.11 API" do
+        stub = stub_request(:get, "#{base}/api/job").with { |request| !header_sent?(request) }.to_return(body: "{}")
+
+        new_client.request("/api/job")
+
+        expect(stub).to have_been_requested
+      end
+
+      it "sends 2.0.0 with the 2.0 API" do
+        stub = stub_request(:get, "#{base}/api/job")
+               .with(headers: { "X-OctoPrint-Api-Version" => "2.0.0" }).to_return(body: "{}")
+
+        new_client("2.0").request("/api/job")
+
+        expect(stub).to have_been_requested
+      end
+
+      it "is sent with multipart uploads" do
+        stub = stub_request(:post, "#{base}/api/files/local")
+               .with(headers: { "X-OctoPrint-Api-Version" => "2.0.0" }).to_return(body: "{}")
+
+        new_client("2.0").request("/api/files/local", http_method: :post, body: { print: true },
+                                                      options: { force_multipart: true })
+
+        expect(stub).to have_been_requested
+      end
+
+      it "keeps the caller's headers" do
+        stub = stub_request(:post, "#{base}/api/job")
+               .with(headers: { "X-OctoPrint-Api-Version" => "2.0.0", "X-Custom" => "yes" }).to_return(status: 204)
+
+        new_client("2.0").request("/api/job", http_method: :post, body: {}, headers: { "X-Custom" => "yes" })
+
+        expect(stub).to have_been_requested
+      end
+    end
+
+    describe "api_version: :auto" do
+      it "doesn't reach the server before the first request" do
+        new_client(:auto)
+
+        expect(a_request(:any, /test.local/)).not_to have_been_made
+      end
+
+      it "detects the server version without the header, once" do
+        detection = stub_request(:get, "#{base}/api/version").with { |request| !header_sent?(request) }
+                                                             .to_return(version_body.call("2.0.0rc7"))
+        job = stub_request(:get, "#{base}/api/job").with(headers: { "X-OctoPrint-Api-Version" => "2.0.0" })
+                                                   .to_return(body: "{}")
+        client = new_client(:auto)
+
+        2.times { client.request("/api/job") }
+
+        expect(detection).to have_been_requested.once
+        expect(job).to have_been_requested.twice
+        expect(client.server_version).to eq Gem::Version.new("2.0.0rc7")
+        expect(client.api_version).to eq Octoprint::ApiVersion::V2_0
+      end
+
+      it "speaks the 1.11 API with an OctoPrint 1.x server" do
+        stub_request(:get, "#{base}/api/version").to_return(version_body.call("1.11.8"))
+        job = stub_request(:get, "#{base}/api/job").with { |request| !header_sent?(request) }.to_return(body: "{}")
+        client = new_client(:auto)
+
+        client.request("/api/job")
+
+        expect(job).to have_been_requested
+        expect(client).to be_legacy_api
+      end
+
+      it "doesn't remember a failed detection" do
+        stub_request(:get, "#{base}/api/version").to_raise(Errno::ECONNREFUSED)
+                                                 .then.to_return(version_body.call("1.11.8"))
+        client = new_client(:auto)
+
+        expect { client.api_version }.to raise_error(Octoprint::Exceptions::ConnectionError)
+        expect(client.server_version).to be_nil
+        expect(client.api_version).to eq Octoprint::ApiVersion::V1_11
+      end
+
+      it "raises the mapped error when the server refuses the detection" do
+        stub_request(:get, "#{base}/api/version").to_return(status: 403, body: { error: "Forbidden" }.to_json)
+
+        expect { new_client(:auto).api_version }
+          .to raise_error(Octoprint::Exceptions::AuthenticationError, "[403] Forbidden")
+      end
+
+      it "detects once when threads share the client" do
+        detection = stub_request(:get, "#{base}/api/version").to_return do
+          sleep 0.05
+          version_body.call("2.0.0rc7")
+        end
+        client = new_client(:auto)
+
+        Array.new(5) { Thread.new { client.api_version } }.each(&:join)
+
+        expect(detection).to have_been_requested.once
+      end
+
+      it "detects again after refresh_version!" do
+        detection = stub_request(:get, "#{base}/api/version").to_return(version_body.call("1.11.8"))
+                                                             .then.to_return(version_body.call("2.0.0"))
+        client = new_client(:auto)
+
+        expect(client.api_version).to eq Octoprint::ApiVersion::V1_11
+        expect(client.refresh_version!).to be_nil
+        expect(client.server_version).to be_nil
+        expect(client.api_version).to eq Octoprint::ApiVersion::V2_0
+        expect(detection).to have_been_requested.twice
+      end
+    end
+
+    describe "#supports?" do
+      it "is false for 2.0 features with the 1.11 API" do
+        expect(new_client.supports?(:connectors)).to be false
+      end
+
+      it "is true for 2.0 features with the 2.0 API" do
+        expect(new_client("2.0").supports?(:connectors)).to be true
+      end
+
+      it "raises for an unknown feature" do
+        expect { new_client.supports?(:teleport) }.to raise_error(ArgumentError, /Unknown feature/)
+      end
+    end
+
+    describe "#require_feature!" do
+      it "passes when the API version has the feature" do
+        expect { new_client("2.0").require_feature!(:refresh_thumbnails) }.not_to raise_error
+      end
+
+      it "raises UnsupportedFeatureError without reaching the server" do
+        expect { new_client.require_feature!(:refresh_thumbnails) }
+          .to raise_error(Octoprint::Exceptions::UnsupportedFeatureError,
+                          "refresh_thumbnails needs the OctoPrint 2.0 API, but this client uses the 1.11 API")
+      end
+
+      it "names the detected server version" do
+        stub_request(:get, "#{base}/api/version").to_return(version_body.call("1.11.8"))
+
+        expect { new_client(:auto).require_feature!(:connectors) }
+          .to raise_error(Octoprint::Exceptions::UnsupportedFeatureError, /uses the 1.11 API \(OctoPrint 1.11.8\)/)
       end
     end
   end

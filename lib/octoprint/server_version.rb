@@ -18,8 +18,8 @@ module Octoprint
     resource_path("/api/version")
 
     # @!attribute [r] api
-    #   @return [String] The server's API version
-    auto_attr :api, type: String, nilable: false
+    #   @return [String, nil] The server's API version (`"0.1"`). nil with the 2.0 API, which dropped it
+    auto_attr :api, type: String
 
     # @!attribute [r] server
     #   @return [String] The server's version number
