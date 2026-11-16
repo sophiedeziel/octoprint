@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-16
 
 Initial release. Targets OctoPrint 1.11.x and Ruby 3.3+.
 
