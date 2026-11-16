@@ -13,7 +13,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#sec-api-datamodel-jobs-job
     class Information
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

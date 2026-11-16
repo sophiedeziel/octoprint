@@ -31,10 +31,10 @@ RSpec.describe Octoprint do
       expect(described_class.client).to have_attributes(open_timeout: 1, timeout: nil)
     end
 
-    it "has a result" do
+    it "returns nil" do
       result = described_class.configure(host: host, api_key: api_key)
 
-      expect(result).to be_truthy
+      expect(result).to be_nil
     end
   end
 end

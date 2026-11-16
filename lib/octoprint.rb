@@ -15,8 +15,6 @@ loader.setup
 # @attr [Octoprint::Client] client      The configured API client
 module Octoprint
   class << self
-    extend T::Sig
-
     # Configure the API client with the server's address and key
     #
     # @example
@@ -27,14 +25,12 @@ module Octoprint
     # @param [Numeric, nil] open_timeout    Seconds to wait for the connection to open. nil falls back to `timeout`
     # @param [Numeric, nil] timeout         Seconds to wait for a read or a write. nil: adapter default (60s)
     # @return [nil]
-    sig do
-      params(
-        host: String,
-        api_key: String,
-        open_timeout: T.nilable(Numeric),
-        timeout: T.nilable(Numeric)
-      ).void
-    end
+    #: (
+    #|   host: String,
+    #|   api_key: String,
+    #|   ?open_timeout: Numeric?,
+    #|   ?timeout: Numeric?
+    #| ) -> void
     def configure(host:, api_key:, open_timeout: Client::DEFAULT_OPEN_TIMEOUT, timeout: Client::DEFAULT_TIMEOUT)
       self.client = Client.new(host: host, api_key: api_key, open_timeout: open_timeout, timeout: timeout)
 
@@ -42,8 +38,8 @@ module Octoprint
     end
 
     # The API client used for the requests
-    # @returns [Client]
-    sig { returns(T.nilable(Client)) }
+    # @return [Client, nil]
+    #: -> Client?
     def client
       Thread.current[:client]
     end

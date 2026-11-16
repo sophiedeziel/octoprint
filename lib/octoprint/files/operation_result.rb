@@ -5,7 +5,6 @@ module Octoprint
   class Files
     # Result of uploading a file or creating a folder
     class OperationResult
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 

@@ -14,6 +14,8 @@ module Octoprint
       SDCard = new("sdcard")
     end
 
+    # @return [String] The location as used in API paths ("local" or "sdcard")
+    #: -> String
     def to_s
       @value.to_s
     end

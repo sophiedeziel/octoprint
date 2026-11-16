@@ -17,7 +17,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.8/api/general.html#data-model
     class LoginResponse
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

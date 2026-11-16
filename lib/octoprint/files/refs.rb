@@ -7,7 +7,6 @@ module Octoprint
   class Files
     # References relevant to this file, left out in abridged version
     class Refs
-      extend T::Sig
       include AutoInitializable
 
       auto_attr :resource, type: String

@@ -17,7 +17,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/features/custom_controls.html
     class CustomControl
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -111,7 +110,7 @@ module Octoprint
       # Whether this is a container grouping other controls.
       #
       # @return [Boolean] true if the control has children
-      sig { returns(T::Boolean) }
+      #: -> bool
       def container?
         !children.nil?
       end

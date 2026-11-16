@@ -2,11 +2,11 @@
 # frozen_string_literal: true
 
 module Octoprint
-  # Common type aliases for use with auto_attr and Sorbet signatures.
+  # Common type aliases for use with auto_attr.
   #
   # This module provides convenient type aliases for commonly used types
-  # in the OctoPrint API. These can be used with auto_attr or in regular
-  # Sorbet type annotations.
+  # in the OctoPrint API. They are runtime values meant for auto_attr and
+  # Sorbet assertions; in RBS signature comments, write the type directly.
   #
   # @example Using with auto_attr
   #   class User
@@ -20,14 +20,12 @@ module Octoprint
   #     auto_initialize!
   #   end
   #
-  # @example Using in Sorbet signatures
-  #   sig { params(data: Types::Hash).returns(Types::NilableString) }
+  # @example The same types in an RBS signature comment
+  #   #: (Hash[Symbol, untyped]) -> String?
   #   def process_data(data)
   #     data[:name]
   #   end
   module Types
-    extend T::Sig
-
     # A hash with symbol keys and untyped values (common for API responses)
     # @example { name: "John", age: 30, active: true }
     Hash = T::Hash[Symbol, T.untyped]

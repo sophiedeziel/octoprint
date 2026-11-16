@@ -19,8 +19,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#issue-a-print-head-command
     class Printhead < BaseResource
-      extend T::Sig
-
       resource_path("/api/printer/printhead")
 
       # Issues a print head command.
@@ -34,7 +32,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the parameters are invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or is printing
-      sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (command: String, ?options: Hash[Symbol, untyped]) -> untyped
       def self.issue_command(command:, options: {})
         post(params: { command: command }.merge(options))
       end
@@ -57,15 +55,13 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if an amount is invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or is printing
-      sig do
-        params(
-          x: T.nilable(Numeric),
-          y: T.nilable(Numeric),
-          z: T.nilable(Numeric),
-          absolute: T.nilable(T::Boolean),
-          speed: T.nilable(T.any(Integer, FalseClass))
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   ?x: Numeric?,
+      #|   ?y: Numeric?,
+      #|   ?z: Numeric?,
+      #|   ?absolute: bool?,
+      #|   ?speed: (Integer | FalseClass)?
+      #| ) -> untyped
       def self.jog(x: nil, y: nil, z: nil, absolute: nil, speed: nil) # rubocop:disable Naming/MethodParameterName
         issue_command(command: "jog", options: { x: x, y: y, z: z, absolute: absolute, speed: speed }.compact)
       end
@@ -83,7 +79,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if an invalid axis is given
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or is printing
-      sig { params(axes: T::Array[T.any(String, Symbol)]).returns(T.untyped) }
+      #: (?axes: Array[(String | Symbol)]) -> untyped
       def self.home(axes: %w[x y z])
         issue_command(command: "home", options: { axes: axes.map(&:to_s) })
       end
@@ -100,7 +96,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the factor is out of range
-      sig { params(factor: Numeric).returns(T.untyped) }
+      #: (Numeric factor) -> untyped
       def self.feedrate(factor)
         issue_command(command: "feedrate", options: { factor: factor })
       end

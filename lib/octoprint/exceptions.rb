@@ -14,9 +14,13 @@ module Octoprint
     class MissingCredentialsError < Error; end
     # The server encountered an unexpected condition which prevented it from fulfilling the request
     class InternalServerError < Error; end
+    # The server answered with an error status code the gem does not map to a specific error
     class UnknownError < Error; end
+    # The request conflicts with the current state of the server (HTTP 409)
     class ConflictError < Error; end
+    # The server refused the request body or file type (HTTP 415)
     class UnsupportedMediaTypeError < Error; end
+    # The requested resource does not exist (HTTP 404)
     class NotFoundError < Error; end
     # The server could not be reached (connection refused, host unreachable, DNS failure, ...)
     class ConnectionError < Error; end

@@ -27,7 +27,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.8/api/printer.html#retrieve-information-about-the-last-error
     class ErrorInformation < BaseResource
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -72,7 +71,7 @@ module Octoprint
       #
       # @return [Printer::ErrorInformation] The last error information
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +STATUS+ permission
-      sig { returns(ErrorInformation) }
+      #: -> ErrorInformation
       def self.get
         fetch_resource
       end
@@ -83,7 +82,7 @@ module Octoprint
       #   Octoprint::Printer.last_error.error? # => false
       #
       # @return [Boolean] false when {#error} is nil or empty
-      sig { returns(T::Boolean) }
+      #: -> bool
       def error?
         !error.to_s.empty?
       end
@@ -94,7 +93,7 @@ module Octoprint
       #   Octoprint::Printer.last_error.faq_url # => "https://faq.octoprint.org/firmware-mintemp"
       #
       # @return [String, nil] The FAQ URL, nil when there is no FAQ entry
-      sig { returns(T.nilable(String)) }
+      #: -> String?
       def faq_url
         return if faq.to_s.empty?
 

@@ -15,7 +15,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#temperature-state
     class TemperatureState
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -59,7 +58,7 @@ module Octoprint
       #
       # @param index [Integer] The tool's index, starting at 0
       # @return [Printer::TemperatureData, nil] The tool's temperature data, nil if there is no such tool
-      sig { params(index: Integer).returns(T.nilable(TemperatureData)) }
+      #: (?Integer index) -> TemperatureData?
       def tool(index = 0)
         tools&.[](:"tool#{index}")
       end

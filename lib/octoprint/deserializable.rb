@@ -92,7 +92,6 @@ module Octoprint
   #     end
   #   end
   module Deserializable
-    extend T::Sig
     extend T::Helpers
 
     # Class methods added when Deserializable is included.
@@ -100,8 +99,6 @@ module Octoprint
     # These methods provide the DSL for configuring deserialization behavior
     # and performing the actual deserialization of API responses.
     module ClassMethods
-      extend T::Sig
-
       # Configures deserialization behavior using a declarative DSL.
       #
       # This method provides a clean, readable way to define how API response data
@@ -120,7 +117,7 @@ module Octoprint
       #   end
       #
       # @see DeserializationConfig DSL methods available in the configuration block
-      sig { params(block: T.nilable(T.proc.bind(DeserializationConfig).void)).void }
+      #: ?{ [self: DeserializationConfig] -> void } -> void
       def deserialize_config(&block)
         @deserialize_config ||= DeserializationConfig.new
         @deserialize_config.instance_eval(&block) if block
@@ -130,7 +127,7 @@ module Octoprint
       #
       # @return [DeserializationConfig, nil] The configuration object or nil if not configured
       # @api private
-      sig { returns(T.nilable(DeserializationConfig)) }
+      #: -> DeserializationConfig?
       def deserialize_configuration
         @deserialize_config
       end
@@ -154,7 +151,7 @@ module Octoprint
       #   user.name         # => "John"
       #   user.display_name # => "John Doe" (renamed from display)
       #   user.profile      # => Profile instance (converted from hash)
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (Hash[Symbol, untyped] data) -> untyped
       def deserialize(data)
         config = deserialize_configuration
 
@@ -206,9 +203,10 @@ module Octoprint
       #   # Avoids conflicts with Object#display, Object#hash, Object#class
       #
       # @note Common Ruby method conflicts include: display, hash, class, type, method, send
-      sig do
-        params(data: T::Hash[Symbol, T.untyped], mapping: T::Hash[Symbol, Symbol]).returns(T::Hash[Symbol, T.untyped])
-      end
+      #: (
+      #|   Hash[Symbol, untyped] data,
+      #|   Hash[Symbol, Symbol] mapping
+      #| ) -> Hash[Symbol, untyped]
       def rename_keys(data, mapping)
         mapping.each do |old_key, new_key|
           data[new_key] = data.delete(old_key) if data.key?(old_key)
@@ -230,13 +228,11 @@ module Octoprint
       #   data = { profile: { name: "John", age: 30 } }
       #   deserialize_nested(data, :profile, User)
       #   # data[:profile] is now a User instance
-      sig do
-        params(
-          data: T::Hash[Symbol, T.untyped],
-          field: Symbol,
-          klass: T.untyped
-        ).returns(T::Hash[Symbol, T.untyped])
-      end
+      #: (
+      #|   Hash[Symbol, untyped] data,
+      #|   Symbol field,
+      #|   untyped klass
+      #| ) -> Hash[Symbol, untyped]
       def deserialize_nested(data, field, klass)
         if data[field] && klass.respond_to?(:deserialize)
           data[field] = T.unsafe(klass).deserialize(data[field])
@@ -260,13 +256,11 @@ module Octoprint
       #   data = { users: [{ name: "John" }, { name: "Jane" }] }
       #   deserialize_array(data, :users, User)
       #   # data[:users] is now [User("John"), User("Jane")]
-      sig do
-        params(
-          data: T::Hash[Symbol, T.untyped],
-          field: Symbol,
-          klass: T.untyped
-        ).returns(T::Hash[Symbol, T.untyped])
-      end
+      #: (
+      #|   Hash[Symbol, untyped] data,
+      #|   Symbol field,
+      #|   untyped klass
+      #| ) -> Hash[Symbol, untyped]
       def deserialize_array(data, field, klass)
         if data[field].is_a?(Array)
           data[field] = data[field].map do |item|
@@ -295,7 +289,7 @@ module Octoprint
       #   data = { firstName: "John", lastName: "Doe", phoneNumber: "123-456-7890" }
       #   convert_camel_case_keys(data)
       #   # data is now { first_name: "John", last_name: "Doe", phone_number: "123-456-7890" }
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      #: (Hash[Symbol, untyped] data) -> Hash[Symbol, untyped]
       def convert_camel_case_keys(data)
         camel_case_keys = data.keys.select { |key| camel_case?(key) }
 
@@ -313,7 +307,7 @@ module Octoprint
       #
       # @param key [Symbol] The key to check
       # @return [Boolean] True if the key is in camelCase format
-      sig { params(key: Symbol).returns(T::Boolean) }
+      #: (Symbol key) -> bool
       def camel_case?(key)
         key_str = key.to_s
         # Has lowercase letter followed by uppercase letter (e.g., firstName, heatedBed)
@@ -324,7 +318,7 @@ module Octoprint
       #
       # @param camel_key [Symbol] The camelCase key to convert
       # @return [Symbol] The snake_case equivalent
-      sig { params(camel_key: Symbol).returns(Symbol) }
+      #: (Symbol camel_key) -> Symbol
       def camel_to_snake(camel_key)
         camel_key.to_s
                  .gsub(/([a-z\d])([A-Z])/, '\1_\2')
@@ -349,7 +343,7 @@ module Octoprint
       #   data = { name: "John", email: "john@example.com", unknown_field: "value" }
       #   handle_extras(data)
       #   # data is now { name: "John", email: "john@example.com", extra: { unknown_field: "value" } }
-      sig { params(data: T::Hash[Symbol, T.untyped]).void }
+      #: (Hash[Symbol, untyped] data) -> void
       def handle_extras(data)
         # Get valid keys from AutoInitializable if included
         valid_keys = if T.unsafe(self).respond_to?(:auto_attrs)
@@ -382,9 +376,7 @@ module Octoprint
     # @api private
     # @see Deserializable#deserialize_config
     class DeserializationConfig
-      extend T::Sig
-
-      sig { void }
+      #: -> void
       def initialize
         @nested_objects = {}
         @array_objects = {}
@@ -394,22 +386,22 @@ module Octoprint
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for nested object conversion
       # @api private
-      sig { returns(T::Hash[Symbol, T.untyped]) }
+      #: Hash[Symbol, untyped]
       attr_reader :nested_objects
 
       # @return [Hash<Symbol, Class>] Mapping of field names to classes for array element conversion
       # @api private
-      sig { returns(T::Hash[Symbol, T.untyped]) }
+      #: Hash[Symbol, untyped]
       attr_reader :array_objects
 
       # @return [Hash<Symbol, Symbol>] Mapping of old field names to new field names
       # @api private
-      sig { returns(T::Hash[Symbol, Symbol]) }
+      #: Hash[Symbol, Symbol]
       attr_reader :key_mappings
 
       # @return [Array<Proc>] Custom transformation blocks to apply to data
       # @api private
-      sig { returns(T::Array[T.proc.params(data: T::Hash[Symbol, T.untyped]).void]) }
+      #: Array[^(Hash[Symbol, untyped] data) -> void]
       attr_reader :transformations
 
       # Configures a field to be deserialized as a nested object.
@@ -423,7 +415,7 @@ module Octoprint
       # @example
       #   nested :profile, Profile      # data[:profile] hash becomes Profile instance
       #   nested :location, Location    # data[:location] becomes Location instance
-      sig { params(field: Symbol, klass: T.untyped).void }
+      #: (Symbol field, untyped klass) -> void
       def nested(field, klass)
         @nested_objects[field] = klass
       end
@@ -439,7 +431,7 @@ module Octoprint
       # @example
       #   array :users, User           # data[:users] array of hashes becomes array of User instances
       #   array :tags, Tag            # data[:tags] becomes array of Tag instances
-      sig { params(field: Symbol, klass: T.untyped).void }
+      #: (Symbol field, untyped klass) -> void
       def array(field, klass)
         @array_objects[field] = klass
       end
@@ -461,7 +453,7 @@ module Octoprint
       # @example Converting API naming to Ruby conventions
       #   rename firstName: :first_name, lastName: :last_name
       #   # Convert camelCase API fields to snake_case Ruby attributes
-      sig { params(mappings: T::Hash[Symbol, Symbol]).void }
+      #: (Hash[Symbol, Symbol] mappings) -> void
       def rename(mappings)
         @key_mappings.merge!(mappings)
       end
@@ -480,7 +472,7 @@ module Octoprint
       #     data[:processed_at] = Time.now
       #     data[:full_name] = "#{data[:first_name]} #{data[:last_name]}"
       #   end
-      sig { params(block: T.proc.params(data: T::Hash[Symbol, T.untyped]).void).void }
+      #: { (Hash[Symbol, untyped] data) -> void } -> void
       def transform(&block)
         @transformations << block
       end

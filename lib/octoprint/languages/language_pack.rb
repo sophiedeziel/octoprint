@@ -15,7 +15,6 @@ module Octoprint
     #   puts pack.identifier        # => "_core"
     #   puts pack.languages         # => ["fr", "de", "es"]
     class LanguagePack
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 

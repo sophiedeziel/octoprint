@@ -21,7 +21,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#issue-a-tool-command
     class Tool < BaseResource
-      extend T::Sig
       extend HistoryQuery
       include TemperatureAttributes
 
@@ -42,7 +41,7 @@ module Octoprint
       #
       # @return [Array<Printer::Tool>] The tools' temperatures, indexed by tool number
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T::Array[Tool]) }
+      #: (?history: bool, ?limit: Integer?) -> Array[Tool]
       def self.temperatures(history: false, limit: nil)
         response = fetch_resource(deserialize: false, options: history_query(history: history, limit: limit))
 
@@ -63,7 +62,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the parameters are invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (command: String, ?options: Hash[Symbol, untyped]) -> untyped
       def self.issue_command(command:, options: {})
         post(params: { command: command }.merge(options))
       end
@@ -82,7 +81,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if a key or temperature is invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(targets: T::Hash[T.any(Symbol, String), Numeric]).returns(T.untyped) }
+      #: (Hash[(Symbol | String), Numeric] targets) -> untyped
       def self.target(targets)
         issue_command(command: "target", options: { targets: targets })
       end
@@ -97,7 +96,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if a key or offset is invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(offsets: T::Hash[T.any(Symbol, String), Numeric]).returns(T.untyped) }
+      #: (Hash[(Symbol | String), Numeric] offsets) -> untyped
       def self.offset(offsets)
         issue_command(command: "offset", options: { offsets: offsets })
       end
@@ -112,7 +111,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the tool is invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or is printing
-      sig { params(tool: T.any(String, Symbol)).returns(T.untyped) }
+      #: ((String | Symbol) tool) -> untyped
       def self.select_tool(tool)
         issue_command(command: "select", options: { tool: tool.to_s })
       end
@@ -131,7 +130,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the amount is invalid
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or is printing
-      sig { params(amount: Numeric, speed: T.nilable(Integer)).returns(T.untyped) }
+      #: (Numeric amount, ?speed: Integer?) -> untyped
       def self.extrude(amount, speed: nil)
         issue_command(command: "extrude", options: { amount: amount, speed: speed }.compact)
       end
@@ -146,7 +145,7 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::BadRequestError] if the factor is out of range
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-      sig { params(factor: Numeric).returns(T.untyped) }
+      #: (Numeric factor) -> untyped
       def self.flowrate(factor)
         issue_command(command: "flowrate", options: { factor: factor })
       end

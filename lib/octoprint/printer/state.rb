@@ -12,7 +12,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#printer-state
     class State
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

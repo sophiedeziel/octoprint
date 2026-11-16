@@ -32,14 +32,6 @@ RSpec.describe Octoprint::Files do
     end
   end
 
-  describe "class method parameter validation" do
-    it "validates location parameter types" do
-      expect do
-        described_class.upload("test.gcode", location: "invalid")
-      end.to raise_error(TypeError, /Parameter 'location': Expected type Octoprint::Location, got type/)
-    end
-  end
-
   describe "inheritance and configuration" do
     it "inherits from BaseResource" do
       expect(described_class).to be < Octoprint::BaseResource

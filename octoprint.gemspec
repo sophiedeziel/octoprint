@@ -26,10 +26,12 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true"
   }
 
-  # Ship only runtime code and top-level docs. lib/tapioca/ is a Tapioca DSL
-  # compiler used to generate RBIs from the repo; it's never needed at runtime.
+  # Ship only runtime code, top-level docs, and the exported Sorbet RBIs
+  # (rbi/, picked up by Tapioca in apps that use Sorbet).
+  # lib/tapioca/ is a Tapioca DSL compiler used to generate RBIs from the
+  # repo; it's never needed at runtime.
   spec.files = Dir.chdir(__dir__) do
-    Dir["lib/**/*.rb", "README.md", "LICENSE.txt", "CHANGELOG.md"]
+    Dir["lib/**/*.rb", "rbi/**/*.rbi", "README.md", "LICENSE.txt", "CHANGELOG.md"]
       .reject { |f| f.start_with?("lib/tapioca/") }
   end
   spec.require_paths = ["lib"]

@@ -19,12 +19,10 @@ module Octoprint
     #   Bed.temperature.actual # => 50.221
     #   Bed.target(75)
     module Heater
-      extend T::Sig
       extend T::Helpers
 
       # Class methods added to the including resource.
       module ClassMethods
-        extend T::Sig
         extend T::Generic
         include HistoryQuery
 
@@ -39,7 +37,7 @@ module Octoprint
         # @return [Object] The heater, e.g. a {Printer::Bed}, with its temperature
         # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
         #   configured
-        sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T.attached_class) }
+        #: (?history: bool, ?limit: Integer?) -> instance
         def temperature(history: false, limit: nil)
           response = T.unsafe(self).fetch_resource(deserialize: false,
                                                    options: history_query(history: history, limit: limit))
@@ -56,7 +54,7 @@ module Octoprint
         # @raise [Octoprint::Exceptions::BadRequestError] if the parameters are invalid
         # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
         #   configured
-        sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+        #: (command: String, ?options: Hash[Symbol, untyped]) -> untyped
         def issue_command(command:, options: {})
           T.unsafe(self).post(params: { command: command }.merge(options))
         end
@@ -69,7 +67,7 @@ module Octoprint
         # @raise [Octoprint::Exceptions::BadRequestError] if the temperature is invalid
         # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
         #   configured
-        sig { params(temperature: Numeric).returns(T.untyped) }
+        #: (Numeric temperature) -> untyped
         def target(temperature)
           issue_command(command: "target", options: { target: temperature })
         end
@@ -82,7 +80,7 @@ module Octoprint
         # @raise [Octoprint::Exceptions::BadRequestError] if the offset is invalid
         # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational or the heater isn't
         #   configured
-        sig { params(offset: Numeric).returns(T.untyped) }
+        #: (Numeric offset) -> untyped
         def offset(offset)
           issue_command(command: "offset", options: { offset: offset })
         end
@@ -92,7 +90,7 @@ module Octoprint
         # The heater's key in the API responses, derived from the class name (+:bed+, +:chamber+).
         #
         # @return [Symbol] The heater's key
-        sig { returns(Symbol) }
+        #: -> Symbol
         def heater_key
           T.must(T.unsafe(self).name).demodulize.underscore.to_sym
         end
@@ -104,7 +102,7 @@ module Octoprint
       #
       # @param base [Class] The including resource
       # @return [void]
-      sig { params(base: Module).void }
+      #: (Module base) -> void
       def self.included(base)
         super
 

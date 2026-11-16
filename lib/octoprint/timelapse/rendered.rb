@@ -18,7 +18,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.2/api/timelapse.html#rendered-timelapse
     class Rendered
-      extend T::Sig
       include AutoInitializable
       include Deserializable
       include FileAttributes
@@ -43,7 +42,7 @@ module Octoprint
       #   Octoprint::Timelapse.get.files.first.modification_time # => 2026-11-15 00:52:35 -0500
       #
       # @return [Time, nil]
-      sig { returns(T.nilable(Time)) }
+      #: -> Time?
       def modification_time
         Time.at(timestamp) if timestamp
       end

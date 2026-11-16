@@ -16,8 +16,6 @@ module Octoprint
   # @example Complete wizard dialog
   #   Octoprint::Wizard.finish(handled: ["corewizard", "softwareupdate"])
   class Wizard < BaseResource
-    extend T::Sig
-
     resource_path("/api/setup/wizard")
 
     # Retrieves registered wizard data from the OctoPrint server.
@@ -34,7 +32,7 @@ module Octoprint
     #
     # @return [Hash] Wizard data keyed by wizard identifier
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { returns(T::Hash[Symbol, T.untyped]) }
+    #: -> Hash[Symbol, untyped]
     def self.get
       fetch_resource(deserialize: false)
     end
@@ -51,7 +49,7 @@ module Octoprint
     # @param handled [Array<String>] List of wizard identifiers that were processed (not skipped)
     # @return [T::Boolean] true on success (204 No Content)
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { params(handled: T::Array[String]).returns(T.untyped) }
+    #: (handled: Array[String]) -> untyped
     def self.finish(handled:)
       post(params: { handled: handled })
     end

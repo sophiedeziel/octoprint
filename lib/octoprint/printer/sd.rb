@@ -17,7 +17,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#issue-an-sd-command
     class Sd < BaseResource
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -40,7 +39,7 @@ module Octoprint
       #
       # @return [Printer::Sd] The SD card state
       # @raise [Octoprint::Exceptions::NotFoundError] if SD support is disabled in OctoPrint's settings
-      sig { returns(Sd) }
+      #: -> Sd
       def self.get
         fetch_resource
       end
@@ -54,7 +53,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::ConflictError] if the card isn't initialized (+refresh+ and +release+)
-      sig { params(command: String).returns(T.untyped) }
+      #: (command: String) -> untyped
       def self.issue_command(command:)
         post(params: { command: command })
       end
@@ -65,7 +64,7 @@ module Octoprint
       #   Octoprint::Printer::Sd.init
       #
       # @return [Boolean] true on success (204 No Content)
-      sig { returns(T.untyped) }
+      #: -> untyped
       def self.init
         issue_command(command: "init")
       end
@@ -77,7 +76,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::ConflictError] if the card hasn't been initialized
-      sig { returns(T.untyped) }
+      #: -> untyped
       def self.refresh
         issue_command(command: "refresh")
       end
@@ -89,7 +88,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::ConflictError] if the card hasn't been initialized
-      sig { returns(T.untyped) }
+      #: -> untyped
       def self.release
         issue_command(command: "release")
       end

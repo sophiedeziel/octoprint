@@ -15,7 +15,6 @@ module Octoprint
       #
       # @see https://docs.octoprint.org/en/master/features/custom_controls.html
       class Input
-        extend T::Sig
         include AutoInitializable
         include Deserializable
 

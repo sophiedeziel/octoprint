@@ -13,7 +13,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#progress-information
     class Progress
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

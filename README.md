@@ -78,7 +78,8 @@ job.progress.completion        # => Float | nil (typed)
 - **Compile-time Error Detection**: Catch errors before runtime with `srb tc`
 - **IDE Integration**: Full autocomplete and type information (requires proper IDE setup, for example: ruby-lsp and sorbet plugins for VSCode)
 - **Refactoring Safety**: Type-checked code changes across the entire codebase
-- **Runtime Type Checking**: Optional runtime validation in development
+- **No Runtime Overhead**: Signatures are inline RBS comments (`#: (String) -> Files`), so nothing is type-checked at runtime
+- **Ships its own RBIs**: the `rbi/` folder is included in the gem, so Tapioca picks up the types in apps that use Sorbet
 
 ## 🔥 Smart Error Handling
 

@@ -34,7 +34,6 @@ module Octoprint
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/1.11.2/api/languages.html
   class Languages < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -59,7 +58,7 @@ module Octoprint
     # Fetches the list of available language packs
     #
     # @return [Languages]
-    sig { returns(Languages) }
+    #: -> Languages
     def self.list
       fetch_resource
     end
@@ -70,10 +69,10 @@ module Octoprint
     # @param [String] locale        Optional. If provided, forces the locale the pack will be installed under
     #
     # @return [Array<LanguagePack>] List of installed language packs
-    sig do
-      params(file_path: String, locale: T.nilable(String))
-        .returns(T::Array[LanguagePack])
-    end
+    #: (
+    #|   String file_path,
+    #|   ?locale: String?
+    #| ) -> Array[LanguagePack]
     def self.upload(file_path, locale: nil)
       params = {
         file: Faraday::UploadIO.new(file_path, "application/octet-stream")
@@ -91,10 +90,10 @@ module Octoprint
     # @param [String] pack      The identifier of the pack to delete
     #
     # @return [T.untyped] 204 No Content on success
-    sig do
-      params(locale: String, pack: String)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   locale: String,
+    #|   pack: String
+    #| ) -> untyped
     def self.delete_pack(locale:, pack:)
       path = [@path, locale, pack].compact.join("/")
       delete(path: path)

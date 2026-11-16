@@ -12,7 +12,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#historic-temperature-data-point
     class TemperatureReading
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -37,7 +36,7 @@ module Octoprint
       # The reading's timestamp as a Time object.
       #
       # @return [Time, nil] The time of the reading, nil when the server didn't provide one
-      sig { returns(T.nilable(Time)) }
+      #: -> Time?
       def recorded_at
         return nil unless time
 

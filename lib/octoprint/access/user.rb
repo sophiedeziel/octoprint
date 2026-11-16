@@ -17,7 +17,6 @@ module Octoprint
     #     needs_role: []
     #   )
     class User
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -87,7 +86,7 @@ module Octoprint
       #   puts "Current user: #{user.name}"
       #
       # @return [User] The current user object
-      sig { returns(User) }
+      #: -> User
       def self.current
         Users.current
       end

@@ -51,7 +51,6 @@ module Octoprint
   #   # Arrays of custom classes
   #   auto_attr :users, type: User, array: true  # Maps each hash to User.new(**hash)
   module AutoInitializable
-    extend T::Sig
     extend T::Helpers
 
     # Class methods added when AutoInitializable is included.
@@ -59,8 +58,6 @@ module Octoprint
     # These methods provide the DSL for declaring auto-initialized attributes
     # and generating the corresponding initialization logic.
     module ClassMethods
-      extend T::Sig
-
       # Declares an attribute that will be automatically initialized and typed.
       #
       # @param name [Symbol] The name of the attribute
@@ -87,15 +84,13 @@ module Octoprint
       #
       # @note Basic Ruby types (Hash, Array, String, Integer, Float) are preserved without conversion.
       #   Custom classes will be instantiated from hash data using Class.new(**hash).
-      sig do
-        params(
-          name: Symbol,
-          type: T.untyped,
-          from: T.nilable(Symbol),
-          array: T::Boolean,
-          nilable: T::Boolean
-        ).void
-      end
+      #: (
+      #|   Symbol name,
+      #|   ?type: untyped,
+      #|   ?from: Symbol?,
+      #|   ?array: bool,
+      #|   ?nilable: bool
+      #| ) -> void
       def auto_attr(name, type: T.untyped, from: nil, array: false, nilable: true)
         @auto_attrs ||= {}
         @auto_attrs[name] = {
@@ -126,7 +121,7 @@ module Octoprint
       #   - Type conversion for nested objects
       #   - Sorbet-typed attr_reader methods
       #   - Automatic validation that required attributes are provided
-      sig { void }
+      #: -> void
       def auto_initialize!
         attrs = @auto_attrs || {}
         klass = self
@@ -182,7 +177,7 @@ module Octoprint
       #   #   name: { type: String, from: :name, array: false, nilable: false },
       #   #   email: { type: String, from: :email, array: false, nilable: true }
       #   # }
-      sig { returns(T::Hash[Symbol, T.untyped]) }
+      #: -> Hash[Symbol, untyped]
       def auto_attrs
         @auto_attrs || {}
       end
@@ -203,7 +198,7 @@ module Octoprint
       #   convert_value({ name: "John" }, User)     # => User.new(name: "John")
       #   convert_value({ key: "value" }, Hash)     # => { key: "value" } (unchanged)
       #   convert_value("text", String)             # => "text" (unchanged)
-      sig { params(value: T.untyped, type: T.untyped).returns(T.untyped) }
+      #: (untyped value, untyped type) -> untyped
       def convert_value(value, type)
         return value unless value.is_a?(Hash)
 

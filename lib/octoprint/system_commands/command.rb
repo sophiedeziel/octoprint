@@ -8,7 +8,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/system.html#data-model
     class Command
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 

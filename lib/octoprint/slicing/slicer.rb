@@ -14,7 +14,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.2/api/slicing.html#slicer
     class Slicer
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 
@@ -64,7 +63,7 @@ module Octoprint
       #   Octoprint::Slicing.list[:curalegacy].default? # => true
       #
       # @return [Boolean] false when {#default} is nil
-      sig { returns(T::Boolean) }
+      #: -> bool
       def default?
         default == true
       end
@@ -75,7 +74,7 @@ module Octoprint
       #   Octoprint::Slicing.list[:curalegacy].configured? # => false
       #
       # @return [Boolean] false when {#configured} is nil
-      sig { returns(T::Boolean) }
+      #: -> bool
       def configured?
         configured == true
       end
