@@ -1,0 +1,75 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST>/api/job"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '640'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "job": {
+            "averagePrintTime": 31.265309458001866,
+            "estimatedPrintTime": 34.949892090338835,
+            "filament": {
+              "tool0": {
+                "length": 60.0,
+                "volume": 0.0
+              }
+            },
+            "file": {
+              "date": 1794809291,
+              "display": "job_test.gcode",
+              "name": "job_test.gcode",
+              "origin": "local",
+              "path": "job_test.gcode",
+              "size": 2073
+            },
+            "lastPrintTime": 31.265309458001866,
+            "user": "admin"
+          },
+          "progress": {
+            "completion": 16.160154365653643,
+            "filepos": 335,
+            "printTime": 4,
+            "printTimeLeft": 26,
+            "printTimeLeftOrigin": "average"
+          },
+          "state": "Printing"
+        }
+  recorded_at: Mon, 16 Nov 2026 06:12:34 GMT
+recorded_with: VCR 6.4.1

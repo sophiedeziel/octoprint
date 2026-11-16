@@ -1,0 +1,71 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/job"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '475'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=0
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": null,
+          "job": {
+            "estimatedPrintTime": null,
+            "filament": null,
+            "file": {
+              "date": null,
+              "display": null,
+              "name": null,
+              "origin": null,
+              "path": null,
+              "size": null,
+              "upload": null
+            },
+            "lastPrintTime": null,
+            "user": null
+          },
+          "progress": {
+            "completion": null,
+            "filepos": null,
+            "printTime": null,
+            "printTimeLeft": null,
+            "printTimeLeftOrigin": null
+          },
+          "state": "Operational"
+        }
+  recorded_at: Mon, 16 Nov 2026 06:12:22 GMT
+recorded_with: VCR 6.4.1

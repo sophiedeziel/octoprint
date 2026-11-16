@@ -14,10 +14,10 @@ class Octoprint::Job::Progress
   sig { returns(T.nilable(::Integer)) }
   def filepos; end
 
-  sig { returns(T.nilable(::Float)) }
+  sig { returns(T.nilable(::Integer)) }
   def print_time; end
 
-  sig { returns(T.nilable(::Float)) }
+  sig { returns(T.nilable(::Integer)) }
   def print_time_left; end
 
   sig { returns(T.nilable(::String)) }
