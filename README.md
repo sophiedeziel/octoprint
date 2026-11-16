@@ -259,7 +259,7 @@ bundle exec srb tc
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`. Releases are published from CI, see [Releasing](#releasing).
 
 ### Testing with Octoprint
 
@@ -307,6 +307,24 @@ It is preferable to have the test setup and teardown making all the required ope
 For example: if a file is required on the octoprint instance in order to make an API call referencing that file, the test setup should upload it.
 
 However, it is not realistic to apply this strictly, some exceptions exist. It is not recommended to delete all cassettes to record them again. Only re-record new cassettes if strictly needed.
+
+### Releasing
+
+Pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml`. It runs the lint and test workflows, checks that the tag matches `Octoprint::VERSION`, publishes the gem to [rubygems.org](https://rubygems.org) through [trusted publishing](https://guides.rubygems.org/trusted-publishing/) (no API key), and creates a GitHub Release with the version's CHANGELOG section as notes and the `.gem` attached.
+
+1. Bump `VERSION` in `lib/octoprint/version.rb`.
+2. In `CHANGELOG.md`, move the entries under `## [X.Y.Z] - YYYY-MM-DD`. The heading must contain `[X.Y.Z]` or the release stops before publishing.
+3. Open a PR and merge it into `main`.
+4. Tag the merge commit on `main` and push the tag:
+
+   ```bash
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+Don't run `bundle exec rake release` locally.
+
+One-time setup, before the first release: on rubygems.org, add a pending trusted publisher (Profile → Trusted publishers) for gem `octoprint`, repository `sophiedeziel/octoprint`, workflow `release.yml` and environment `rubygems`. It becomes a regular trusted publisher after the first push.
 
 ## Contributing
 

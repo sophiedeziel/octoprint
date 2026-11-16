@@ -5,6 +5,8 @@ on:
     branches: [ 'main' ]
   pull_request:
     branches: [ 'main' ]
+  # Reused by release.yml so a tag must pass the same checks before publishing.
+  workflow_call:
 
 jobs:
   RSpec:
@@ -41,10 +43,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Install Ruby and gems
-      uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+      uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
@@ -66,10 +68,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Install Ruby
-      uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+      uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false

@@ -1,0 +1,64 @@
+name: Release
+
+# Publishes the gem to rubygems.org when a `vX.Y.Z` tag is pushed, through
+# RubyGems trusted publishing (OIDC): no API key is stored in the repo. See the
+# "Releasing" section of the README.
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  release:
+    needs: [ lint, tests ]
+    runs-on: ubuntu-latest
+    # Must match the environment set on the rubygems.org trusted publisher.
+    environment: rubygems
+    permissions:
+      id-token: write # OIDC token for trusted publishing
+      contents: write # create the GitHub Release
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Install Ruby and gems
+      uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+      with:
+        bundler-cache: true # Ruby version from .tool-versions
+
+    - name: Check tag matches Octoprint::VERSION
+      run: |
+        version="$(ruby -r ./lib/octoprint/version -e 'print Octoprint::VERSION')"
+        if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+          echo "::error::Tag ${GITHUB_REF_NAME} does not match Octoprint::VERSION ${version}"
+          exit 1
+        fi
+
+    # Done before publishing so a missing CHANGELOG section stops the release
+    # before anything reaches rubygems.org.
+    - name: Extract release notes from CHANGELOG
+      run: |
+        awk -v v="${GITHUB_REF_NAME#v}" '/^## \[/{p = index($0, "[" v "]") > 0; next} /^\[[^]]+\]: /{p = 0} p' CHANGELOG.md > "${RUNNER_TEMP}/notes.md"
+        grep -q '[^[:space:]]' "${RUNNER_TEMP}/notes.md" || { echo "::error::No CHANGELOG section for ${GITHUB_REF_NAME}"; exit 1; }
+
+    # Runs `bundle exec rake release`. The tag already exists, so Bundler
+    # skips its git push and only builds and pushes the gem.
+    - name: Publish to rubygems.org
+      uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
+
+    - name: Create GitHub Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release create "$GITHUB_REF_NAME" pkg/*.gem --verify-tag --title "$GITHUB_REF_NAME" --notes-file "${RUNNER_TEMP}/notes.md"
