@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Type-safe Ruby client for the OctoPrint REST API, with Sorbet signatures."
   spec.description   = "Ruby client for OctoPrint's REST API covering files, jobs, printer state and commands, " \
-                       "printer profiles, connection, access control, settings, timelapse, logs, system " \
+                       "printer and slicing profiles, connection, access control, settings, timelapse, logs, system " \
                        "commands and more. Typed with Sorbet; API errors map to typed exceptions."
   spec.homepage      = "https://github.com/sophiedeziel/octoprint"
   spec.license       = "MIT"
