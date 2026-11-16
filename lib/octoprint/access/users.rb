@@ -251,6 +251,90 @@ module Octoprint
         User.deserialize(response)
       end
 
+      # Log in, or get the user tied to the current API key ("passive login")
+      #
+      # Without arguments, this is a passive login: OctoPrint returns the user
+      # tied to the client's API key, along with a session key you can send in
+      # the `auth` message of the push API. This is the main use case for this gem.
+      #
+      # With a username and a password, this is an active login. OctoPrint
+      # checks the credentials, returns the user and sets a session cookie.
+      # This gem only authenticates with its API key: it doesn't keep cookies,
+      # so the session cookie is thrown away and later requests keep using the
+      # API key. The returned {LoginResponse#session} is still valid for the push API.
+      #
+      # @example Passive login, to authenticate on the push API
+      #   login = Octoprint::Access::Users.login
+      #   login.user.name  # => "sophie"
+      #   login.session    # => "5f8c1a..."
+      #
+      # @example Active login, to check a user's credentials
+      #   login = Octoprint::Access::Users.login(username: "john_doe", password: "secret", remember: true)
+      #   login.user.name  # => "john_doe"
+      #
+      # @param username [String, nil] The user's login name. Omit for a passive login
+      # @param password [String, nil] The user's password. Omit for a passive login
+      # @param remember [Boolean] Whether OctoPrint should set a "remember me" cookie (active login only)
+      # @return [LoginResponse] The logged in user, the session key and whether the client is external
+      # @raise [ArgumentError] if only one of `username` and `password` is given,
+      #   or if `remember` is set on a passive login
+      # @raise [Exceptions::AuthenticationError] if the username or password is wrong,
+      #   the user is unknown or the account is deactivated
+      # @see https://docs.octoprint.org/en/1.11.8/api/general.html#login
+      sig do
+        params(
+          username: T.nilable(String),
+          password: T.nilable(String),
+          remember: T::Boolean
+        ).returns(LoginResponse)
+      end
+      def self.login(username: nil, password: nil, remember: false)
+        response = client.request("/api/login", http_method: :post,
+                                                body: login_params(username, password, remember))
+        LoginResponse.deserialize(response)
+      end
+
+      # End the current login session
+      #
+      # Logout only ends a session cookie set by a browser-based login. This gem
+      # authenticates with its API key and doesn't keep cookies, so there is no
+      # session to end and the API key keeps working afterwards. It is provided
+      # for completeness.
+      #
+      # The docs say OctoPrint answers `204 No Content`, but OctoPrint 1.11.8
+      # answers `200 OK` with the guest's needs as the body. Both mean success.
+      #
+      # @example
+      #   Octoprint::Access::Users.logout # => true
+      #
+      # @return [Boolean] true when OctoPrint accepts the logout (`200` or `204`)
+      # @see https://docs.octoprint.org/en/1.11.8/api/general.html#logout
+      sig { returns(T::Boolean) }
+      def self.logout # rubocop:disable Naming/PredicateMethod
+        client.request("/api/logout", http_method: :post)
+        true
+      end
+
+      sig do
+        params(
+          username: T.nilable(String),
+          password: T.nilable(String),
+          remember: T::Boolean
+        ).returns(T::Hash[Symbol, T.untyped])
+      end
+      private_class_method def self.login_params(username, password, remember)
+        if username.nil? && password.nil?
+          raise ArgumentError, "remember only applies to an active login" if remember
+
+          return { passive: true }
+        end
+        raise ArgumentError, "username and password must be given together" if username.nil? || password.nil?
+
+        params = { user: username, pass: password }
+        params[:remember] = true if remember
+        params
+      end
+
       sig { params(path: String, params: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
       private_class_method def self.post_with_hash_format(path: @path, params: {})
         T.unsafe(client).request(path, { http_method: :post, params: params })

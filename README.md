@@ -61,6 +61,8 @@ Or select and start printing in one call: `Octoprint::Files.select(filename: "aw
 
 To generate an app key on your Octoprint's instance, log in to it, click on the Settings button in the top menu and then go to the "Application Keys".
 
+The gem always authenticates with this API key and doesn't keep cookies. To authenticate on the push API (WebSocket), get a session key with a passive login: `Octoprint::Access::Users.login.session`.
+
 ## 🛡️ Type Safety with Sorbet
 
 This gem provides complete type safety with Sorbet integration:
@@ -128,7 +130,7 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 | **Languages** | List, upload, and delete language packs |
 | **Logs** | List and delete log files, download URLs |
 | **Timelapse** | List and delete timelapses, render or delete unrendered ones, change the timelapse config |
-| **Access** | Users (list, add, get, update, delete, change password, user settings, API keys, current user), groups (list, add, get, update, delete), permissions (list) |
+| **Access** | Users (list, add, get, update, delete, change password, user settings, API keys, current user, login (session key for the push API) and logout), groups (list, add, get, update, delete), permissions (list) |
 | **Settings** | Get and save settings, regenerate the API key, fetch templates, typed webcam settings |
 | **System Commands** | List commands (all or by source) and execute them |
 | **Wizard** | Get wizard data and finish wizards |
