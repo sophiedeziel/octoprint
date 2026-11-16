@@ -1106,8 +1106,12 @@ class Octoprint::Printer < ::Octoprint::BaseResource
   def initialize(**kwargs); end
 
   def extra; end
+
+  sig { returns(T.nilable(::Octoprint::Printer::Storage)) }
   def sd; end
+
   def state; end
+  def storage; end
   def temperature; end
 
   class << self
@@ -1122,6 +1126,11 @@ class Octoprint::Printer < ::Octoprint::BaseResource
 
     sig { returns(::Octoprint::Printer::ErrorInformation) }
     def last_error; end
+
+    private
+
+    sig { params(exclude: T::Array[T.any(::String, ::Symbol)]).returns(T::Array[::String]) }
+    def excluded_fields(exclude); end
   end
 end
 
@@ -1257,6 +1266,7 @@ class Octoprint::Printer::CustomControl::Input
   def slider; end
 end
 
+Octoprint::Printer::DEPRECATED_EXCLUDABLE_FIELDS = T.let(T.unsafe(nil), Hash)
 Octoprint::Printer::EXCLUDABLE_FIELDS = T.let(T.unsafe(nil), Array)
 
 class Octoprint::Printer::ErrorInformation < ::Octoprint::BaseResource
@@ -1337,6 +1347,21 @@ module Octoprint::Printer::HistoryQuery
   def history_query(history:, limit:); end
 end
 
+module Octoprint::Printer::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(response: T.untyped, _request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def from_response(response, _request); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+  end
+end
+
+Octoprint::Printer::Legacy::LEGACY_FIELDS = T.let(T.unsafe(nil), Hash)
+Octoprint::Printer::Legacy::RESPONSE_KEYS = T.let(T.unsafe(nil), Hash)
+
 class Octoprint::Printer::Printhead < ::Octoprint::BaseResource
   class << self
     sig { params(factor: ::Numeric).returns(T.untyped) }
@@ -1361,34 +1386,7 @@ class Octoprint::Printer::Printhead < ::Octoprint::BaseResource
   end
 end
 
-class Octoprint::Printer::Sd < ::Octoprint::BaseResource
-  include ::Octoprint::AutoInitializable
-  include ::Octoprint::Deserializable
-  extend ::Octoprint::AutoInitializable::ClassMethods
-  extend ::Octoprint::Deserializable::ClassMethods
-
-  def initialize(**kwargs); end
-
-  def extra; end
-  def ready; end
-
-  class << self
-    sig { returns(::Octoprint::Printer::Sd) }
-    def get; end
-
-    sig { returns(T.untyped) }
-    def init; end
-
-    sig { params(command: ::String).returns(T.untyped) }
-    def issue_command(command:); end
-
-    sig { returns(T.untyped) }
-    def refresh; end
-
-    sig { returns(T.untyped) }
-    def release; end
-  end
-end
+Octoprint::Printer::Sd = Octoprint::Printer::Storage
 
 class Octoprint::Printer::State
   include ::Octoprint::AutoInitializable
@@ -1425,6 +1423,47 @@ class Octoprint::Printer::StateFlags
   def resuming; end
   def sd_ready; end
 end
+
+class Octoprint::Printer::Storage < ::Octoprint::BaseResource
+  include ::Octoprint::AutoInitializable
+  include ::Octoprint::Deserializable
+  extend ::Octoprint::AutoInitializable::ClassMethods
+  extend ::Octoprint::Deserializable::ClassMethods
+
+  def initialize(**kwargs); end
+
+  def extra; end
+  def ready; end
+
+  class << self
+    sig { returns(::Octoprint::Printer::Storage) }
+    def get; end
+
+    sig { returns(T.untyped) }
+    def init; end
+
+    sig { params(command: ::String).returns(T.untyped) }
+    def issue_command(command:); end
+
+    sig { returns(T.untyped) }
+    def refresh; end
+
+    sig { returns(T.untyped) }
+    def release; end
+  end
+end
+
+module Octoprint::Printer::Storage::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+  end
+end
+
+Octoprint::Printer::Storage::Legacy::LEGACY_PATH = T.let(T.unsafe(nil), String)
+Octoprint::Printer::Storage::Legacy::PATH = T.let(T.unsafe(nil), String)
 
 module Octoprint::Printer::TemperatureAttributes
   include ::Octoprint::AutoInitializable

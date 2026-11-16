@@ -1,108 +1,57 @@
 # typed: true
 # frozen_string_literal: true
 
-RSpec.describe Octoprint::Printer::Sd do
-  include_context "with default Octoprint config"
+require "open3"
 
-  describe "inheritance and configuration" do
-    it "inherits from BaseResource" do
-      expect(described_class).to be < Octoprint::BaseResource
-    end
+# Octoprint::Printer::Sd warns when it's first referenced, so this spec only references it inside examples.
+RSpec.describe "Octoprint::Printer::Sd" do
+  let(:deprecation) { "[octoprint] Printer::Sd is deprecated: use Printer::Storage\n" }
 
-    it "has correct resource path" do
-      expect(described_class.instance_variable_get(:@path)).to eq("/api/printer/sd")
-    end
-
-    it "includes AutoInitializable and Deserializable" do
-      expect(described_class.new).to be_a(Octoprint::AutoInitializable)
-      expect(described_class.new).to be_a(Octoprint::Deserializable)
-    end
+  # The alias, without the warning printed when an example references it first
+  def sd_alias
+    stderr = $stderr
+    $stderr = StringIO.new
+    Octoprint::Printer::Sd
+  ensure
+    $stderr = stderr
   end
 
-  describe ".get" do
-    let(:sd) { described_class.new(ready: true) }
-
-    before do
-      allow(described_class).to receive(:fetch_resource).and_return(sd)
-    end
-
-    it "fetches the resource with no arguments" do
-      described_class.get
-
-      expect(described_class).to have_received(:fetch_resource).with(no_args)
-    end
-
-    it "returns the SD card state" do
-      expect(described_class.get).to be(sd)
-    end
+  it "is an alias of Printer::Storage" do
+    expect(sd_alias).to be(Octoprint::Printer::Storage)
   end
 
-  describe ".deserialize" do
-    it "deserializes the ready flag" do
-      expect(described_class.deserialize({ ready: true }).ready).to be(true)
-      expect(described_class.deserialize({ ready: false }).ready).to be(false)
-    end
-
-    it "has no extra fields for a known response" do
-      expect(described_class.deserialize({ ready: true }).extra).to be_nil
-    end
-
-    it "collects unknown fields in extra" do
-      sd = described_class.deserialize({ ready: true, size: 1024 })
-
-      expect(sd.extra).to eq({ size: 1024 })
-    end
+  it "uses the printer storage API" do
+    expect(sd_alias.instance_variable_get(:@path)).to eq("/api/printer/storage")
+    expect(sd_alias.legacy_converter).to be(Octoprint::Printer::Storage::Legacy)
   end
 
-  describe ".issue_command" do
-    before do
-      allow(described_class).to receive(:post).and_return(true)
-    end
+  it "deserializes the storage state" do
+    sd = sd_alias.deserialize({ ready: true })
 
-    it "posts with the correct command" do
-      described_class.issue_command(command: "refresh")
-
-      expect(described_class).to have_received(:post).with(params: { command: "refresh" })
-    end
-
-    it "returns the post result" do
-      expect(described_class.issue_command(command: "refresh")).to be(true)
-    end
+    expect(sd).to be_a(Octoprint::Printer::Storage)
+    expect(sd.ready).to be(true)
   end
 
-  describe ".init" do
-    before do
-      allow(described_class).to receive(:issue_command).and_return(true)
+  # In a separate process: this one may have loaded the alias already
+  describe "loading" do
+    def run_ruby(script)
+      lib = File.expand_path("../../../lib", __dir__)
+      Open3.capture3(RbConfig.ruby, "-I", lib, "-e", "require 'octoprint'; #{script}")
     end
 
-    it "delegates to issue_command with init" do
-      described_class.init
+    it "isn't eager loaded, so the warning only appears when it's used" do
+      _stdout, stderr, status = run_ruby("Zeitwerk::Loader.eager_load_all")
 
-      expect(described_class).to have_received(:issue_command).with(command: "init")
-    end
-  end
-
-  describe ".refresh" do
-    before do
-      allow(described_class).to receive(:issue_command).and_return(true)
+      expect(status).to be_success
+      expect(stderr).not_to include("deprecated")
     end
 
-    it "delegates to issue_command with refresh" do
-      described_class.refresh
+    it "warns once, the first time it's referenced" do
+      stdout, stderr, status = run_ruby("Octoprint::Printer::Sd; Octoprint::Printer::Sd; print Octoprint::Printer::Sd")
 
-      expect(described_class).to have_received(:issue_command).with(command: "refresh")
-    end
-  end
-
-  describe ".release" do
-    before do
-      allow(described_class).to receive(:issue_command).and_return(true)
-    end
-
-    it "delegates to issue_command with release" do
-      described_class.release
-
-      expect(described_class).to have_received(:issue_command).with(command: "release")
+      expect(status).to be_success
+      expect(stdout).to eq("Octoprint::Printer::Storage")
+      expect(stderr.scan(deprecation).size).to eq(1)
     end
   end
 end

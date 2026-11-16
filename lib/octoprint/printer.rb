@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Octoprint
-  # Full state of the printer: temperatures, SD card state and general printer state.
+  # Full state of the printer: temperatures, printer storage (SD card) state and general printer state.
   #
   # The printer's components are controlled through dedicated resources:
   #
@@ -10,9 +10,12 @@ module Octoprint
   # - {Printer::Tool} — set temperatures, select tools, extrude and change the flow rate
   # - {Printer::Bed} — set the heated bed's temperature
   # - {Printer::Chamber} — set the heated chamber's temperature
-  # - {Printer::Sd} — initialize, refresh and release the printer's SD card
+  # - {Printer::Storage} — initialize, refresh and release the printer's storage (formerly `Printer::Sd`)
   # - {Printer::Command} — send arbitrary commands and retrieve custom controls
   # - {Printer::ErrorInformation} — retrieve information about the last error (see {.last_error})
+  #
+  # OctoPrint 2.0 renamed the `sd` field to `storage`. The gem uses the 2.0 name with both API versions, and
+  # converts it for the 1.x API.
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
@@ -20,14 +23,14 @@ module Octoprint
   #   printer.state.flags.printing          # => false
   #   printer.temperature.tool(0).actual    # => 214.8821
   #   printer.temperature.bed.target        # => 70.0
-  #   printer.sd.ready                      # => true
+  #   printer.storage.ready                 # => true
   #
   # @example Include the temperature history, limited to the last two data points
   #   printer = Octoprint::Printer.get(history: true, limit: 2)
   #   printer.temperature.history.map(&:time) # => [1395651928, 1395651926]
   #
   # @example Exclude data that isn't needed
-  #   printer = Octoprint::Printer.get(exclude: %i[temperature sd])
+  #   printer = Octoprint::Printer.get(exclude: %i[temperature storage])
   #   printer.temperature # => nil
   #
   # @example Check the last error
@@ -46,9 +49,9 @@ module Octoprint
     #   @return [Printer::TemperatureState, nil] The printer's temperature state, nil when excluded
     auto_attr :temperature, type: TemperatureState
 
-    # @!attribute [r] sd
-    #   @return [Printer::Sd, nil] The printer's SD card state, nil when excluded or unavailable
-    auto_attr :sd, type: Sd
+    # @!attribute [r] storage
+    #   @return [Printer::Storage, nil] The printer's storage (SD card) state, nil when excluded or unavailable
+    auto_attr :storage, type: Storage
 
     # @!attribute [r] state
     #   @return [Printer::State, nil] The printer's general state, nil when excluded
@@ -62,18 +65,22 @@ module Octoprint
 
     deserialize_config do
       nested :temperature, TemperatureState
-      nested :sd, Sd
+      nested :storage, Storage
       nested :state, State
     end
 
     # Fields that can be excluded from the full state response.
-    EXCLUDABLE_FIELDS = %w[temperature sd state].freeze
+    EXCLUDABLE_FIELDS = %w[temperature storage state].freeze
+
+    # Deprecated names of excludable fields, and the field each one stands for.
+    DEPRECATED_EXCLUDABLE_FIELDS = { "sd" => "storage" }.freeze
 
     # Retrieves the current state of the printer.
     #
     # @param history [Boolean] Whether to include the temperature history
     # @param limit [Integer, nil] Only return the last +limit+ history data points (ignored unless +history+ is true)
-    # @param exclude [Array<String, Symbol>] Fields to leave out of the response: +temperature+, +sd+ and/or +state+
+    # @param exclude [Array<String, Symbol>] Fields to leave out of the response: +temperature+, +storage+ and/or
+    #   +state+. +sd+ is a deprecated name of +storage+.
     #
     # @example Get the printer state
     #   printer = Octoprint::Printer.get
@@ -83,7 +90,7 @@ module Octoprint
     #   Octoprint::Printer.get(history: true, limit: 10).temperature.history
     #
     # @example Only retrieve the general state
-    #   Octoprint::Printer.get(exclude: %i[temperature sd]).state.flags.ready # => true
+    #   Octoprint::Printer.get(exclude: %i[temperature storage]).state.flags.ready # => true
     #
     # @return [Printer] The current printer state
     # @raise [ArgumentError] if +exclude+ contains an unknown field
@@ -95,14 +102,7 @@ module Octoprint
     #| ) -> Printer
     def self.get(history: false, limit: nil, exclude: [])
       options = history_query(history: history, limit: limit)
-
-      if exclude.any?
-        excluded = exclude.map(&:to_s)
-        invalid = excluded - EXCLUDABLE_FIELDS
-        raise ArgumentError, "Invalid exclude field(s): #{invalid.join(", ")}" if invalid.any?
-
-        options[:exclude] = excluded.join(",")
-      end
+      options[:exclude] = excluded_fields(exclude).join(",") if exclude.any?
 
       fetch_resource(options: options)
     end
@@ -121,6 +121,41 @@ module Octoprint
     #: -> ErrorInformation
     def self.last_error
       ErrorInformation.get
+    end
+
+    # The printer's storage (SD card) state.
+    #
+    # @deprecated Use {#storage} instead. OctoPrint 2.0 renamed the printer's SD card to printer storage.
+    #
+    # @example
+    #   Octoprint::Printer.get.sd.ready # => true
+    #
+    # @return [Printer::Storage, nil] Same as {#storage}
+    #: -> Storage?
+    def sd
+      Deprecation.warn_once("Printer#sd", "use Printer#storage")
+      storage
+    end
+
+    class << self
+      private
+
+      # Validates the fields to exclude and renames the deprecated ones.
+      #
+      #: (Array[(String | Symbol)]) -> Array[String]
+      def excluded_fields(exclude)
+        excluded = exclude.map(&:to_s)
+        invalid = excluded - EXCLUDABLE_FIELDS - DEPRECATED_EXCLUDABLE_FIELDS.keys
+        raise ArgumentError, "Invalid exclude field(s): #{invalid.join(", ")}" if invalid.any?
+
+        excluded.map do |field|
+          renamed = DEPRECATED_EXCLUDABLE_FIELDS[field]
+          next field unless renamed
+
+          Deprecation.warn_once("Printer.get(exclude: [:#{field}])", "use exclude: [:#{renamed}]")
+          renamed
+        end.uniq
+      end
     end
   end
 end

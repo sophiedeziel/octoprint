@@ -4,6 +4,15 @@
 RSpec.describe Octoprint::Printer, type: :integration do
   include_context "with default Octoprint config"
 
+  # Runs a block that uses a deprecated name, without printing its deprecation warning
+  def without_warnings
+    stderr = $stderr
+    $stderr = StringIO.new
+    yield
+  ensure
+    $stderr = stderr
+  end
+
   describe ".get" do
     use_octoprint_server
 
@@ -12,7 +21,7 @@ RSpec.describe Octoprint::Printer, type: :integration do
 
       it { is_expected.to be_a described_class }
       its(:temperature) { is_expected.to be_a Octoprint::Printer::TemperatureState }
-      its(:sd)          { is_expected.to be_a Octoprint::Printer::Sd }
+      its(:storage)     { is_expected.to be_a Octoprint::Printer::Storage }
       its(:state)       { is_expected.to be_a Octoprint::Printer::State }
 
       it "returns the general state" do
@@ -34,8 +43,13 @@ RSpec.describe Octoprint::Printer, type: :integration do
         expect(printer.temperature.history).to be_nil
       end
 
-      it "returns the SD state" do
-        expect(printer.sd.ready).to be true
+      it "returns the storage state, converted from the 1.x sd field" do
+        expect(printer.storage.ready).to be true
+        expect(printer.extra).to be_nil
+      end
+
+      it "still returns it with the deprecated sd reader" do
+        expect(without_warnings { printer.sd }).to be printer.storage
       end
     end
 
@@ -58,11 +72,85 @@ RSpec.describe Octoprint::Printer, type: :integration do
       end
     end
 
+    # The 1.x API calls the storage field sd: the request excludes sd
     context "with excluded fields", vcr: { cassette_name: "printer/get_with_exclude" } do
-      subject(:printer) { described_class.get(exclude: %i[temperature sd]) }
+      subject(:printer) { described_class.get(exclude: %i[temperature storage]) }
 
       its(:temperature) { is_expected.to be_nil }
-      its(:sd)          { is_expected.to be_nil }
+      its(:storage)     { is_expected.to be_nil }
+      its(:state)       { is_expected.to be_a Octoprint::Printer::State }
+    end
+
+    # Same request as excluding storage
+    context "with the deprecated sd exclude field", vcr: { cassette_name: "printer/get_with_exclude" } do
+      subject(:printer) { without_warnings { described_class.get(exclude: %i[temperature sd]) } }
+
+      its(:temperature) { is_expected.to be_nil }
+      its(:storage)     { is_expected.to be_nil }
+      its(:state)       { is_expected.to be_a Octoprint::Printer::State }
+    end
+  end
+
+  describe ".get with the 2.0 API", octoprint: "2.0" do
+    use_octoprint_server
+
+    context "without options", vcr: { cassette_name: "printer/get" } do
+      subject(:printer) { described_class.get }
+
+      it { is_expected.to be_a described_class }
+      its(:temperature) { is_expected.to be_a Octoprint::Printer::TemperatureState }
+      its(:state)       { is_expected.to be_a Octoprint::Printer::State }
+      its(:extra)       { is_expected.to be_nil }
+
+      it "returns the storage state" do
+        expect(printer.storage).to be_a Octoprint::Printer::Storage
+        expect(printer.storage.ready).to be true
+      end
+
+      it "still reports the storage in the sd_ready flag" do
+        expect(printer.state.text).to eq "Operational"
+        expect(printer.state.flags.sd_ready).to be true
+      end
+    end
+
+    context "with excluded fields", vcr: { cassette_name: "printer/get_with_exclude" } do
+      subject(:printer) { described_class.get(exclude: %i[temperature storage]) }
+
+      its(:temperature) { is_expected.to be_nil }
+      its(:storage)     { is_expected.to be_nil }
+      its(:state)       { is_expected.to be_a Octoprint::Printer::State }
+    end
+
+    # The 2.0 API ignores exclude=sd, so the gem sends storage instead: same request as above
+    context "with the deprecated sd exclude field", vcr: { cassette_name: "printer/get_with_exclude" } do
+      subject(:printer) { without_warnings { described_class.get(exclude: %i[temperature sd]) } }
+
+      its(:temperature) { is_expected.to be_nil }
+      its(:storage)     { is_expected.to be_nil }
+      its(:state)       { is_expected.to be_a Octoprint::Printer::State }
+    end
+  end
+
+  # Without the version header, OctoPrint 2.0 answers like 1.x: sd instead of storage
+  describe ".get with the 1.11 API on OctoPrint 2.0", api_version: "1.11", octoprint: "2.0" do
+    use_octoprint_server
+
+    context "without options", vcr: { cassette_name: "printer/api_1_11/get" } do
+      subject(:printer) { described_class.get }
+
+      its(:extra) { is_expected.to be_nil }
+
+      it "returns the storage state, converted from the sd field" do
+        expect(printer.storage).to be_a Octoprint::Printer::Storage
+        expect(printer.storage.ready).to be true
+      end
+    end
+
+    context "with excluded fields", vcr: { cassette_name: "printer/api_1_11/get_with_exclude" } do
+      subject(:printer) { described_class.get(exclude: %i[temperature storage]) }
+
+      its(:temperature) { is_expected.to be_nil }
+      its(:storage)     { is_expected.to be_nil }
       its(:state)       { is_expected.to be_a Octoprint::Printer::State }
     end
   end
@@ -247,32 +335,79 @@ RSpec.describe Octoprint::Printer, type: :integration do
     end
   end
 
-  describe Octoprint::Printer::Sd do
+  describe Octoprint::Printer::Storage do
+    shared_examples "the printer storage API" do |cassettes|
+      describe ".get", vcr: { cassette_name: "#{cassettes}/get" } do
+        subject(:storage) { described_class.get }
+
+        it { is_expected.to be_a described_class }
+        its(:ready) { is_expected.to be true }
+        its(:extra) { is_expected.to be_nil }
+      end
+
+      describe ".init", vcr: { cassette_name: "#{cassettes}/init" } do
+        subject(:init) { described_class.init }
+
+        it { expect(init).to be true }
+      end
+
+      describe ".refresh", vcr: { cassette_name: "#{cassettes}/refresh" } do
+        subject(:refresh) { described_class.refresh }
+
+        it { expect(refresh).to be true }
+      end
+
+      describe ".release", vcr: { cassette_name: "#{cassettes}/release" } do
+        subject(:release) { described_class.release }
+
+        it { expect(release).to be true }
+      end
+
+      describe ".issue_command with an unknown command", vcr: { cassette_name: "#{cassettes}/invalid_command" } do
+        subject(:issue_command) { described_class.issue_command(command: "format") }
+
+        it { expect { issue_command }.to raise_error Octoprint::Exceptions::BadRequestError }
+      end
+    end
+
+    # /api/printer/sd on 1.11, /api/printer/storage on 2.0
+    on_octoprint_versions do
+      use_octoprint_server
+
+      it_behaves_like "the printer storage API", "printer/storage"
+    end
+
+    # /api/printer/sd, which OctoPrint 2.0 still serves
+    context "with the 1.11 API on OctoPrint 2.0", api_version: "1.11", octoprint: "2.0" do
+      use_octoprint_server
+
+      it_behaves_like "the printer storage API", "printer/storage/api_1_11"
+    end
+  end
+
+  # The deprecated alias of Printer::Storage, still replaying the cassettes recorded for it with OctoPrint 1.11
+  describe "Octoprint::Printer::Sd" do
+    let(:sd) { without_warnings { Octoprint::Printer::Sd } }
+
     use_octoprint_server
 
     describe ".get", vcr: { cassette_name: "printer/sd/get" } do
-      subject(:sd) { described_class.get }
+      subject(:state) { sd.get }
 
-      it { is_expected.to be_a described_class }
+      it { is_expected.to be_a Octoprint::Printer::Storage }
       its(:ready) { is_expected.to be true }
     end
 
     describe ".init", vcr: { cassette_name: "printer/sd/init" } do
-      subject(:init) { described_class.init }
-
-      it { expect(init).to be true }
+      it { expect(sd.init).to be true }
     end
 
     describe ".refresh", vcr: { cassette_name: "printer/sd/refresh" } do
-      subject(:refresh) { described_class.refresh }
-
-      it { expect(refresh).to be true }
+      it { expect(sd.refresh).to be true }
     end
 
     describe ".release", vcr: { cassette_name: "printer/sd/release" } do
-      subject(:release) { described_class.release }
-
-      it { expect(release).to be true }
+      it { expect(sd.release).to be true }
     end
   end
 
