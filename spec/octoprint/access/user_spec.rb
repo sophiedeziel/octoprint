@@ -117,6 +117,22 @@ RSpec.describe Octoprint::Access::User do
     end
   end
 
+  describe "deprecated readers" do
+    subject(:user) { described_class.new(admin: true, user: false, roles: %w[admin user]) }
+
+    before { Octoprint::Deprecation.reset! }
+
+    it "returns the 1.x values and warns once per reader" do
+      expect do
+        expect([user.admin, user.admin, user.user, user.roles]).to eq([true, true, false, %w[admin user]])
+      end.to output(
+        "[octoprint] Access::User#admin is deprecated: use Access::User#admin?\n" \
+        "[octoprint] Access::User#user is deprecated: use Access::User#groups\n" \
+        "[octoprint] Access::User#roles is deprecated: use Access::User#needs_role or #groups\n"
+      ).to_stderr
+    end
+  end
+
   describe "#admin?" do
     it "is true for a member of the admins group" do
       expect(described_class.new(groups: %w[users admins]).admin?).to be(true)

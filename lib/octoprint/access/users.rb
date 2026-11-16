@@ -67,7 +67,10 @@ module Octoprint
           password: password,
           active: active
         }
-        params[:admin] = admin unless admin.nil?
+        unless admin.nil?
+          Deprecation.warn_once("Access::Users.add(admin:)", "put the user in the admins group instead")
+          params[:admin] = admin
+        end
         params[:groups] = groups if groups
         params[:permissions] = permissions if permissions
 

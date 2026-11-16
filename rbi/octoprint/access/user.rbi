@@ -8,7 +8,7 @@ class Octoprint::Access::User
   sig { returns(T::Boolean) }
   def active; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(T.nilable(T::Boolean)) }
   def admin; end
 
   sig { returns(T.nilable(::String)) }
@@ -20,7 +20,7 @@ class Octoprint::Access::User
   sig { returns(T.nilable(T::Array[::String])) }
   def groups; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(T.nilable(T::Boolean)) }
   def has_password; end
 
   sig { returns(T.nilable(::String)) }
@@ -41,6 +41,6 @@ class Octoprint::Access::User
   sig { returns(T.nilable(::Hash)) }
   def settings; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(T.nilable(T::Boolean)) }
   def user; end
 end

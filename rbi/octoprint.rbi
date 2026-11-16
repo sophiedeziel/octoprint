@@ -141,6 +141,8 @@ class Octoprint::Access::User
   def initialize(**kwargs); end
 
   def active; end
+
+  sig { returns(T.nilable(T::Boolean)) }
   def admin; end
 
   sig { returns(T::Boolean) }
@@ -154,8 +156,13 @@ class Octoprint::Access::User
   def needs; end
   def needs_role; end
   def permissions; end
+
+  sig { returns(T.nilable(T::Array[::String])) }
   def roles; end
+
   def settings; end
+
+  sig { returns(T.nilable(T::Boolean)) }
   def user; end
 
   class << self
@@ -552,6 +559,16 @@ class Octoprint::Connection::Settings
   def port; end
   def printer_profile; end
   def state; end
+end
+
+module Octoprint::Deprecation
+  class << self
+    sig { void }
+    def reset!; end
+
+    sig { params(name: ::String, advice: ::String).void }
+    def warn_once(name, advice); end
+  end
 end
 
 module Octoprint::Deserializable

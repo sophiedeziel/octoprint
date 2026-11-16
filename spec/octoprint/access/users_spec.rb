@@ -156,6 +156,15 @@ RSpec.describe Octoprint::Access::Users do
       expect(user.admin).to be(true)
     end
 
+    it "warns that admin: is deprecated" do
+      Octoprint::Deprecation.reset!
+      allow(client).to receive(:request).and_return({ users: [] })
+
+      expect { described_class.add(name: "test_user", password: "password", active: true, admin: false) }
+        .to output("[octoprint] Access::Users.add(admin:) is deprecated: put the user in the admins group instead\n")
+        .to_stderr
+    end
+
     it "omits admin from the payload when it isn't given (OctoPrint 2.0 removed it)" do
       api_response = {
         users: [{ name: "test_user", active: true, apikey: nil, groups: ["users"], has_password: true,

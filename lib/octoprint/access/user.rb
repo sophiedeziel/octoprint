@@ -32,14 +32,12 @@ module Octoprint
       #   @return [Boolean] Whether the user is active
       auto_attr :active, type: Types::Boolean
 
-      # @!attribute [r] admin
-      #   @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#admin?} instead.
-      #   @return [Boolean, nil] Whether the user is an admin. `nil` on OctoPrint 2.0
-      auto_attr :admin, type: Types::Boolean
+      # Deprecated, see {#admin}
+      auto_attr :admin, type: T.nilable(Types::Boolean)
 
       # @!attribute [r] has_password
       #   @return [Boolean, nil] Whether the user has a password set. New in OctoPrint 2.0, `nil` on 1.11
-      auto_attr :has_password, type: Types::Boolean
+      auto_attr :has_password, type: T.nilable(Types::Boolean)
 
       # @!attribute [r] api_key
       #   @return [String, nil] The user's API key (only in list requests)
@@ -65,15 +63,11 @@ module Octoprint
       #   @return [Hash] Needs information with groups and roles
       auto_attr :needs, type: Hash
 
-      # @!attribute [r] roles
-      #   @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#needs_role} or {#groups} instead.
-      #   @return [Array<String>, nil] User roles. `nil` on OctoPrint 2.0
+      # Deprecated, see {#roles}
       auto_attr :roles, type: String, array: true
 
-      # @!attribute [r] user
-      #   @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#groups} instead.
-      #   @return [Boolean, nil] Whether the user is in the users group. `nil` on OctoPrint 2.0
-      auto_attr :user, type: Types::Boolean, nilable: true
+      # Deprecated, see {#user}
+      auto_attr :user, type: T.nilable(Types::Boolean)
 
       # @!attribute [r] extra
       #   @return [Hash] Additional attributes from the API
@@ -88,6 +82,36 @@ module Octoprint
           # Handle the needs structure which comes as a hash with group and role arrays
           data[:needs_role] = data[:needs][:role] if data[:needs].is_a?(Hash) && data[:needs][:role]
         end
+      end
+
+      # Whether the user is an admin
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#admin?} instead.
+      # @return [Boolean, nil] `nil` on OctoPrint 2.0
+      #: -> bool?
+      def admin
+        Deprecation.warn_once("Access::User#admin", "use Access::User#admin?")
+        @admin
+      end
+
+      # Roles of the user
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#needs_role} or {#groups} instead.
+      # @return [Array<String>, nil] `nil` on OctoPrint 2.0
+      #: -> Array[String]?
+      def roles
+        Deprecation.warn_once("Access::User#roles", "use Access::User#needs_role or #groups")
+        @roles
+      end
+
+      # Whether the user is in the users group
+      #
+      # @deprecated Removed in OctoPrint 2.0, where it is always `nil`. Use {#groups} instead.
+      # @return [Boolean, nil] `nil` on OctoPrint 2.0
+      #: -> bool?
+      def user
+        Deprecation.warn_once("Access::User#user", "use Access::User#groups")
+        @user
       end
 
       # Key of OctoPrint's built-in admin group
