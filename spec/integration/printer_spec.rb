@@ -276,6 +276,44 @@ RSpec.describe Octoprint::Printer, type: :integration do
     end
   end
 
+  describe Octoprint::Printer::ErrorInformation do
+    use_octoprint_server
+
+    describe ".get without an error", vcr: { cassette_name: "printer/error/no_error" } do
+      subject(:info) { described_class.get }
+
+      it { is_expected.to be_a described_class }
+      its(:error)       { is_expected.to eq "" }
+      its(:reason)      { is_expected.to eq "" }
+      its(:consequence) { is_expected.to be_nil }
+      its(:faq)         { is_expected.to be_nil }
+      its(:logs)        { is_expected.to be_nil }
+      its(:error?)      { is_expected.to be false }
+    end
+
+    describe ".get with an error", vcr: { cassette_name: "printer/error/error_present" } do
+      subject(:info) { Octoprint::Printer.last_error }
+
+      let(:message) { "Thermal Runaway, system stopped! Heater_ID: bed - Printer halted. kill() called!" }
+
+      it { is_expected.to be_a described_class }
+
+      its(:error?)      { is_expected.to be true }
+      its(:error)       { is_expected.to eq message }
+      its(:reason)      { is_expected.to eq "firmware" }
+      its(:consequence) { is_expected.to eq "emergency" }
+      its(:faq)         { is_expected.to eq "firmware-thermal-runaway" }
+      its(:faq_url)     { is_expected.to eq "https://faq.octoprint.org/firmware-thermal-runaway" }
+      its(:extra)       { is_expected.to be_nil }
+
+      it "returns the terminal lines related to the error" do
+        expect(info.logs).to all(be_a(String))
+        expect(info.logs).to include "Recv: Error:Thermal Runaway, system stopped! Heater_ID: bed"
+        expect(info.logs.last).to eq 'Changing monitoring state from "Operational" to "Error"'
+      end
+    end
+  end
+
   describe Octoprint::Printer::Command do
     use_octoprint_server
 

@@ -12,6 +12,7 @@ module Octoprint
   # - {Printer::Chamber} — set the heated chamber's temperature
   # - {Printer::Sd} — initialize, refresh and release the printer's SD card
   # - {Printer::Command} — send arbitrary commands and retrieve custom controls
+  # - {Printer::ErrorInformation} — retrieve information about the last error (see {.last_error})
   #
   # @example Get the current printer state
   #   printer = Octoprint::Printer.get
@@ -28,6 +29,10 @@ module Octoprint
   # @example Exclude data that isn't needed
   #   printer = Octoprint::Printer.get(exclude: %i[temperature sd])
   #   printer.temperature # => nil
+  #
+  # @example Check the last error
+  #   error = Octoprint::Printer.last_error
+  #   error.error? # => false
   #
   # @see https://docs.octoprint.org/en/master/api/printer.html OctoPrint Printer API Documentation
   class Printer < BaseResource
@@ -103,6 +108,22 @@ module Octoprint
       end
 
       fetch_resource(options: options)
+    end
+
+    # Retrieves information about the last error reported by the printer.
+    #
+    # Shortcut for {Printer::ErrorInformation.get}.
+    #
+    # @example
+    #   error = Octoprint::Printer.last_error
+    #   error.error?  # => true
+    #   error.reason  # => "firmware"
+    #
+    # @return [Printer::ErrorInformation] The last error information
+    # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +STATUS+ permission
+    sig { returns(ErrorInformation) }
+    def self.last_error
+      ErrorInformation.get
     end
   end
 end

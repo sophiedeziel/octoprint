@@ -121,7 +121,7 @@ This gem aims to provide complete coverage of OctoPrint's REST API:
 |---|---|
 | **Files** | List, get, upload, delete, create folders, select/unselect, slice STL files, copy/move, download URLs |
 | **Jobs** | Current job info, progress tracking, start/cancel/restart/pause/resume |
-| **Printer** | Printer state, temperatures with history, print head jog/home, tool/bed/chamber temperatures, extrusion, SD card, arbitrary commands, custom controls |
+| **Printer** | Printer state, temperatures with history, print head jog/home, tool/bed/chamber temperatures, extrusion, SD card, arbitrary commands, custom controls, last error |
 | **Printer Profiles** | List, get, create, update, and delete printer profiles |
 | **Connection** | Connect/disconnect printer, connection settings and options |
 | **Languages** | List, upload, and delete language packs |
