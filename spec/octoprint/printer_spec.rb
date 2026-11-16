@@ -19,7 +19,15 @@ RSpec.describe Octoprint::Printer do
     end
 
     it "lists the excludable fields" do
-      expect(described_class::EXCLUDABLE_FIELDS).to eq(%w[temperature sd state])
+      expect(described_class::EXCLUDABLE_FIELDS).to eq(%w[temperature storage state])
+    end
+
+    it "lists the deprecated excludable fields" do
+      expect(described_class::DEPRECATED_EXCLUDABLE_FIELDS).to eq("sd" => "storage")
+    end
+
+    it "has a legacy converter" do
+      expect(described_class.legacy_converter).to be(Octoprint::Printer::Legacy)
     end
   end
 
@@ -27,6 +35,7 @@ RSpec.describe Octoprint::Printer do
     let(:printer) { described_class.new }
 
     before do
+      Octoprint::Deprecation.reset!
       allow(described_class).to receive(:fetch_resource).and_return(printer)
     end
 
@@ -59,9 +68,9 @@ RSpec.describe Octoprint::Printer do
     end
 
     it "joins excluded symbol fields with commas" do
-      described_class.get(exclude: %i[temperature sd])
+      described_class.get(exclude: %i[temperature storage])
 
-      expect(described_class).to have_received(:fetch_resource).with(options: { exclude: "temperature,sd" })
+      expect(described_class).to have_received(:fetch_resource).with(options: { exclude: "temperature,storage" })
     end
 
     it "joins excluded string fields with commas" do
@@ -71,11 +80,77 @@ RSpec.describe Octoprint::Printer do
     end
 
     it "combines history, limit and exclude options" do
-      described_class.get(history: true, limit: 5, exclude: [:sd, "state"])
+      described_class.get(history: true, limit: 5, exclude: [:storage, "state"])
 
       expect(described_class).to have_received(:fetch_resource).with(
-        options: { history: true, limit: 5, exclude: "sd,state" }
+        options: { history: true, limit: 5, exclude: "storage,state" }
       )
+    end
+
+    context "with the deprecated sd field" do
+      it "excludes storage instead" do
+        expect { described_class.get(exclude: %i[temperature sd]) }.to output.to_stderr
+
+        expect(described_class).to have_received(:fetch_resource).with(options: { exclude: "temperature,storage" })
+      end
+
+      it "excludes storage only once when both names are given" do
+        expect { described_class.get(exclude: ["sd", :storage]) }.to output.to_stderr
+
+        expect(described_class).to have_received(:fetch_resource).with(options: { exclude: "storage" })
+      end
+
+      it "prints a deprecation warning once" do
+        expect { described_class.get(exclude: [:sd]) }
+          .to output("[octoprint] Printer.get(exclude: [:sd]) is deprecated: use exclude: [:storage]\n").to_stderr
+        expect { described_class.get(exclude: [:sd]) }.not_to output.to_stderr
+      end
+    end
+
+    context "when the client speaks the 1.x API" do
+      let(:client) { Octoprint::Client.new(host: "http://test.local", api_key: "key", api_version: "1.11") }
+
+      before do
+        allow(described_class).to receive(:fetch_resource).and_call_original
+        allow(client).to receive(:request).and_return(sd: { ready: true }, state: { text: "Operational" })
+      end
+
+      around { |example| client.use { example.run } }
+
+      it "excludes sd and reads the storage state from sd" do
+        printer = described_class.get(exclude: %i[temperature])
+
+        expect(printer.storage.ready).to be(true)
+        expect(client).to have_received(:request).with("/api/printer?exclude=temperature", http_method: :get)
+      end
+
+      it "sends sd for an excluded storage" do
+        described_class.get(exclude: %i[temperature storage])
+
+        expect(client).to have_received(:request).with("/api/printer?exclude=temperature%2Csd", http_method: :get)
+      end
+    end
+
+    context "when the client speaks the 2.0 API" do
+      let(:client) { Octoprint::Client.new(host: "http://test.local", api_key: "key", api_version: "2.0") }
+
+      before do
+        allow(described_class).to receive(:fetch_resource).and_call_original
+        allow(client).to receive(:request).and_return(storage: { ready: true }, state: { text: "Operational" })
+      end
+
+      around { |example| client.use { example.run } }
+
+      it "sends storage for an excluded storage" do
+        described_class.get(exclude: %i[temperature storage])
+
+        expect(client).to have_received(:request)
+          .with("/api/printer?exclude=temperature%2Cstorage", http_method: :get)
+      end
+
+      it "reads the storage state" do
+        expect(described_class.get.storage.ready).to be(true)
+      end
     end
 
     it "raises ArgumentError listing the invalid exclude fields" do
@@ -107,7 +182,7 @@ RSpec.describe Octoprint::Printer do
             }
           ]
         },
-        sd: { ready: true },
+        storage: { ready: true },
         state: {
           text: "Operational",
           flags: {
@@ -137,9 +212,9 @@ RSpec.describe Octoprint::Printer do
       expect(printer.temperature.history.first.time).to eq(1_395_651_928)
     end
 
-    it "deserializes the SD card state" do
-      expect(printer.sd).to be_a(Octoprint::Printer::Sd)
-      expect(printer.sd.ready).to be(true)
+    it "deserializes the storage state" do
+      expect(printer.storage).to be_a(Octoprint::Printer::Storage)
+      expect(printer.storage.ready).to be(true)
     end
 
     it "deserializes the general state" do
@@ -158,17 +233,40 @@ RSpec.describe Octoprint::Printer do
 
       it "leaves the excluded fields nil" do
         expect(printer.temperature).to be_nil
-        expect(printer.sd).to be_nil
+        expect(printer.storage).to be_nil
         expect(printer.state.text).to eq("Operational")
       end
     end
 
     context "with unknown fields" do
-      let(:data) { { sd: { ready: false }, job: { file: "test.gcode" } } }
+      let(:data) { { storage: { ready: false }, job: { file: "test.gcode" } } }
 
       it "collects them in extra" do
         expect(printer.extra).to eq({ job: { file: "test.gcode" } })
       end
+    end
+  end
+
+  describe "#sd" do
+    subject(:printer) { described_class.deserialize({ storage: { ready: true } }) }
+
+    before do
+      Octoprint::Deprecation.reset!
+    end
+
+    it "returns the storage state" do
+      expect { printer.sd }.to output.to_stderr
+
+      expect(printer.sd).to be(printer.storage)
+    end
+
+    it "is nil when the storage state is" do
+      expect { expect(described_class.new.sd).to be_nil }.to output.to_stderr
+    end
+
+    it "prints a deprecation warning once" do
+      expect { printer.sd }.to output("[octoprint] Printer#sd is deprecated: use Printer#storage\n").to_stderr
+      expect { printer.sd }.not_to output.to_stderr
     end
   end
 

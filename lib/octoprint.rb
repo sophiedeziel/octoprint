@@ -7,6 +7,8 @@ require "sorbet-runtime"
 
 loader = Zeitwerk::Loader.for_gem
 loader.ignore("#{__dir__}/tapioca")
+# Deprecated aliases warn when they are loaded, so only load them when they're used
+loader.do_not_eager_load("#{__dir__}/octoprint/printer/sd.rb")
 loader.setup
 
 # Welcome to the Octoprint Gem!

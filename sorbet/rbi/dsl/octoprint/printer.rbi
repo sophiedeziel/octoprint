@@ -9,11 +9,11 @@ class Octoprint::Printer
   sig { returns(T.nilable(::Hash)) }
   def extra; end
 
-  sig { returns(T.nilable(::Octoprint::Printer::Sd)) }
-  def sd; end
-
   sig { returns(T.nilable(::Octoprint::Printer::State)) }
   def state; end
+
+  sig { returns(T.nilable(::Octoprint::Printer::Storage)) }
+  def storage; end
 
   sig { returns(T.nilable(::Octoprint::Printer::TemperatureState)) }
   def temperature; end
