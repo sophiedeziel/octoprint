@@ -1,0 +1,196 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: "<HOST_2_0>/api/connection"
+    body:
+      encoding: UTF-8
+      string: '{"command":"connect","connector":"serial","parameters":{"port":"VIRTUAL","baudrate":115200},"printerProfile":"_default"}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: NO CONTENT
+    headers:
+      Content-Type:
+      - text/plain
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=5
+      Content-Length:
+      - '0'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 16 Nov 2026 06:11:32 GMT
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/connection"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1014'
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=2
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "current": {
+            "capabilities": {
+              "job_on_hold": true,
+              "temperature_offsets": true
+            },
+            "connector": "serial",
+            "parameters": {
+              "baudrate": 115200,
+              "port": "VIRTUAL"
+            },
+            "profile": "_default",
+            "state": "Operational"
+          },
+          "options": {
+            "connectors": [
+              {
+                "connector": "serial",
+                "name": "Serial Connection",
+                "parameters": {
+                  "baudrate": [
+                    115200,
+                    250000,
+                    230400,
+                    57600,
+                    38400,
+                    19200,
+                    9600
+                  ],
+                  "port": [
+                    "/dev/cu.debug-console",
+                    "/dev/cu.Bluetooth-Incoming-Port",
+                    "VIRTUAL"
+                  ]
+                }
+              }
+            ],
+            "preferredConnector": {
+              "connector": "serial",
+              "parameters": {
+                "baudrate": null,
+                "port": null
+              }
+            },
+            "preferredProfile": "_default",
+            "profiles": [
+              {
+                "id": "_default",
+                "name": "Default"
+              }
+            ]
+          }
+        }
+  recorded_at: Mon, 16 Nov 2026 06:11:35 GMT
+- request:
+    method: post
+    uri: "<HOST_2_0>/api/connection"
+    body:
+      encoding: UTF-8
+      string: '{"command":"disconnect"}'
+    headers:
+      Authorization:
+      - Bearer <API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: NO CONTENT
+    headers:
+      Content-Type:
+      - text/plain
+      Cache-Control:
+      - no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=1
+      Content-Length:
+      - '0'
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 16 Nov 2026 06:11:35 GMT
+recorded_with: VCR 6.4.1

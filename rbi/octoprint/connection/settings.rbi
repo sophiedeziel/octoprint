@@ -5,14 +5,17 @@
 # Please instead update this file by running `bundle exec rake rbi:export`.
 
 class Octoprint::Connection::Settings
-  sig { returns(T.nilable(::Integer)) }
-  def baudrate; end
+  sig { returns(T.nilable(::Hash)) }
+  def capabilities; end
 
   sig { returns(T.nilable(::String)) }
-  def port; end
+  def connector; end
+
+  sig { returns(T.nilable(::Hash)) }
+  def parameters; end
 
   sig { returns(T.nilable(::String)) }
-  def printer_profile; end
+  def profile; end
 
   sig { returns(T.nilable(::String)) }
   def state; end

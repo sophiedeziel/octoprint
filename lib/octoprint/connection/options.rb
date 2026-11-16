@@ -3,42 +3,124 @@
 
 module Octoprint
   class Connection
-    # Available connection options of the printer.
+    # Available connection options of the printer, in the OctoPrint 2.0 shape.
     #
-    # Octoprint's API doc: https://docs.octoprint.org/en/master/api/connection.html
+    # With the 1.x API, the gem converts the old `ports`, `baudrates`, `portPreference` and `baudratePreference`
+    # into a single `serial` connector.
     #
-    # @attr [Array<String>] ports Available ports
-    # @attr [Array<Integer>] baudrates  Available baudrates
-    # @attr [Array<Hash>] printer_profiles
-    # @attr [String | nil] port_preference
-    # @attr [Integer] baudrate_preference
-    # @attr [String] printer_profile_preference
-    # @attr [Boolean | nil] autoconnect
+    # Octoprint's API doc: https://docs.octoprint.org/en/dev/api/connection.html
     #
     # @example
-    #           Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
+    #   Octoprint.configure(host: 'https://octopi.local/', api_key: 'j98G2nsJq...')
     #
-    #           options = Octoprint::Connection.get.options
+    #   options = Octoprint::Connection.get.options
     #
-    #           options.ports #=> ["/dev/ttyACM0"]
-    #           options.baudrates #=>  [250000, 230400, 115200, 57600, 38400, 19200, 9600]
-    #           options.printer_profiles #=>  [{:id=>"_default", :name=>"Creality CR-10s"}]
-    #           options.port_preference #=>  nil
-    #           options.baudrate_preference #=>  250000
-    #           options.printer_profile_preference #=>  "_default"
-    #           options.autoconnect #=>  nil
+    #   options.connectors.map(&:connector)    #=> ["serial"]
+    #   options.connectors.first.parameters    #=> { port: ["/dev/ttyACM0", "VIRTUAL"], baudrate: [115200, ...] }
+    #   options.preferred_connector.connector  #=> "serial"
+    #   options.preferred_connector.parameters #=> { port: nil, baudrate: nil }
+    #   options.profiles                       #=> [{ id: "_default", name: "Default" }]
+    #   options.preferred_profile              #=> "_default"
     class Options
       include AutoInitializable
 
-      auto_attr :ports, type: String, array: true
-      auto_attr :baudrates, type: Integer, array: true
-      auto_attr :printer_profiles, type: Hash, array: true
-      auto_attr :port_preference, type: String
-      auto_attr :baudrate_preference, type: Integer
-      auto_attr :printer_profile_preference, type: String
+      # @!attribute [r] connectors
+      #   @return [Array<Connector>, nil] The available connectors and the values their parameters accept
+      auto_attr :connectors, type: Connector, array: true
+
+      # @!attribute [r] profiles
+      #   @return [Array<Hash>, nil] The available printer profiles (`id` and `name`)
+      auto_attr :profiles, type: Hash, array: true
+
+      # @!attribute [r] preferred_connector
+      #   @return [PreferredConnector, nil] The connector and parameters used when none are given
+      auto_attr :preferred_connector, type: PreferredConnector
+
+      # @!attribute [r] preferred_profile
+      #   @return [String, nil] Identifier of the printer profile used when none is given
+      auto_attr :preferred_profile, type: String
+
+      # @!attribute [r] autoconnect
+      #   @return [Boolean, nil] Whether OctoPrint connects to the printer on startup. Only some 1.x servers report
+      #     it; always nil with the 2.0 API
       auto_attr :autoconnect, type: T::Boolean
 
       auto_initialize!
+
+      # Available serial ports
+      #
+      # @deprecated Use the `port` parameter of the serial connector in {#connectors}
+      # @return [Array<String>, nil]
+      #: -> Array[String]?
+      def ports
+        Deprecation.warn_once("Connection::Options#ports", "use the serial connector in connectors")
+        serial_connector&.parameters&.[](:port)
+      end
+
+      # Available serial baud rates
+      #
+      # @deprecated Use the `baudrate` parameter of the serial connector in {#connectors}
+      # @return [Array<Integer>, nil]
+      #: -> Array[Integer]?
+      def baudrates
+        Deprecation.warn_once("Connection::Options#baudrates", "use the serial connector in connectors")
+        serial_connector&.parameters&.[](:baudrate)
+      end
+
+      # Available printer profiles
+      #
+      # @deprecated Use {#profiles}
+      # @return [Array<Hash>, nil]
+      #: -> Array[Hash[untyped, untyped]]?
+      def printer_profiles
+        Deprecation.warn_once("Connection::Options#printer_profiles", "use profiles")
+        profiles
+      end
+
+      # Preferred serial port
+      #
+      # @deprecated Use {#preferred_connector}
+      # @return [String, nil]
+      #: -> String?
+      def port_preference
+        Deprecation.warn_once("Connection::Options#port_preference", "use preferred_connector")
+        serial_preference(:port)
+      end
+
+      # Preferred serial baud rate
+      #
+      # @deprecated Use {#preferred_connector}
+      # @return [Integer, nil]
+      #: -> Integer?
+      def baudrate_preference
+        Deprecation.warn_once("Connection::Options#baudrate_preference", "use preferred_connector")
+        serial_preference(:baudrate)
+      end
+
+      # Identifier of the preferred printer profile
+      #
+      # @deprecated Use {#preferred_profile}
+      # @return [String, nil]
+      #: -> String?
+      def printer_profile_preference
+        Deprecation.warn_once("Connection::Options#printer_profile_preference", "use preferred_profile")
+        preferred_profile
+      end
+
+      private
+
+      #: -> Connector?
+      def serial_connector
+        connectors&.find { |connector| connector.connector == SERIAL }
+      end
+
+      #: (Symbol) -> untyped
+      def serial_preference(parameter)
+        preferred = preferred_connector
+        return if preferred.nil? || preferred.connector != SERIAL
+
+        preferred.parameters&.[](parameter)
+      end
     end
   end
 end

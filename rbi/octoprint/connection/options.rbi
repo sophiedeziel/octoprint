@@ -8,21 +8,15 @@ class Octoprint::Connection::Options
   sig { returns(T::Boolean) }
   def autoconnect; end
 
-  sig { returns(T.nilable(::Integer)) }
-  def baudrate_preference; end
+  sig { returns(T.nilable(T::Array[::Octoprint::Connection::Connector])) }
+  def connectors; end
 
-  sig { returns(T.nilable(T::Array[::Integer])) }
-  def baudrates; end
-
-  sig { returns(T.nilable(::String)) }
-  def port_preference; end
-
-  sig { returns(T.nilable(T::Array[::String])) }
-  def ports; end
+  sig { returns(T.nilable(::Octoprint::Connection::PreferredConnector)) }
+  def preferred_connector; end
 
   sig { returns(T.nilable(::String)) }
-  def printer_profile_preference; end
+  def preferred_profile; end
 
   sig { returns(T.nilable(T::Array[::Hash])) }
-  def printer_profiles; end
+  def profiles; end
 end
