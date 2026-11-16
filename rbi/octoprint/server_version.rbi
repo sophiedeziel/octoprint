@@ -5,7 +5,7 @@
 # Please instead update this file by running `bundle exec rake rbi:export`.
 
 class Octoprint::ServerVersion < ::Octoprint::BaseResource
-  sig { returns(::String) }
+  sig { returns(T.nilable(::String)) }
   def api; end
 
   sig { returns(T.nilable(::Hash)) }

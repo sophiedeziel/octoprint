@@ -26,5 +26,8 @@ module Octoprint
     class ConnectionError < Error; end
     # The server did not open the connection or respond within the configured timeouts
     class TimeoutError < ConnectionError; end
+    # The feature needs a newer OctoPrint API than the client speaks. Raised before any request is sent.
+    # See {Octoprint::Client#supports?} and the `api_version:` option of {Octoprint::Client#initialize}.
+    class UnsupportedFeatureError < Error; end
   end
 end

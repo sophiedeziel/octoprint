@@ -6,7 +6,7 @@
 
 
 class Octoprint::ServerVersion
-  sig { returns(::String) }
+  sig { returns(T.nilable(::String)) }
   def api; end
 
   sig { returns(T.nilable(::Hash)) }
