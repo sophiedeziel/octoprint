@@ -1,8 +1,151 @@
 # typed: true
 # frozen_string_literal: true
 
+# A non-admin user's key, to record the permission-filtered settings of OctoPrint 2.0. Create it on the 2.0 server
+# with the admin key: POST /api/plugin/appkeys {"command": "generate", "app": "gem-specs", "user": "vcruser"}
+def octoprint_restricted_api_key
+  ENV.fetch("OCTOPRINT_RESTRICTED_API_KEY_2_0", "fake_restricted_api_key")
+end
+
+VCR.configure do |config|
+  config.filter_sensitive_data("<RESTRICTED_API_KEY_2_0>") { octoprint_restricted_api_key }
+end
+
+# The settings use the 2.0 key names on every server and API version
+RSpec.shared_examples "settings with the 2.0 key names" do |prefix|
+  describe ".get", vcr: { cassette_name: "#{prefix}/get_by_version" } do
+    subject(:settings) { described_class.get }
+
+    it "has the printer connection settings instead of the serial settings" do
+      expect(settings).not_to include(:serial)
+      expect(settings[:printer_connection]).to eq(autoconnect: false)
+    end
+
+    it "has the serial connector settings in the 2.0 shape" do
+      expect(settings.dig(:plugins, :serial_connector)).to include(
+        timeout: include(communication: 30.0, connection: 10.0),
+        max_communication_timeouts: { idle: 2, long: 5, printing: 5 },
+        capabilities: include(autoreport_temp: true, busy_protocol: true),
+        blocklisted_ports: [],
+        error_handling: "disconnect",
+        send_checksum: "print",
+        wait_for_start_on_connect: false,
+        log: false
+      )
+    end
+
+    it "uses the blocklist names" do
+      expect(settings[:feature]).to include(auto_uppercase_blocklist: %w[M117 M118 M707 M708],
+                                            notify_suppressed_commands: "warn")
+      expect(settings[:feature]).not_to include(:auto_uppercase_blacklist)
+      expect(settings[:server]).to include(plugin_blocklist: include(enabled: false, ttl: 15))
+      expect(settings[:server]).not_to include(:plugin_blacklist)
+    end
+
+    it "reads the webcam settings" do
+      expect(Octoprint::Settings::Webcam.from_settings(settings)).to have_attributes(enabled: true, name: "classic")
+    end
+  end
+
+  describe ".save with the 2.0 key names",
+           vcr: { cassette_name: "#{prefix}/save_2_0_names", match_requests_on: %i[method uri body] } do
+    subject(:updated) do
+      described_class.save(
+        printerConnection: { autoconnect: true },
+        feature: { autoUppercaseBlocklist: %w[M117 M118] },
+        server: { pluginBlocklist: { ttl: 20 } },
+        plugins: { serial_connector: { timeout: { communication: 45.0 }, errorHandling: "cancel" } }
+      )
+    end
+
+    after do
+      described_class.save(
+        printerConnection: { autoconnect: false },
+        feature: { autoUppercaseBlocklist: %w[M117 M118 M707 M708] },
+        server: { pluginBlocklist: { ttl: 15 } },
+        plugins: { serial_connector: { timeout: { communication: 30.0 }, errorHandling: "disconnect" } }
+      )
+    end
+
+    it "saves them, on 1.x servers too" do
+      expect(updated[:printer_connection]).to eq(autoconnect: true)
+      expect(updated.dig(:feature, :auto_uppercase_blocklist)).to eq %w[M117 M118]
+      expect(updated.dig(:server, :plugin_blocklist, :ttl)).to eq 20
+      expect(updated.dig(:plugins, :serial_connector, :timeout, :communication)).to eq 45.0
+      expect(updated.dig(:plugins, :serial_connector, :error_handling)).to eq "cancel"
+    end
+  end
+end
+
+# OctoPrint 2.0 filters the settings by permission, with every API version. Uses a non-admin user's key.
+RSpec.shared_examples "permission-filtered settings" do |prefix|
+  let(:api_key) { octoprint_restricted_api_key }
+
+  describe ".get", vcr: { cassette_name: "#{prefix}/get_restricted" } do
+    subject(:settings) { described_class.get }
+
+    it "hides the values the user can't read" do
+      expect(settings.dig(:server, :online_check)).to eq(enabled: nil, host: nil, interval: nil, name: nil, port: nil)
+      expect(settings.dig(:server, :plugin_blocklist)).to eq(enabled: nil, ttl: nil, url: nil)
+      expect(settings.dig(:plugins, :serial_connector))
+        .to include(error_handling: nil, blocked_commands: [], log: false)
+      expect(settings.dig(:plugins, :serial_connector, :timeout, :communication)).to be_nil
+    end
+
+    it "keeps the values the user can read" do
+      expect(settings.dig(:appearance, :color)).to eq "default"
+      expect(settings.dig(:feature, :auto_uppercase_blocklist)).to eq %w[M117 M118 M707 M708]
+    end
+
+    it "reads the webcam settings" do
+      expect(Octoprint::Settings::Webcam.from_settings(settings)).to have_attributes(enabled: true, name: "classic")
+    end
+  end
+end
+
 RSpec.describe Octoprint::Settings, type: :integration do
   include_context "with default Octoprint config"
+
+  on_octoprint_versions do
+    use_octoprint_server
+
+    it_behaves_like "settings with the 2.0 key names", "settings"
+  end
+
+  context "with the 1.11 API against OctoPrint 2.0", api_version: "1.11", octoprint: "2.0" do
+    use_octoprint_server
+
+    it_behaves_like "settings with the 2.0 key names", "settings/api_1_11"
+    it_behaves_like "permission-filtered settings", "settings/api_1_11"
+  end
+
+  context "with the 2.0 API", octoprint: "2.0" do
+    use_octoprint_server
+
+    it_behaves_like "permission-filtered settings", "settings"
+
+    describe ".reauth_required", vcr: { cassette_name: "settings/reauth_required" } do
+      subject(:requirements) { described_class.reauth_required }
+
+      it "lists the settings that need a recent login" do
+        expect(requirements).to include(
+          access_control: { default_reauthentication_timeout: true },
+          server: { commands: true },
+          system: { actions: true }
+        )
+        expect(requirements.dig(:plugins, :eventmanager, :subscriptions)).to be true
+      end
+    end
+  end
+
+  describe ".reauth_required with the 1.11 API" do
+    use_octoprint_server
+
+    it "raises before sending a request" do
+      expect { described_class.reauth_required }
+        .to raise_error(Octoprint::Exceptions::UnsupportedFeatureError, /reauth_required/)
+    end
+  end
 
   describe ".get", vcr: { cassette_name: "settings/get" } do
     use_octoprint_server
@@ -20,11 +163,15 @@ RSpec.describe Octoprint::Settings, type: :integration do
       expect(settings).to include(:folder)
       expect(settings).to include(:plugins)
       expect(settings).to include(:scripts)
-      expect(settings).to include(:serial)
+      expect(settings).to include(:printer_connection)
       expect(settings).to include(:server)
       expect(settings).to include(:system)
       expect(settings).to include(:temperature)
       expect(settings).to include(:webcam)
+    end
+
+    it "keeps the 1.x serial settings that have no 2.0 equivalent" do
+      expect(settings.dig(:plugins, :serial_connector)).to include(:port, :baudrate, :port_options, :baudrate_options)
     end
 
     it "returns appearance settings" do

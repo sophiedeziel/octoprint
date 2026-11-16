@@ -115,8 +115,8 @@ RSpec.describe Octoprint::Util do
           auth_pass: "pass",
           auth_digest: "digest",
           auth_bearer: "token",
-          content_type_whitelist: "application/json",
-          content_type_blacklist: "text/html"
+          content_type_allowlist: ["application/json"],
+          content_type_blocklist: ["text/html"]
         )
 
         expect(described_class).to have_received(:post).with(
@@ -131,9 +131,56 @@ RSpec.describe Octoprint::Util do
             auth_pass: "pass",
             auth_digest: "digest",
             auth_bearer: "token",
-            content_type_whitelist: "application/json",
-            content_type_blacklist: "text/html"
+            content_type_allowlist: ["application/json"],
+            content_type_blocklist: ["text/html"]
           }
+        )
+      end
+
+      it "sends a single content type as a list" do
+        allow(described_class).to receive(:post).and_return({ result: true })
+
+        described_class.test_url(url: "https://example.com", content_type_allowlist: "image/*")
+
+        expect(described_class).to have_received(:post).with(
+          path: "/api/util/test",
+          params: { command: "url", url: "https://example.com", content_type_allowlist: ["image/*"] }
+        )
+      end
+
+      it "sends the deprecated whitelist and blacklist as the allowlist and blocklist, and warns once" do
+        Octoprint::Deprecation.reset!
+        allow(described_class).to receive(:post).and_return({ result: true })
+
+        expect do
+          2.times do
+            described_class.test_url(url: "https://example.com", content_type_whitelist: "application/json",
+                                     content_type_blacklist: ["text/html"])
+          end
+        end.to output(
+          "[octoprint] Util.test_url(content_type_whitelist:) is deprecated: use content_type_allowlist: instead\n" \
+          "[octoprint] Util.test_url(content_type_blacklist:) is deprecated: use content_type_blocklist: instead\n"
+        ).to_stderr
+
+        expect(described_class).to have_received(:post).with(
+          path: "/api/util/test",
+          params: { command: "url", url: "https://example.com", content_type_allowlist: ["application/json"],
+                    content_type_blocklist: ["text/html"] }
+        ).twice
+      end
+
+      it "prefers the allowlist to the deprecated whitelist" do
+        Octoprint::Deprecation.reset!
+        allow(described_class).to receive(:post).and_return({ result: true })
+
+        expect do
+          described_class.test_url(url: "https://example.com", content_type_allowlist: ["image/*"],
+                                   content_type_whitelist: ["text/html"])
+        end.to output(/deprecated/).to_stderr
+
+        expect(described_class).to have_received(:post).with(
+          path: "/api/util/test",
+          params: { command: "url", url: "https://example.com", content_type_allowlist: ["image/*"] }
         )
       end
     end

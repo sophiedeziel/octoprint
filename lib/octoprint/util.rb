@@ -61,6 +61,13 @@ module Octoprint
 
     # Test URL connectivity
     #
+    # The content type filters use the OctoPrint 2.0 names (`content_type_allowlist`, `content_type_blocklist`).
+    # With the 1.x API, {Util::Legacy} sends them as `content_type_whitelist` and `content_type_blacklist`.
+    #
+    # @example Check that a URL serves an image
+    #   result = Octoprint::Util.test_url(url: "http://webcam.local/snapshot", content_type_allowlist: ["image/*"])
+    #   result.result # => true when the URL answered with an image
+    #
     # @param [String] url Mandatory URL to test
     # @param [String] method Optional HTTP method (default HEAD)
     # @param [Integer] timeout Optional timeout in seconds (default 3)
@@ -69,8 +76,11 @@ module Octoprint
     # @param [String] auth_pass Optional basic auth password
     # @param [String] auth_digest Optional digest auth
     # @param [String] auth_bearer Optional bearer token
-    # @param [String] content_type_whitelist Optional content type filter
-    # @param [String] content_type_blacklist Optional content type exclusion
+    # @param [Array<String>, String] content_type_allowlist Optional content types (e.g. `image/*`) the URL must
+    #   answer with
+    # @param [Array<String>, String] content_type_blocklist Optional content types the URL must not answer with
+    # @param [Array<String>, String] content_type_whitelist Deprecated, use `content_type_allowlist`
+    # @param [Array<String>, String] content_type_blacklist Deprecated, use `content_type_blocklist`
     # @return [Util]
     #: (
     #|   url: String,
@@ -81,16 +91,23 @@ module Octoprint
     #|   ?auth_pass: String?,
     #|   ?auth_digest: String?,
     #|   ?auth_bearer: String?,
-    #|   ?content_type_whitelist: String?,
-    #|   ?content_type_blacklist: String?
+    #|   ?content_type_allowlist: (Array[String] | String)?,
+    #|   ?content_type_blocklist: (Array[String] | String)?,
+    #|   ?content_type_whitelist: (Array[String] | String)?,
+    #|   ?content_type_blacklist: (Array[String] | String)?
     #| ) -> Util
     def self.test_url(url:, method: nil, timeout: nil, status: nil, auth_user: nil, auth_pass: nil,
-                      auth_digest: nil, auth_bearer: nil, content_type_whitelist: nil, content_type_blacklist: nil)
-      # rubocop:enable Metrics/ParameterLists
+                      auth_digest: nil, auth_bearer: nil, content_type_allowlist: nil, content_type_blocklist: nil,
+                      content_type_whitelist: nil, content_type_blacklist: nil)
+      whitelist = deprecated_option(:content_type_whitelist, content_type_whitelist, :content_type_allowlist)
+      blacklist = deprecated_option(:content_type_blacklist, content_type_blacklist, :content_type_blocklist)
+      content_type_allowlist ||= whitelist
+      content_type_blocklist ||= blacklist
       options = {
         method: method, timeout: timeout, status: status,
         auth_user: auth_user, auth_pass: auth_pass, auth_digest: auth_digest, auth_bearer: auth_bearer,
-        content_type_whitelist: content_type_whitelist, content_type_blacklist: content_type_blacklist
+        content_type_allowlist: content_type_allowlist && Array(content_type_allowlist),
+        content_type_blocklist: content_type_blocklist && Array(content_type_blocklist)
       }.compact
       params = build_url_test_params(url, options)
       response = post(path: "#{@path}/test", params: params)
@@ -99,6 +116,16 @@ module Octoprint
 
     private_class_method def self.build_url_test_params(url, options)
       { command: "url", url: url }.merge(options.compact)
+    end
+
+    # Returns the value of a deprecated option, and warns once per option when it is used
+    #
+    #: (Symbol, untyped, Symbol) -> untyped
+    private_class_method def self.deprecated_option(name, value, replacement)
+      return if value.nil?
+
+      Deprecation.warn_once("Util.test_url(#{name}:)", "use #{replacement}: instead")
+      value
     end
 
     # Test server connectivity

@@ -163,6 +163,36 @@ RSpec.describe Octoprint::Settings do
       end
     end
 
+    describe ".reauth_required" do
+      it "raises with the 1.x API, before any request" do
+        expect(client).not_to receive(:request)
+
+        expect { described_class.reauth_required }
+          .to raise_error(Octoprint::Exceptions::UnsupportedFeatureError, /reauth_required needs the OctoPrint 2.0 API/)
+      end
+
+      it "returns the requirements with the 2.0 API" do
+        v2_client = Octoprint::Client.new(host: "http://test.local", api_key: "test_key", api_version: "2.0")
+        allow(described_class).to receive(:client).and_return(v2_client)
+        allow(v2_client).to receive(:request).with("/api/settings/reauthReq", http_method: :get)
+                                             .and_return(requirements: { server: { commands: true } })
+
+        expect(described_class.reauth_required).to eq(server: { commands: true })
+      end
+    end
+
+    describe ".save with the 2.0 key names" do
+      it "sends the 1.x names with the 1.x API" do
+        allow(client).to receive(:request).and_return(serial: { autoconnect: true })
+
+        expect(described_class.save(printerConnection: { autoconnect: true }))
+          .to include(printer_connection: { autoconnect: true })
+        expect(client).to have_received(:request).with(
+          "/api/settings", http_method: :post, body: { serial: { autoconnect: true } }, headers: {}, options: {}
+        )
+      end
+    end
+
     describe ".fetch_templates" do
       let(:templates_data) do
         {

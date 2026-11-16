@@ -5,7 +5,23 @@ module Octoprint
   # The Settings API allows retrieval and saving of OctoPrint settings,
   # regeneration of the system-wide API key, and fetching template data.
   #
-  # @see https://docs.octoprint.org/en/1.11.2/api/settings.html OctoPrint Settings API Documentation
+  # The settings use the OctoPrint 2.0 key names whatever the server version. With the 1.x API (the default),
+  # {Settings::Legacy} renames the 1.x settings:
+  #
+  # | 1.x setting                         | 2.0 setting (what the gem returns)                       |
+  # |-------------------------------------|----------------------------------------------------------|
+  # | `serial.autoconnect`                | `printer_connection.autoconnect`                         |
+  # | `serial.notify_suppressed_commands` | `feature.notify_suppressed_commands`                     |
+  # | other `serial` settings             | `plugins.serial_connector` (2.0 serial connector shape)  |
+  # | `feature.auto_uppercase_blacklist`  | `feature.auto_uppercase_blocklist`                       |
+  # | `server.plugin_blacklist`           | `server.plugin_blocklist`                                |
+  #
+  # 1.x settings without a 2.0 equivalent are kept: `serial.port`, `serial.baudrate`, `serial.port_options` and
+  # `serial.baudrate_options` (under `plugins.serial_connector`), `api.key` and `system.events`.
+  #
+  # Updates sent with {.save} use the 2.0 names too, and are renamed back for 1.x servers.
+  #
+  # @see https://docs.octoprint.org/en/dev/api/settings.html OctoPrint Settings API Documentation
   #
   # @example Get current settings
   #   settings = Octoprint::Settings.get
@@ -23,7 +39,12 @@ module Octoprint
     # Retrieves the current settings from the OctoPrint server.
     #
     # This method fetches all current OctoPrint settings. The response is returned
-    # as a Hash containing the entire settings structure.
+    # as a Hash containing the entire settings structure, with snake_case Symbol keys
+    # and the OctoPrint 2.0 key names (see {Settings}).
+    #
+    # OctoPrint 2.0 filters the settings by the user's permissions, whatever the API version: a value
+    # the user isn't allowed to read is `nil` (or `[]` for lists, `{}` for some sections). Expect nil
+    # values when the API key doesn't belong to an admin. OctoPrint 1.11 returns every value.
     #
     # @example Get current settings
     #   settings = Octoprint::Settings.get
@@ -33,6 +54,16 @@ module Octoprint
     #
     #   # Access feature flags
     #   puts settings[:feature][:temperature_graph]
+    #
+    # @example Read the printer connection settings (1.x `serial` settings)
+    #   settings = Octoprint::Settings.get
+    #   settings.dig(:printer_connection, :autoconnect)                       # => false
+    #   settings.dig(:plugins, :serial_connector, :timeout, :communication)   # => 30.0
+    #   settings.dig(:plugins, :serial_connector, :error_handling)            # => "disconnect"
+    #
+    # @example Settings hidden from a user without the SETTINGS permission (OctoPrint 2.0)
+    #   settings = Octoprint::Settings.get
+    #   settings.dig(:server, :online_check, :host) # => nil
     #
     # @return [Hash] The current settings as a hash
     # @raise [Octoprint::Exceptions::Error] if the request fails
@@ -66,6 +97,13 @@ module Octoprint
     # You can provide either a full settings object or partial updates.
     # The server will merge the provided settings with existing ones.
     #
+    # The keys are sent as they are given, so spell them like the server does (camelCase, e.g.
+    # `temperatureGraph`). Use the OctoPrint 2.0 names: for 1.x servers, `printerConnection.autoconnect`,
+    # `plugins.serial_connector`, `feature.notifySuppressedCommands`, `feature.autoUppercaseBlocklist` and
+    # `server.pluginBlocklist` are renamed to their 1.x names (see {Settings::Legacy}).
+    #
+    # OctoPrint 2.0 asks for a recent login before it changes some settings (see {.reauth_required}).
+    #
     # @example Update appearance settings
     #   updated = Octoprint::Settings.save(
     #     appearance: {
@@ -77,7 +115,13 @@ module Octoprint
     # @example Update multiple settings
     #   updated = Octoprint::Settings.save(
     #     appearance: { color: "green" },
-    #     feature: { temperature_graph: false }
+    #     feature: { temperatureGraph: false }
+    #   )
+    #
+    # @example Update the printer connection settings, on 1.x and 2.0 servers
+    #   Octoprint::Settings.save(
+    #     printerConnection: { autoconnect: true },
+    #     plugins: { serial_connector: { timeout: { communication: 45 } } }
     #   )
     #
     # @param settings [Hash] The settings to update (can be partial)
@@ -128,6 +172,27 @@ module Octoprint
     #: -> Hash[Symbol, untyped]
     def self.fetch_templates
       fetch_resource("templates", deserialize: false)
+    end
+
+    # Lists the settings that need a recent login to be changed (OctoPrint 2.0 API only).
+    #
+    # OctoPrint 2.0 asks the user to log in again before it saves some sensitive settings (server
+    # commands, system actions, webcam ffmpeg commands, event subscriptions, ...). The result mirrors the
+    # settings tree, with snake_case keys like {.get}, and `true` on every setting that needs it.
+    #
+    # @example Check whether a setting needs a recent login
+    #   requirements = Octoprint::Settings.reauth_required
+    #   requirements.dig(:server, :commands) # => true
+    #   requirements # => { access_control: { default_reauthentication_timeout: true },
+    #                #      plugins: { eventmanager: { subscriptions: true } }, server: { commands: true }, ... }
+    #
+    # @return [Hash] The settings that need a recent login, as a tree of `true` leaves
+    # @raise [Octoprint::Exceptions::UnsupportedFeatureError] with the 1.x API, before any request
+    # @raise [Octoprint::Exceptions::Error] if the request fails
+    #: -> Hash[Symbol, untyped]
+    def self.reauth_required
+      require_feature!(:reauth_required)
+      fetch_resource("reauthReq", deserialize: false).fetch(:requirements)
     end
   end
 end

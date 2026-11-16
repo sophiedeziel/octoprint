@@ -164,6 +164,13 @@ RSpec.describe Octoprint::Settings::Webcam do
       it { is_expected.to have_attributes(enabled: true) }
     end
 
+    # OctoPrint 2.0 returns nil for the settings a user isn't allowed to read
+    context "when the enabled flag is hidden" do
+      let(:settings) { { webcam: { webcam_enabled: nil, stream_url: "/webcam/?action=stream", webcams: [] } } }
+
+      it { is_expected.to have_attributes(enabled: true, stream_url: "/webcam/?action=stream") }
+    end
+
     context "when the enabled flag is missing and there is no stream URL" do
       let(:settings) { { webcam: {} } }
 

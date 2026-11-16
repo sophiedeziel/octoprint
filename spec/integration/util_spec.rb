@@ -1,6 +1,34 @@
 # typed: true
 # frozen_string_literal: true
 
+# The cassettes match on the request body, so replaying them checks the parameter names sent to each API version
+RSpec.shared_examples "URL tests with content type filters" do |prefix|
+  let(:url) { "https://httpbin.org/json" } # answers with application/json
+
+  {
+    "allowlist" => { allowed: ["application/*"], refused: ["text/html"] },
+    "blocklist" => { allowed: ["text/html"], refused: ["application/json"] }
+  }.each do |filter, types|
+    describe "with a content type #{filter}" do
+      subject(:test_result) { described_class.test_url(url: url, "content_type_#{filter}": content_types) }
+
+      context "when the content type is refused",
+              vcr: { cassette_name: "#{prefix}/test_url_#{filter}_refused", match_requests_on: %i[method uri body] } do
+        let(:content_types) { types[:refused] }
+
+        its(:result) { is_expected.to be false }
+      end
+
+      context "when the content type is allowed",
+              vcr: { cassette_name: "#{prefix}/test_url_#{filter}_allowed", match_requests_on: %i[method uri body] } do
+        let(:content_types) { types[:allowed] }
+
+        its(:result) { is_expected.to be true }
+      end
+    end
+  end
+end
+
 RSpec.describe Octoprint::Util, type: :integration do
   include_context "with default Octoprint config"
 
@@ -80,6 +108,18 @@ RSpec.describe Octoprint::Util, type: :integration do
 
       it { is_expected.to be_a described_class }
     end
+  end
+
+  on_octoprint_versions do
+    use_octoprint_server
+
+    it_behaves_like "URL tests with content type filters", "util"
+  end
+
+  context "with the 1.11 API against OctoPrint 2.0", api_version: "1.11", octoprint: "2.0" do
+    use_octoprint_server
+
+    it_behaves_like "URL tests with content type filters", "util/api_1_11"
   end
 
   describe "Test server connectivity", vcr: { cassette_name: "util/test_server" } do
