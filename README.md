@@ -282,7 +282,7 @@ Enable the virtual printer plugin.
 
 Go to Settings > Application keys and generate a new API key.
 
-Set the `OCTOPRINT_HOST` and `OCTOPRINT_API_KEY` environment variables in your preferred way. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automatically load its content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
+Set the `OCTOPRINT_HOST_1_11` and `OCTOPRINT_API_KEY_1_11` environment variables (and `OCTOPRINT_HOST_2_0` / `OCTOPRINT_API_KEY_2_0` to record against OctoPrint 2.0) in your preferred way. The older `OCTOPRINT_HOST` / `OCTOPRINT_API_KEY` still work for the 1.11 server. For convenience, there is an example `.env` that you can copy. Some development tools will recognize that file and automatically load its content as environment variables. Copy it by entering `cp .env.example .env` in your terminal and add your Octoprint's configuration to the newly created `.env` file. This file is ignored by git, so it is safe to edit. VCR is configured to filter that data out of cassettes.
 
 Remember, you should never commit your credentials to git. With the current configuration, you should never have to.
 

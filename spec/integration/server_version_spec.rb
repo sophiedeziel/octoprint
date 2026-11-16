@@ -24,4 +24,23 @@ RSpec.describe Octoprint::ServerVersion, type: :integration do
     its(:server) { is_expected.to eq "1.9.1" }
     its(:text)   { is_expected.to eq "OctoPrint 1.9.1" }
   end
+
+  describe ".get against every supported server" do
+    on_octoprint_versions do |version|
+      describe ".get", vcr: { cassette_name: "server_version/get_by_version" } do
+        subject { described_class.get }
+
+        let(:recorded_version) { { "1.11" => "1.11.8", "2.0" => "2.0.0rc7" }.fetch(version) }
+
+        use_octoprint_server
+
+        it { is_expected.to be_a described_class }
+        its(:server) { is_expected.to eq recorded_version }
+        its(:text)   { is_expected.to eq "OctoPrint #{recorded_version}" }
+
+        # Without the X-OctoPrint-Api-Version header, 2.0 still answers with the 1.x shape
+        its(:api)    { is_expected.to eq "0.1" }
+      end
+    end
+  end
 end

@@ -20,6 +20,7 @@ require "rspec/its"
 require "pry"
 require "dotenv/load"
 require "rspec/sorbet"
+require_relative "support/octoprint_versions"
 
 wip_count = 0
 RSpec.configure do |config|
@@ -39,17 +40,34 @@ RSpec.configure do |config|
     WebMock.disable_net_connect!
     wip_count += 1
   end
+
+  config.extend OctoprintVersions::DSL
+
+  # `octoprint: "2.0"` replays cassettes from that version's folder: spec/cassettes/2_0/<cassette_name>
+  config.define_derived_metadata(:octoprint) do |metadata|
+    server = OctoprintVersions.server(metadata[:octoprint])
+    vcr = metadata[:vcr]
+    next if vcr.nil? || server.cassette_prefix.nil?
+    unless vcr.is_a?(Hash) && vcr[:cassette_name]
+      raise ArgumentError, "Specs tagged octoprint: #{server.version.inspect} need a vcr cassette_name"
+    end
+
+    metadata[:vcr] = vcr.merge(cassette_name: server.cassette_name(vcr[:cassette_name]))
+  end
+
   config.after(:suite) do
     warn "\n\nWarning: don't forget to remove the 'wip' tag before commiting your work" unless wip_count.zero?
   end
 end
 
+# Host of the default (1.11) server. See spec/support/octoprint_versions.rb for the other versions.
 def octoprint_host
-  ENV.fetch("OCTOPRINT_HOST", "http://octoprint.local")
+  OctoprintVersions.server.host
 end
 
+# API key of the default (1.11) server
 def octoprint_api_key
-  ENV.fetch("OCTOPRINT_API_KEY", "fake_api_key")
+  OctoprintVersions.server.api_key
 end
 
 # Credentials of a non-admin user, used to record the active login cassettes
@@ -61,9 +79,11 @@ def octoprint_login_password
   ENV.fetch("OCTOPRINT_LOGIN_PASSWORD", "fake_password")
 end
 
+# Host and API key of the server picked by the `octoprint:` metadata (1.11 when missing)
 RSpec.shared_context "with default Octoprint config" do
-  let(:host)    { octoprint_host }
-  let(:api_key) { octoprint_api_key }
+  let(:octoprint_server) { OctoprintVersions.server(RSpec.current_example.metadata[:octoprint]) }
+  let(:host)    { octoprint_server.host }
+  let(:api_key) { octoprint_server.api_key }
 end
 
 VCR.configure do |config|
@@ -73,8 +93,11 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   config.default_cassette_options = { record: :none, record_on_error: false }
 
-  config.filter_sensitive_data("<HOST>")    { octoprint_host }
-  config.filter_sensitive_data("<API_KEY>") { octoprint_api_key }
+  # <HOST>/<API_KEY> for 1.11, <HOST_2_0>/<API_KEY_2_0> for 2.0: distinct placeholders, so each cassette
+  # replays against its own server
+  OctoprintVersions.sensitive_data.each do |placeholder, value|
+    config.filter_sensitive_data(placeholder) { value }
+  end
   config.filter_sensitive_data("<LOGIN_PASSWORD>") { octoprint_login_password }
 
   # Session keys and cookies (session, remember_token, csrf_token) grant access to the server
