@@ -540,6 +540,16 @@ class Octoprint::Connection::Settings
   def state; end
 end
 
+module Octoprint::Deprecation
+  class << self
+    sig { void }
+    def reset!; end
+
+    sig { params(name: ::String, advice: ::String).void }
+    def warn_once(name, advice); end
+  end
+end
+
 module Octoprint::Deserializable
   mixes_in_class_methods ::Octoprint::Deserializable::ClassMethods
 end
@@ -1563,6 +1573,9 @@ class Octoprint::Settings < ::Octoprint::BaseResource
     sig { returns(T::Hash[::Symbol, T.untyped]) }
     def get; end
 
+    sig { returns(T::Hash[::Symbol, T.untyped]) }
+    def reauth_required; end
+
     sig { returns(T::Hash[::Symbol, ::String]) }
     def regenerate_api_key; end
 
@@ -1573,6 +1586,83 @@ class Octoprint::Settings < ::Octoprint::BaseResource
     def webcam; end
   end
 end
+
+module Octoprint::Settings::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(response: T.untyped, request: ::Octoprint::ApiRequest).returns(T.untyped) }
+    def from_response(response, request); end
+
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+
+    private
+
+    sig do
+      params(
+        settings: T::Hash[::Symbol, T.untyped],
+        renames: T::Hash[::Symbol, T::Hash[::Symbol, ::Symbol]]
+      ).void
+    end
+    def rename_sections(settings, renames); end
+  end
+end
+
+module Octoprint::Settings::Legacy::HashPath
+  class << self
+    sig { params(hash: T::Hash[::Symbol, T.untyped], path: T::Array[::Symbol], value: T.untyped).void }
+    def put(hash, path, value); end
+
+    sig { params(hash: T::Hash[::Symbol, T.untyped], path: T::Array[::Symbol], _arg2: ).void }
+    def take(hash, path, &_arg2); end
+
+    private
+
+    sig { params(hash: T::Hash[::Symbol, T.untyped], parents: T::Array[::Symbol]).void }
+    def prune(hash, parents); end
+  end
+end
+
+Octoprint::Settings::Legacy::REQUEST_RENAMES = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::RESPONSE_RENAMES = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::SETTINGS_PATH = T.let(T.unsafe(nil), String)
+
+module Octoprint::Settings::Legacy::Serial
+  class << self
+    sig { params(settings: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def from_legacy(settings); end
+
+    sig { params(settings: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def to_legacy(settings); end
+
+    private
+
+    sig { params(values: T::Hash[::String, T.untyped], default: ::String).returns(T.nilable(::String)) }
+    def choice(values, default); end
+
+    sig { params(serial: T::Hash[::Symbol, T.untyped], connector: T::Hash[::Symbol, T.untyped]).void }
+    def choices_from_legacy(serial, connector); end
+
+    sig { params(serial: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
+    def connector_from_legacy(serial); end
+
+    sig { params(settings: T::Hash[::Symbol, T.untyped], serial: T::Hash[::Symbol, T.untyped]).void }
+    def connector_to_legacy(settings, serial); end
+
+    sig { params(settings: T::Hash[::Symbol, T.untyped], serial: T::Hash[::Symbol, T.untyped]).void }
+    def move_notify_suppressed_commands(settings, serial); end
+  end
+end
+
+Octoprint::Settings::Legacy::Serial::CAPABILITIES = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::Serial::CHOICES = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::Serial::MAX_TIMEOUTS = T.let(T.unsafe(nil), Array)
+Octoprint::Settings::Legacy::Serial::PATHS = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::Serial::REQUEST_PATHS = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::Serial::RESPONSE_PATHS = T.let(T.unsafe(nil), Hash)
+Octoprint::Settings::Legacy::Serial::SAME_NAME = T.let(T.unsafe(nil), Array)
+Octoprint::Settings::Legacy::Serial::TIMEOUTS = T.let(T.unsafe(nil), Array)
 
 class Octoprint::Settings::Webcam
   include ::Octoprint::AutoInitializable
@@ -1962,18 +2052,34 @@ class Octoprint::Util < ::Octoprint::BaseResource
         auth_pass: T.nilable(::String),
         auth_digest: T.nilable(::String),
         auth_bearer: T.nilable(::String),
-        content_type_whitelist: T.nilable(::String),
-        content_type_blacklist: T.nilable(::String)
+        content_type_allowlist: T.nilable(T.any(::String, T::Array[::String])),
+        content_type_blocklist: T.nilable(T.any(::String, T::Array[::String])),
+        content_type_whitelist: T.nilable(T.any(::String, T::Array[::String])),
+        content_type_blacklist: T.nilable(T.any(::String, T::Array[::String]))
       ).returns(::Octoprint::Util)
     end
-    def test_url(url:, method: T.unsafe(nil), timeout: T.unsafe(nil), status: T.unsafe(nil), auth_user: T.unsafe(nil), auth_pass: T.unsafe(nil), auth_digest: T.unsafe(nil), auth_bearer: T.unsafe(nil), content_type_whitelist: T.unsafe(nil), content_type_blacklist: T.unsafe(nil)); end
+    def test_url(url:, method: T.unsafe(nil), timeout: T.unsafe(nil), status: T.unsafe(nil), auth_user: T.unsafe(nil), auth_pass: T.unsafe(nil), auth_digest: T.unsafe(nil), auth_bearer: T.unsafe(nil), content_type_allowlist: T.unsafe(nil), content_type_blocklist: T.unsafe(nil), content_type_whitelist: T.unsafe(nil), content_type_blacklist: T.unsafe(nil)); end
 
     private
 
     def build_url_test_params(url, options); end
+
+    sig { params(name: ::Symbol, value: T.untyped, replacement: ::Symbol).returns(T.untyped) }
+    def deprecated_option(name, value, replacement); end
   end
 end
 
+module Octoprint::Util::Legacy
+  extend ::Octoprint::LegacyConverter
+
+  class << self
+    sig { params(request: ::Octoprint::ApiRequest).returns(::Octoprint::ApiRequest) }
+    def to_request(request); end
+  end
+end
+
+Octoprint::Util::Legacy::ALLOW_ALL = T.let(T.unsafe(nil), Array)
+Octoprint::Util::Legacy::RENAMED = T.let(T.unsafe(nil), Hash)
 Octoprint::VERSION = T.let(T.unsafe(nil), String)
 
 class Octoprint::Wizard < ::Octoprint::BaseResource

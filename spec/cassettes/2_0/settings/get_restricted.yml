@@ -1,0 +1,540 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<HOST_2_0>/api/settings"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <RESTRICTED_API_KEY_2_0>
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.14.4
+      X-Octoprint-Api-Version:
+      - 2.0.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '12743'
+      Etag:
+      - '"97fbbb9a3cae1167d860ad4b59011f5db913d5be"'
+      Last-Modified:
+      - Mon, 16 Nov 2026 06:18:42 GMT
+      Cache-Control:
+      - max-age=0
+      X-Clacks-Overhead:
+      - GNU Terry Pratchett
+      Server-Timing:
+      - app;dur=16
+      X-Robots-Tag:
+      - noindex, nofollow, noimageindex
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "accessControl": {
+            "autologinHeadsupAcknowledged": null,
+            "autologinLocal": null,
+            "defaultReauthenticationTimeout": null
+          },
+          "api": {
+            "allowCrossOrigin": null,
+            "key": null
+          },
+          "appearance": {
+            "closeModalsWithClick": true,
+            "color": "default",
+            "colorIcon": true,
+            "colorTransparent": false,
+            "defaultLanguage": "_default",
+            "fuzzyTimes": true,
+            "name": "",
+            "showFahrenheitAlso": false,
+            "showInternalFilename": true,
+            "thumbnails": {
+              "filelistAlignment": "left",
+              "filelistEnabled": true,
+              "filelistPreview": false,
+              "filelistScale": 25,
+              "stateEnabled": true,
+              "stateScale": 75
+            }
+          },
+          "controls": [],
+          "devel": {
+            "pluginTimings": null
+          },
+          "feature": {
+            "autoUppercaseBlocklist": [
+              "M117",
+              "M118",
+              "M707",
+              "M708"
+            ],
+            "enableDragDropUpload": true,
+            "fileDeleteConfirmation": true,
+            "g90InfluencesExtruder": false,
+            "keyboardControl": true,
+            "modelSizeDetection": true,
+            "notifySuppressedCommands": "warn",
+            "pollWatched": null,
+            "printCancelConfirmation": true,
+            "printStartConfirmation": false,
+            "rememberFileFolder": false,
+            "sdSupport": true,
+            "temperatureGraph": true,
+            "uploadOverwriteConfirmation": true
+          },
+          "folder": {
+            "timelapse": null,
+            "uploads": null,
+            "watched": null
+          },
+          "gcodeAnalysis": {
+            "bedZ": 0.0,
+            "runAt": null
+          },
+          "plugins": {
+            "achievements": {
+              "timezone": ""
+            },
+            "action_command_notification": {
+              "enable": true,
+              "enable_popups": false,
+              "filter": ""
+            },
+            "action_command_prompt": {
+              "command": "M876",
+              "enable": "detected",
+              "enable_emergency_sending": true,
+              "enable_signal_support": true
+            },
+            "announcements": {
+              "channel_order": [],
+              "channels": {},
+              "display_limit": 3,
+              "enabled_channels": [],
+              "forced_channels": [],
+              "summary_limit": 300,
+              "ttl": null
+            },
+            "backup": {
+              "path": "/Users/sophiedeziel/conductor/workspaces/octoprint/sparta/.context/opserver/base-2.0-slot6/data/backup",
+              "restore_unsupported": null
+            },
+            "classicwebcam": {
+              "cacheBuster": false,
+              "flipH": false,
+              "flipV": false,
+              "rotate90": false,
+              "snapshot": "",
+              "snapshotAuth": "none",
+              "snapshotBearerToken": "",
+              "snapshotPassword": "",
+              "snapshotSslValidation": true,
+              "snapshotTimeout": 5,
+              "snapshotUsername": "",
+              "stream": "",
+              "streamRatio": "16:9",
+              "streamTimeout": 5,
+              "streamWebrtcIceServers": [
+                "stun:stun.l.google.com:19302"
+              ]
+            },
+            "discovery": {
+              "addresses": null,
+              "httpPassword": null,
+              "httpUsername": null,
+              "ignoredAddresses": null,
+              "ignoredInterfaces": null,
+              "interfaces": null,
+              "model": {
+                "description": null,
+                "name": "OctoPrint",
+                "number": null,
+                "serial": null,
+                "url": null,
+                "vendor": null,
+                "vendorUrl": null
+              },
+              "pathPrefix": null,
+              "publicHost": null,
+              "publicPort": null,
+              "upnpUuid": "796f9f22-18da-4bbb-a092-22d261c699e1",
+              "zeroConf": []
+            },
+            "errortracking": {
+              "enabled": false,
+              "enabled_unreleased": null,
+              "unique_id": null,
+              "url_coreui": null,
+              "url_server": null
+            },
+            "eventmanager": {
+              "availableEvents": [],
+              "subscriptions": []
+            },
+            "file_check": {
+              "ignored_checks": []
+            },
+            "firmware_check": {
+              "ignore_infos": false
+            },
+            "gcodeviewer": {
+              "alwaysCompress": false,
+              "compressionSizeThreshold": 209715200,
+              "mobileSizeThreshold": 2097152,
+              "sizeThreshold": 20971520,
+              "skipUntilThis": null
+            },
+            "health_check": {
+              "check_interval": null,
+              "checks": {
+                "filesystem_storage": {
+                  "issue_threshold": 95,
+                  "warning_threshold": 85
+                },
+                "python_eol": {}
+              },
+              "disabled": [],
+              "ignore_info_results": null,
+              "ignore_warning_results": null
+            },
+            "logging": {
+              "plugintimings_log_warning": true
+            },
+            "pluginmanager": {
+              "confirm_disable": null,
+              "dependency_links": null,
+              "hidden": [],
+              "ignore_throttled": false,
+              "notices": null,
+              "notices_ttl": null,
+              "pip_args": null,
+              "pip_force_user": null,
+              "repository": null,
+              "repository_restricted": true,
+              "repository_ttl": null
+            },
+            "serial_connector": {
+              "abortHeatupOnCancel": null,
+              "ackMax": null,
+              "additionalBaudrates": [],
+              "additionalPorts": [],
+              "blockWhileDwelling": null,
+              "blockedCommands": [],
+              "blocklistedBaudrates": [],
+              "blocklistedPorts": [],
+              "capabilities": {},
+              "checksumRequiringCommands": [],
+              "disableSdPrintingDetection": null,
+              "emergencyCommands": [],
+              "enableShutdownActionCommand": null,
+              "enableUploadToSd": null,
+              "encoding": null,
+              "errorHandling": null,
+              "exclusive": null,
+              "externalHeatupDetection": null,
+              "firmwareDetection": null,
+              "helloCommand": null,
+              "ignoreEmptyPorts": false,
+              "ignoredCommands": [],
+              "lastLineBufferSize": null,
+              "log": false,
+              "logPositionOnCancel": null,
+              "logPositionOnPause": null,
+              "logResends": null,
+              "longRunningCommands": [],
+              "lowLatency": null,
+              "maxCommunicationTimeouts": {},
+              "maxConsecutiveResends": null,
+              "maxNotSdPrinting": null,
+              "maxWritePasses": null,
+              "pausingCommands": [],
+              "repetierTargetTemp": null,
+              "resendRatioStart": null,
+              "resendRatioThreshold": null,
+              "sanityCheckTools": null,
+              "sdAlwaysAvailable": null,
+              "sdCancelCommand": null,
+              "sdLowerCase": null,
+              "sdRelativePath": null,
+              "sendChecksum": null,
+              "sendChecksumWithUnknownCommands": null,
+              "sendM112OnError": null,
+              "supportFAsCommand": null,
+              "supportResendsWithoutOk": null,
+              "supportWait": null,
+              "suppressSecondHello": null,
+              "terminalLogSize": null,
+              "timeout": {},
+              "triggerOkForM29": null,
+              "trustM73": null,
+              "unknownCommandsNeedAck": null,
+              "useParityWorkaround": null,
+              "waitForStartOnConnect": null,
+              "waitToLoadSdFileList": null
+            },
+            "softwareupdate": {
+              "cache_ttl": null,
+              "check_overlay_py2_url": null,
+              "check_overlay_ttl": null,
+              "check_overlay_url": null,
+              "credentials": {
+                "bitbucket_password_set": false,
+                "bitbucket_user_set": false,
+                "github_set": false
+              },
+              "ignore_throttled": false,
+              "minimum_free_storage": null,
+              "notify_users": true,
+              "octoprint_branch_mappings": [
+                {
+                  "branch": "stable",
+                  "commitish": [
+                    "main"
+                  ],
+                  "name": "Stable"
+                },
+                {
+                  "branch": "prerelease",
+                  "commitish": [
+                    "next"
+                  ],
+                  "name": "Release Candidates"
+                }
+              ],
+              "octoprint_checkout_folder": null,
+              "octoprint_method": "pip",
+              "octoprint_pip_target": "https://github.com/OctoPrint/OctoPrint/archive/{target_version}.zip",
+              "octoprint_release_channel": "stable",
+              "octoprint_tracked_branch": "main",
+              "octoprint_type": "github_release",
+              "pip_command": null,
+              "pip_enable_check": false,
+              "queued_updates": [],
+              "updatelog_cutoff": null
+            },
+            "tracking": {
+              "enabled": null,
+              "events": {},
+              "ping": null,
+              "pong": null,
+              "server": null,
+              "unique_id": null
+            },
+            "virtual_printer": {
+              "ambientTemperature": null,
+              "brokenM29": null,
+              "brokenResend": null,
+              "busyInterval": null,
+              "capabilities": {},
+              "commandBuffer": null,
+              "echoOnM117": null,
+              "enable_eeprom": null,
+              "enabled": null,
+              "errors": {},
+              "fanMaxSpeed": null,
+              "firmwareName": null,
+              "forceChecksum": null,
+              "hasBed": null,
+              "hasChamber": null,
+              "includeCurrentToolInTemps": null,
+              "includeFilenameInOpened": null,
+              "klipperTemperatureReporting": null,
+              "locked": null,
+              "m105NoTargetFormatString": null,
+              "m105TargetFormatString": null,
+              "m114FormatString": null,
+              "m115FormatString": null,
+              "m115ReportArea": null,
+              "m115ReportCapabilities": null,
+              "m123PowerFormatString": null,
+              "m123RPMFormatString": null,
+              "numExtruders": null,
+              "okAfterResend": null,
+              "okBeforeCommandOutput": null,
+              "okFormatString": null,
+              "passcode": null,
+              "pinnedExtruders": null,
+              "preparedOks": [],
+              "repetierStyleTargetTemperature": null,
+              "reprapfwM114": null,
+              "resend_ratio": null,
+              "resetLines": [],
+              "rxBuffer": null,
+              "sdFiles": {},
+              "sendBusy": null,
+              "sendWait": null,
+              "sharedNozzle": null,
+              "simulateReset": null,
+              "simulated_errors": [],
+              "smoothieTemperatureReporting": null,
+              "supportF": null,
+              "supportM112": null,
+              "support_M503": null,
+              "suppressFileSelected": null,
+              "throttle": null,
+              "waitInterval": null
+            }
+          },
+          "printerConnection": {
+            "autoconnect": false
+          },
+          "scripts": {
+            "gcode": {
+              "afterPrintCancelled": null,
+              "snippets/disable_bed": null,
+              "snippets/disable_hotends": null
+            }
+          },
+          "server": {
+            "allowFraming": null,
+            "commands": {
+              "serverRestartCommand": null,
+              "systemRestartCommand": null,
+              "systemShutdownCommand": null
+            },
+            "diskspace": {
+              "critical": null,
+              "warning": null
+            },
+            "onlineCheck": {
+              "enabled": null,
+              "host": null,
+              "interval": null,
+              "name": null,
+              "port": null
+            },
+            "pluginBlocklist": {
+              "enabled": null,
+              "ttl": null,
+              "url": null
+            }
+          },
+          "slicing": {
+            "defaultSlicer": null
+          },
+          "system": {
+            "actions": []
+          },
+          "temperature": {
+            "cutoff": 30,
+            "profiles": [
+              {
+                "bed": 100,
+                "chamber": 0,
+                "extruder": 210,
+                "name": "ABS"
+              },
+              {
+                "bed": 60,
+                "chamber": 0,
+                "extruder": 180,
+                "name": "PLA"
+              }
+            ],
+            "sendAutomatically": false,
+            "sendAutomaticallyAfter": 1
+          },
+          "terminalFilters": [
+            {
+              "name": "Suppress temperature messages",
+              "regex": "((Send:|>>>)\\s+(N\\d+\\s+)?M105)|((Recv:|<<<)\\s+(ok\\s+([PBN]\\d+\\s+)*)?([BCLPR]|T\\d*):-?\\d+)"
+            },
+            {
+              "name": "Suppress SD status messages",
+              "regex": "((Send:|>>>)\\s+(N\\d+\\s+)?M27)|((Recv:|<<<)\\s+SD printing byte)|((Recv:|<<<)\\s+Not SD printing)"
+            },
+            {
+              "name": "Suppress position messages",
+              "regex": "((Send:|>>>)\\s+(N\\d+\\s+)?M114)|((Recv:|<<<)\\s+(ok\\s+)?X:[+-]?([0-9]*[.])?[0-9]+\\s+Y:[+-]?([0-9]*[.])?[0-9]+\\s+Z:[+-]?([0-9]*[.])?[0-9]+\\s+E\\d*:[+-]?([0-9]*[.])?[0-9]+).*"
+            },
+            {
+              "name": "Suppress wait responses",
+              "regex": "(Recv:|<<<)\\s+wait"
+            },
+            {
+              "name": "Suppress processing responses",
+              "regex": "(Recv:|<<<)\\s+(echo:\\s*)?busy:\\s*processing"
+            }
+          ],
+          "webcam": {
+            "bitrate": null,
+            "cacheBuster": false,
+            "defaultWebcam": "classic",
+            "ffmpegCommandline": null,
+            "ffmpegPath": null,
+            "ffmpegPathConfigured": false,
+            "ffmpegThreads": null,
+            "ffmpegVideoCodec": null,
+            "flipH": false,
+            "flipV": false,
+            "renderAfterPrintDelay": 0,
+            "rotate90": false,
+            "snapshotSslValidation": true,
+            "snapshotTimeout": 5,
+            "snapshotUrl": "",
+            "snapshotWebcam": "classic",
+            "streamRatio": "16:9",
+            "streamTimeout": 5,
+            "streamUrl": "",
+            "streamWebrtcIceServers": [
+              "stun:stun.l.google.com:19302"
+            ],
+            "timelapseEnabled": true,
+            "watermark": null,
+            "webcamEnabled": true,
+            "webcams": [
+              {
+                "canSnapshot": false,
+                "compat": {
+                  "cacheBuster": false,
+                  "snapshot": "",
+                  "snapshotSslValidation": true,
+                  "snapshotTimeout": 5,
+                  "stream": "",
+                  "streamRatio": "16:9",
+                  "streamTimeout": 5,
+                  "streamWebrtcIceServers": [
+                    "stun:stun.l.google.com:19302"
+                  ]
+                },
+                "displayName": "Classic Webcam",
+                "extras": {
+                  "cacheBuster": false,
+                  "stream": "",
+                  "streamRatio": "16:9",
+                  "streamTimeout": 5,
+                  "streamWebrtcIceServers": [
+                    "stun:stun.l.google.com:19302"
+                  ]
+                },
+                "flipH": false,
+                "flipV": false,
+                "name": "classic",
+                "provider": "classicwebcam",
+                "rotate90": false,
+                "snapshotDisplay": ""
+              }
+            ]
+          }
+        }
+  recorded_at: Mon, 16 Nov 2026 06:18:42 GMT
+recorded_with: VCR 6.4.1

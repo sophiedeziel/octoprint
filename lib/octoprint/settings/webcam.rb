@@ -67,7 +67,8 @@ module Octoprint
       # Uses the default webcam from the OctoPrint 1.9+ `webcams` list when there is
       # one (or the first webcam if the default can't be found), and only falls back to
       # the legacy `webcam` keys when the server has no `webcams` list. Empty URLs are
-      # returned as nil.
+      # returned as nil. Works with the permission-filtered settings of OctoPrint 2.0: when
+      # the `webcam` section or `webcam_enabled` is hidden, `enabled` is guessed from the stream URL.
       #
       # @example
       #   settings = Octoprint::Settings.get
@@ -81,7 +82,11 @@ module Octoprint
         camera = default_webcam(legacy)
         attributes = camera ? webcam_attributes(camera) : legacy_attributes(legacy)
 
-        T.unsafe(self).new(enabled: legacy.fetch(:webcam_enabled) { attributes[:stream_url].present? }, **attributes)
+        # OctoPrint 2.0 hides the webcam settings from users without the WEBCAM permission
+        enabled = legacy[:webcam_enabled]
+        enabled = attributes[:stream_url].present? if enabled.nil?
+
+        T.unsafe(self).new(enabled: enabled, **attributes)
       end
 
       # Picks the default webcam from the OctoPrint 1.9+ `webcams` list.
