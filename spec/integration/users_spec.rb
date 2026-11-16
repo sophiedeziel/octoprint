@@ -104,4 +104,44 @@ RSpec.describe Octoprint::Access::Users do
       expect { described_class.get(username: test_username) }.to raise_error(Octoprint::Exceptions::NotFoundError)
     end
   end
+
+  # Recorded against OctoPrint 1.11.8. The active login cassettes need a second,
+  # non-admin user: set OCTOPRINT_LOGIN_USER and OCTOPRINT_LOGIN_PASSWORD to its
+  # credentials when re-recording. VCR replaces the password with <LOGIN_PASSWORD>,
+  # session keys with <SESSION> and cookie values with <COOKIE>.
+  describe ".login" do
+    it "returns the user tied to the API key on a passive login", vcr: { cassette_name: "access/login_passive" } do
+      login = described_class.login
+
+      expect(login).to be_a(Octoprint::Access::LoginResponse)
+      expect(login.user).to be_a(Octoprint::Access::User)
+      expect(login.user.name).to be_a(String)
+      expect(login.user.admin).to be(true)
+      expect(login.session).to be_a(String)
+      expect(login.is_external_client).to be(false)
+      expect(login.login_mechanism).to eq("apikey")
+    end
+
+    it "logs in as the given user on an active login", vcr: { cassette_name: "access/login_active" } do
+      login = described_class.login(username: octoprint_login_user, password: octoprint_login_password,
+                                    remember: true)
+
+      # The API key belongs to an admin: a non-admin user proves the password login won
+      expect(login.user.name).to be_a(String)
+      expect(login.user.admin).to be(false)
+      expect(login.session).to be_a(String)
+      expect(login.login_mechanism).to eq("password")
+    end
+
+    it "raises AuthenticationError on a wrong password", vcr: { cassette_name: "access/login_wrong_password" } do
+      expect { described_class.login(username: octoprint_login_user, password: "wrong-password") }
+        .to raise_error(Octoprint::Exceptions::AuthenticationError, /\[403\]/)
+    end
+  end
+
+  describe ".logout", vcr: { cassette_name: "access/logout" } do
+    it "returns true" do
+      expect(described_class.logout).to be(true)
+    end
+  end
 end

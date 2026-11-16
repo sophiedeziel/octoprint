@@ -52,6 +52,15 @@ def octoprint_api_key
   ENV.fetch("OCTOPRINT_API_KEY", "fake_api_key")
 end
 
+# Credentials of a non-admin user, used to record the active login cassettes
+def octoprint_login_user
+  ENV.fetch("OCTOPRINT_LOGIN_USER", "vcruser")
+end
+
+def octoprint_login_password
+  ENV.fetch("OCTOPRINT_LOGIN_PASSWORD", "fake_password")
+end
+
 RSpec.shared_context "with default Octoprint config" do
   let(:host)    { octoprint_host }
   let(:api_key) { octoprint_api_key }
@@ -66,6 +75,13 @@ VCR.configure do |config|
 
   config.filter_sensitive_data("<HOST>")    { octoprint_host }
   config.filter_sensitive_data("<API_KEY>") { octoprint_api_key }
+  config.filter_sensitive_data("<LOGIN_PASSWORD>") { octoprint_login_password }
+
+  # Session keys and cookies (session, remember_token, csrf_token) grant access to the server
+  config.before_record do |interaction|
+    interaction.response.headers["Set-Cookie"]&.map! { |cookie| cookie.sub(/=[^;]*/, "=<COOKIE>") }
+    interaction.response.body = interaction.response.body.gsub(/("session":\s*")[^"]*"/, '\1<SESSION>"')
+  end
 end
 
 def use_octoprint_server

@@ -327,4 +327,92 @@ RSpec.describe Octoprint::Access::Users do
       expect(result).to be_nil
     end
   end
+
+  describe ".login" do
+    let(:api_response) do
+      {
+        name: "john_doe",
+        active: true,
+        admin: false,
+        groups: ["users"],
+        permissions: ["STATUS"],
+        session: "SESSION_KEY",
+        _is_external_client: false
+      }
+    end
+
+    def stub_login(body)
+      allow(client).to receive(:request)
+        .with("/api/login", http_method: :post, body: body)
+        .and_return(api_response)
+    end
+
+    it "does a passive login without credentials" do
+      stub_login({ passive: true })
+
+      login = described_class.login
+
+      expect(login).to be_a(Octoprint::Access::LoginResponse)
+      expect(login.user.name).to eq("john_doe")
+      expect(login.session).to eq("SESSION_KEY")
+      expect(login.is_external_client).to be(false)
+    end
+
+    it "sends the credentials as user and pass for an active login" do
+      stub_login({ user: "john_doe", pass: "secret" })
+
+      login = described_class.login(username: "john_doe", password: "secret")
+
+      expect(login.user.name).to eq("john_doe")
+    end
+
+    it "sends remember only when it is true" do
+      stub_login({ user: "john_doe", pass: "secret", remember: true })
+
+      login = described_class.login(username: "john_doe", password: "secret", remember: true)
+
+      expect(login.session).to eq("SESSION_KEY")
+    end
+
+    it "raises ArgumentError when only the username is given" do
+      expect { described_class.login(username: "john_doe") }
+        .to raise_error(ArgumentError, "username and password must be given together")
+    end
+
+    it "raises ArgumentError when only the password is given" do
+      expect { described_class.login(password: "secret") }
+        .to raise_error(ArgumentError, "username and password must be given together")
+    end
+
+    it "raises ArgumentError when remember is set on a passive login" do
+      expect { described_class.login(remember: true) }
+        .to raise_error(ArgumentError, "remember only applies to an active login")
+    end
+
+    it "raises AuthenticationError when the credentials are rejected" do
+      allow(client).to receive(:request)
+        .and_raise(Octoprint::Exceptions::AuthenticationError, "[403] Forbidden")
+
+      expect { described_class.login(username: "john_doe", password: "wrong") }
+        .to raise_error(Octoprint::Exceptions::AuthenticationError)
+    end
+  end
+
+  describe ".logout" do
+    it "returns true when OctoPrint answers 204" do
+      allow(client).to receive(:request)
+        .with("/api/logout", http_method: :post)
+        .and_return(true)
+
+      expect(described_class.logout).to be(true)
+    end
+
+    it "returns true when OctoPrint answers 200 with the guest's needs" do
+      allow(client).to receive(:request)
+        .with("/api/logout", http_method: :post)
+        .and_return({ needs: { group: ["guests"] } })
+
+      expect(described_class.logout).to be(true)
+    end
+  end
 end
