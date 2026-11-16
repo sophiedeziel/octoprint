@@ -53,10 +53,44 @@ jobs:
         awk -v v="${GITHUB_REF_NAME#v}" '/^## \[/{p = index($0, "[" v "]") > 0; next} /^\[[^]]+\]: /{p = 0} p' CHANGELOG.md > "${RUNNER_TEMP}/notes.md"
         grep -q '[^[:space:]]' "${RUNNER_TEMP}/notes.md" || { echo "::error::No CHANGELOG section for ${GITHUB_REF_NAME}"; exit 1; }
 
-    # Runs `bundle exec rake release`. The tag already exists, so Bundler
-    # skips its git push and only builds and pushes the gem.
+    # Trusted publishing can only create a new gem when the exchange names the
+    # rubygems.org account that will own it (`owner`). No release of
+    # rubygems/release-gem or configure-rubygems-credentials sends it yet, so
+    # this step exchanges the GitHub OIDC token itself.
+    - name: Get a rubygems.org API key through trusted publishing
+      env:
+        RUBYGEMS_OWNER_ID: ${{ vars.RUBYGEMS_OWNER_ID }}
+      run: |
+        if [ -z "${RUBYGEMS_OWNER_ID}" ]; then
+          echo "::error::Set the RUBYGEMS_OWNER_ID repository variable to the rubygems.org account ID that owns the gem"
+          exit 1
+        fi
+        jwt="$(curl -sSf -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=rubygems.org" | jq -r .value)"
+        echo "::add-mask::${jwt}"
+        jq -n --arg jwt "${jwt}" --arg owner "${RUBYGEMS_OWNER_ID}" '{jwt: $jwt, owner: $owner}' > "${RUNNER_TEMP}/exchange.json"
+        status="$(curl -sS -o "${RUNNER_TEMP}/key.json" -w '%{http_code}' -X POST \
+          -H 'content-type: application/json' -H 'accept: application/json' \
+          --data @"${RUNNER_TEMP}/exchange.json" \
+          https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token)"
+        rm -f "${RUNNER_TEMP}/exchange.json"
+        if [ "${status}" != "201" ]; then
+          echo "::error::Trusted publishing token exchange failed (HTTP ${status})"
+          cat "${RUNNER_TEMP}/key.json"
+          exit 1
+        fi
+        key="$(jq -r .rubygems_api_key "${RUNNER_TEMP}/key.json")"
+        rm -f "${RUNNER_TEMP}/key.json"
+        echo "::add-mask::${key}"
+        echo "GEM_HOST_API_KEY=${key}" >> "${GITHUB_ENV}"
+
+    # Runs `bundle exec rake release`, which pushes with GEM_HOST_API_KEY from
+    # the step above. The tag already exists, so Bundler skips its git push
+    # and only builds and pushes the gem.
     - name: Publish to rubygems.org
       uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
+      with:
+        setup-trusted-publisher: false
 
     # The CHANGELOG is the source of truth: it replaces the notes typed in the
     # GitHub UI.

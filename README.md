@@ -321,7 +321,7 @@ The release is public before CI finishes. If lint, tests or the version and CHAN
 
 Don't run `bundle exec rake release` locally.
 
-One-time setup, before the first release: on rubygems.org, add a pending trusted publisher (Profile → Trusted publishers) for gem `octoprint`, repository `sophiedeziel/octoprint`, workflow `release.yml` and environment `rubygems`. It becomes a regular trusted publisher after the first push.
+One-time setup, before the first release: on rubygems.org, add a pending trusted publisher (Profile → Trusted publishers) for gem `octoprint`, repository `sophiedeziel/octoprint`, workflow `release.yml` and environment `rubygems`. Then set the `RUBYGEMS_OWNER_ID` repository variable (Settings → Secrets and variables → Actions → Variables) to the account ID shown on the rubygems.org Pending Trusted Publishers page: rubygems.org only lets trusted publishing create a new gem when the workflow names the owning account. The pending publisher becomes a regular trusted publisher after the first push.
 
 ## Contributing
 
