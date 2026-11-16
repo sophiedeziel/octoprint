@@ -7,7 +7,6 @@ module Octoprint
   class Files
     # A folder in the file system
     class Folder
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 

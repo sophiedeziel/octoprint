@@ -30,14 +30,13 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/1.11.2/api/timelapse.html
   class Timelapse < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
     resource_path("/api/timelapse")
 
     # Timelapse types accepted by {.update_config}
-    TYPES = T.let(%w[off zchange timed].freeze, T::Array[String])
+    TYPES = %w[off zchange timed].freeze #: Array[String]
 
     # @!attribute [r] config
     #   @return [Timelapse::Config] The current timelapse configuration
@@ -68,8 +67,6 @@ module Octoprint
     end
 
     class << self
-      extend T::Sig
-
       # Retrieves the timelapses and the current timelapse config.
       #
       # @param unrendered [Boolean] Also include the unrendered timelapses
@@ -81,7 +78,7 @@ module Octoprint
       #   timelapse.unrendered.map(&:name) # => ["cube_20261115"]
       #
       # @return [Timelapse] The timelapses and config
-      sig { params(unrendered: T::Boolean, force: T::Boolean).returns(Timelapse) }
+      #: (?unrendered: bool, ?force: bool) -> Timelapse
       def get(unrendered: false, force: false)
         fetch_resource(options: query(unrendered: unrendered, force: force))
       end
@@ -95,7 +92,7 @@ module Octoprint
       #   Octoprint::Timelapse.delete_file(filename: "benchy_20261115.mp4")
       #
       # @return [Timelapse] The updated timelapses and config
-      sig { params(filename: String, unrendered: T::Boolean).returns(Timelapse) }
+      #: (filename: String, ?unrendered: bool) -> Timelapse
       def delete_file(filename:, unrendered: false)
         response = delete(path: with_query("#{@path}/#{escape(filename)}", query(unrendered: unrendered)))
         deserialize(response)
@@ -111,7 +108,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is printing or paused
-      sig { params(name: String, command: String).returns(T.untyped) }
+      #: (name: String, command: String) -> untyped
       def issue_unrendered_command(name:, command:)
         post(path: "#{@path}/unrendered/#{escape(name)}", params: { command: command })
       end
@@ -125,7 +122,7 @@ module Octoprint
       #
       # @return [Boolean] true on success (204 No Content)
       # @raise [Octoprint::Exceptions::ConflictError] if the printer is printing or paused
-      sig { params(name: String).returns(T.untyped) }
+      #: (name: String) -> untyped
       def render(name:)
         issue_unrendered_command(name: name, command: "render")
       end
@@ -138,7 +135,7 @@ module Octoprint
       #   Octoprint::Timelapse.delete_unrendered(name: "cube_20261115")
       #
       # @return [Boolean] true on success (204 No Content)
-      sig { params(name: String).returns(T.untyped) }
+      #: (name: String) -> untyped
       def delete_unrendered(name:)
         delete(path: "#{@path}/unrendered/#{escape(name)}")
       end
@@ -169,19 +166,17 @@ module Octoprint
       # @return [Timelapse] The updated timelapses and config
       # @raise [ArgumentError] if the type isn't one of {TYPES}
       # @raise [Octoprint::Exceptions::BadRequestError] if a setting is invalid
-      sig do
-        params(
-          type: String,
-          post_roll: T.nilable(Integer),
-          fps: T.nilable(Integer),
-          interval: T.nilable(Integer),
-          retraction_z_hop: T.nilable(Numeric),
-          min_delay: T.nilable(Numeric),
-          render_after_print: T.nilable(String),
-          save: T::Boolean,
-          unrendered: T::Boolean
-        ).returns(Timelapse)
-      end
+      #: (
+      #|   type: String,
+      #|   ?post_roll: Integer?,
+      #|   ?fps: Integer?,
+      #|   ?interval: Integer?,
+      #|   ?retraction_z_hop: Numeric?,
+      #|   ?min_delay: Numeric?,
+      #|   ?render_after_print: String?,
+      #|   ?save: bool,
+      #|   ?unrendered: bool
+      #| ) -> Timelapse
       def update_config(type:, post_roll: nil, fps: nil, interval: nil, retraction_z_hop: nil, min_delay: nil,
                         render_after_print: nil, save: false, unrendered: false)
         raise ArgumentError, "type must be one of #{TYPES.join(", ")}" unless TYPES.include?(type)
@@ -203,12 +198,12 @@ module Octoprint
 
       private
 
-      sig { params(flags: T::Boolean).returns(T::Hash[Symbol, T::Boolean]) }
+      #: (**bool flags) -> Hash[Symbol, bool]
       def query(**flags)
         flags.select { |_flag, value| value }
       end
 
-      sig { params(path: String, options: T::Hash[Symbol, T.untyped]).returns(String) }
+      #: (String path, Hash[Symbol, untyped] options) -> String
       def with_query(path, options)
         return path if options.empty?
 
@@ -217,7 +212,7 @@ module Octoprint
 
       # Percent-encodes a name for use as a path segment. Timelapse names keep the
       # characters of the printed file's name, including spaces and "#".
-      sig { params(name: String).returns(String) }
+      #: (String name) -> String
       def escape(name)
         ERB::Util.url_encode(name)
       end

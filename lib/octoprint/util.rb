@@ -10,7 +10,6 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/1.11.2/api/util.html
   class Util < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -42,15 +41,13 @@ module Octoprint
     # @param [Boolean] allow_create_dir Optional directory creation flag
     # @param [Boolean] check_writable_dir Optional directory writability test
     # @return [Util]
-    sig do
-      params(
-        path: String,
-        check_type: T.nilable(String),
-        check_access: T.nilable(String),
-        allow_create_dir: T.nilable(T::Boolean),
-        check_writable_dir: T.nilable(T::Boolean)
-      ).returns(Util)
-    end
+    #: (
+    #|   path: String,
+    #|   ?check_type: String?,
+    #|   ?check_access: String?,
+    #|   ?allow_create_dir: bool?,
+    #|   ?check_writable_dir: bool?
+    #| ) -> Util
     def self.test_path(path:, check_type: nil, check_access: nil, allow_create_dir: nil, check_writable_dir: nil)
       params = { command: "path", path: path }
       params[:check_type] = check_type if check_type
@@ -75,20 +72,18 @@ module Octoprint
     # @param [String] content_type_whitelist Optional content type filter
     # @param [String] content_type_blacklist Optional content type exclusion
     # @return [Util]
-    sig do
-      params(
-        url: String,
-        method: T.nilable(String),
-        timeout: T.nilable(Integer),
-        status: T.nilable(Integer),
-        auth_user: T.nilable(String),
-        auth_pass: T.nilable(String),
-        auth_digest: T.nilable(String),
-        auth_bearer: T.nilable(String),
-        content_type_whitelist: T.nilable(String),
-        content_type_blacklist: T.nilable(String)
-      ).returns(Util)
-    end
+    #: (
+    #|   url: String,
+    #|   ?method: String?,
+    #|   ?timeout: Integer?,
+    #|   ?status: Integer?,
+    #|   ?auth_user: String?,
+    #|   ?auth_pass: String?,
+    #|   ?auth_digest: String?,
+    #|   ?auth_bearer: String?,
+    #|   ?content_type_whitelist: String?,
+    #|   ?content_type_blacklist: String?
+    #| ) -> Util
     def self.test_url(url:, method: nil, timeout: nil, status: nil, auth_user: nil, auth_pass: nil,
                       auth_digest: nil, auth_bearer: nil, content_type_whitelist: nil, content_type_blacklist: nil)
       # rubocop:enable Metrics/ParameterLists
@@ -113,14 +108,12 @@ module Octoprint
     # @param [String] protocol Optional protocol (default TCP)
     # @param [Float] timeout Optional timeout in seconds (default 3.05)
     # @return [Util]
-    sig do
-      params(
-        host: String,
-        port: Integer,
-        protocol: T.nilable(String),
-        timeout: T.nilable(Float)
-      ).returns(Util)
-    end
+    #: (
+    #|   host: String,
+    #|   port: Integer,
+    #|   ?protocol: String?,
+    #|   ?timeout: Float?
+    #| ) -> Util
     def self.test_server(host:, port:, protocol: nil, timeout: nil)
       params = { command: "server", host: host, port: port }
       params[:protocol] = protocol if protocol
@@ -134,7 +127,7 @@ module Octoprint
     #
     # @param [String] name Mandatory hostname to resolve
     # @return [Util]
-    sig { params(name: String).returns(Util) }
+    #: (name: String) -> Util
     def self.test_resolution(name:)
       params = { command: "resolution", name: name }
 
@@ -146,7 +139,7 @@ module Octoprint
     #
     # @param [String] address Optional address (defaults to client address)
     # @return [Util]
-    sig { params(address: T.nilable(String)).returns(Util) }
+    #: (?address: String?) -> Util
     def self.test_address(address: nil)
       params = { command: "address" }
       params[:address] = address if address

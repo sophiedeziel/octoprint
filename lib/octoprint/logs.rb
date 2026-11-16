@@ -53,7 +53,6 @@ module Octoprint
   #
   # OctoPrint's API doc: https://docs.octoprint.org/en/1.11.2/bundledplugins/logging.html
   class Logs < BaseResource
-    extend T::Sig
     include Deserializable
     include AutoInitializable
 
@@ -77,7 +76,7 @@ module Octoprint
     #   logs = Octoprint::Logs.list
     #   logs.files.each { |file| puts "#{file.name}: #{file.size} bytes" }
     #   puts "Free space: #{logs.free} bytes"
-    sig { returns(Logs) }
+    #: -> Logs
     def self.list
       fetch_resource
     end
@@ -90,7 +89,7 @@ module Octoprint
     # @example
     #   result = Octoprint::Logs.delete_file(filename: "octoprint.log.1")
     #   puts "Deleted successfully" if result
-    sig { params(filename: String).returns(T::Boolean) }
+    #: (filename: String) -> bool
     def self.delete_file(filename:)
       path = [@path, filename].compact.join("/")
       delete(path: path)

@@ -15,7 +15,6 @@ module Octoprint
     #     needs: ["CONNECTION"]
     #   )
     class Permission
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

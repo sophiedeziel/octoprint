@@ -42,13 +42,9 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/1.11.2/api/slicing.html OctoPrint Slicing API Documentation
   class Slicing < BaseResource
-    extend T::Sig
-
     resource_path("/api/slicing")
 
     class << self
-      extend T::Sig
-
       # Lists all slicers and their slicing profiles.
       #
       # @example
@@ -62,7 +58,7 @@ module Octoprint
       # @return [Hash{Symbol => Slicing::Slicer}] The slicers, by {Slicing::Slicer#key key}.
       #   Empty when no slicer is installed
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SLICE+ permission
-      sig { params(configured: T::Boolean).returns(T::Hash[Symbol, Slicer]) }
+      #: (?configured: bool) -> Hash[Symbol, Slicer]
       def list(configured: false)
         response = fetch_resource(deserialize: false, options: configured_option(configured))
         response.values.to_h do |slicer_data|
@@ -85,7 +81,7 @@ module Octoprint
       # @raise [Octoprint::Exceptions::NotFoundError] if the slicer doesn't exist, or if +configured+ is true
       #   and the slicer isn't configured
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SLICE+ permission
-      sig { params(slicer: String, configured: T::Boolean).returns(T::Hash[Symbol, Profile]) }
+      #: (slicer: String, ?configured: bool) -> Hash[Symbol, Profile]
       def profiles(slicer:, configured: false)
         response = fetch_resource(profiles_path(slicer), deserialize: false, options: configured_option(configured))
         deserialize_profiles(response)
@@ -102,7 +98,7 @@ module Octoprint
       # @return [Slicing::Profile] The profile
       # @raise [Octoprint::Exceptions::NotFoundError] if the slicer or the profile doesn't exist
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SLICE+ permission
-      sig { params(slicer: String, key: String).returns(Profile) }
+      #: (slicer: String, key: String) -> Profile
       def get_profile(slicer:, key:)
         Profile.deserialize(fetch_resource(profile_subpath(slicer, key), deserialize: false))
       end
@@ -129,15 +125,13 @@ module Octoprint
       # @return [Slicing::Profile] The added profile, without its data
       # @raise [Octoprint::Exceptions::NotFoundError] if the slicer doesn't exist
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SETTINGS+ permission
-      sig do
-        params(
-          slicer: String,
-          key: String,
-          data: T::Hash[T.any(Symbol, String), T.untyped],
-          display_name: T.nilable(String),
-          description: T.nilable(String)
-        ).returns(Profile)
-      end
+      #: (
+      #|   slicer: String,
+      #|   key: String,
+      #|   ?data: Hash[(Symbol | String), untyped],
+      #|   ?display_name: String?,
+      #|   ?description: String?
+      #| ) -> Profile
       def add_profile(slicer:, key:, data: {}, display_name: nil, description: nil)
         params = { displayName: display_name, description: description, data: data }.compact
         Profile.deserialize(put(path: profile_path(slicer, key), params: params))
@@ -160,16 +154,14 @@ module Octoprint
       # @return [Slicing::Profile] The updated profile, without its data
       # @raise [Octoprint::Exceptions::NotFoundError] if the slicer or the profile doesn't exist
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SETTINGS+ permission
-      sig do
-        params(
-          slicer: String,
-          key: String,
-          data: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]),
-          display_name: T.nilable(String),
-          description: T.nilable(String),
-          default: T.nilable(T::Boolean)
-        ).returns(Profile)
-      end
+      #: (
+      #|   slicer: String,
+      #|   key: String,
+      #|   ?data: Hash[(Symbol | String), untyped]?,
+      #|   ?display_name: String?,
+      #|   ?description: String?,
+      #|   ?default: bool?
+      #| ) -> Profile
       def update_profile(slicer:, key:, data: nil, display_name: nil, description: nil, default: nil)
         params = { displayName: display_name, description: description, default: default, data: data }.compact
         Profile.deserialize(patch(path: profile_path(slicer, key), params: params))
@@ -187,7 +179,7 @@ module Octoprint
       # @return [true] when the request succeeded
       # @raise [Octoprint::Exceptions::NotFoundError] if the slicer doesn't exist
       # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +SETTINGS+ permission
-      sig { params(slicer: String, key: String).returns(TrueClass) }
+      #: (slicer: String, key: String) -> TrueClass
       def delete_profile(slicer:, key:)
         delete(path: profile_path(slicer, key))
       end
@@ -201,7 +193,7 @@ module Octoprint
       # @api private
       # @param profiles_data [Hash, nil] The profiles data, by key
       # @return [Hash{Symbol => Slicing::Profile}] The profiles, by key. Empty when +profiles_data+ is nil
-      sig { params(profiles_data: T.nilable(T::Hash[Symbol, T.untyped])).returns(T::Hash[Symbol, Profile]) }
+      #: (Hash[Symbol, untyped]? profiles_data) -> Hash[Symbol, Profile]
       def deserialize_profiles(profiles_data)
         (profiles_data || {}).values.to_h do |profile_data|
           profile = Profile.deserialize(profile_data)
@@ -211,22 +203,22 @@ module Octoprint
 
       private
 
-      sig { params(slicer: String).returns(String) }
+      #: (String slicer) -> String
       def profiles_path(slicer)
         "#{ERB::Util.url_encode(slicer)}/profiles"
       end
 
-      sig { params(slicer: String, key: String).returns(String) }
+      #: (String slicer, String key) -> String
       def profile_subpath(slicer, key)
         "#{profiles_path(slicer)}/#{ERB::Util.url_encode(key)}"
       end
 
-      sig { params(slicer: String, key: String).returns(String) }
+      #: (String slicer, String key) -> String
       def profile_path(slicer, key)
         "#{@path}/#{profile_subpath(slicer, key)}"
       end
 
-      sig { params(configured: T::Boolean).returns(T::Hash[Symbol, T::Boolean]) }
+      #: (bool configured) -> Hash[Symbol, bool]
       def configured_option(configured)
         configured ? { configured: true } : {}
       end

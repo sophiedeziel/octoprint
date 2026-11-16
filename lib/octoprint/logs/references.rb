@@ -17,7 +17,6 @@ module Octoprint
     #   puts refs.resource  # => "http://octoprint.local/plugin/logging/logs/octoprint.log"
     #   puts refs.download  # => "http://octoprint.local/downloads/logs/octoprint.log"
     class References
-      extend T::Sig
       include AutoInitializable
 
       auto_attr :resource, type: String

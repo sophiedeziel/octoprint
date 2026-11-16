@@ -7,14 +7,12 @@ module Octoprint
     #
     # @api private
     module HistoryQuery
-      extend T::Sig
-
       private
 
       # @param history [Boolean] Whether to include the temperature history
       # @param limit [Integer, nil] Maximum number of history data points, only sent when +history+ is true
       # @return [Hash] The query parameters
-      sig { params(history: T::Boolean, limit: T.nilable(Integer)).returns(T::Hash[Symbol, T.untyped]) }
+      #: (history: bool, limit: Integer?) -> Hash[Symbol, untyped]
       def history_query(history:, limit:)
         return {} unless history
 

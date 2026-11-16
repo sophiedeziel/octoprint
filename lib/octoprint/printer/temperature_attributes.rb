@@ -23,13 +23,10 @@ module Octoprint
     #   tool = Tool.from_response({ tool0: { actual: 214.8821, target: 220.0, offset: 0 } }, :tool0)
     #   tool.actual # => 214.8821
     module TemperatureAttributes
-      extend T::Sig
       extend T::Helpers
 
       # Class methods added to the including class.
       module ClassMethods
-        extend T::Sig
-
         # Builds a heater from a temperature response, picking the heater's own data out of the
         # response and out of every history data point.
         #
@@ -37,7 +34,7 @@ module Octoprint
         # @param response [Hash] A tool, bed or chamber temperature response
         # @param key [Symbol] The heater's key in the response, e.g. +:tool0+ or +:bed+
         # @return [Object] An instance of the including class
-        sig { params(response: T::Hash[Symbol, T.untyped], key: Symbol).returns(T.untyped) }
+        #: (Hash[Symbol, untyped] response, Symbol key) -> untyped
         def from_response(response, key)
           history = response[:history]&.filter_map do |point|
             reading = point[key]
@@ -54,11 +51,11 @@ module Octoprint
       #
       # @param base [Class] The including class
       # @return [void]
-      sig { params(base: Module).void }
+      #: (Module base) -> void
       def self.included(base)
         super
 
-        klass = T.unsafe(base)
+        klass = base #: as untyped
         klass.include AutoInitializable
         klass.include Deserializable
         klass.auto_attr :actual, type: Float

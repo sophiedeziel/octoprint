@@ -24,7 +24,6 @@ module Octoprint
     #     resource_url = log_file.refs.resource  # API resource URL
     #   end
     class LogFile
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 
@@ -43,7 +42,7 @@ module Octoprint
       # Returns a human-readable string representation of the log file
       #
       # @return [String]
-      sig { returns(String) }
+      #: -> String
       def to_s
         "#{name} (#{size} bytes, modified: #{Time.at(date)})"
       end
@@ -51,7 +50,7 @@ module Octoprint
       # Convert Unix timestamp to Time object
       #
       # @return [Time] The file date as a Time object
-      sig { returns(Time) }
+      #: -> Time
       def modification_time
         Time.at(date)
       end

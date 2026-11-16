@@ -12,7 +12,6 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/master/api/version.html
   class ServerVersion < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -45,7 +44,7 @@ module Octoprint
     #
     # @return [ServerVersion] Version information object
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { returns(ServerVersion) }
+    #: -> ServerVersion
     def self.get
       fetch_resource
     end

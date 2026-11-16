@@ -6,3 +6,6 @@
 --ignore=/spec/
 --ignore=/lib/tapioca/
 --did-you-mean=false
+--parser=prism
+--enable-experimental-rbs-comments
+--ignore=/rbi/

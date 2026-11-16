@@ -51,3 +51,6 @@ jobs:
 
     - name: Verify Tapioca RBI files are up to date
       run: bin/tapioca dsl --verify
+
+    - name: Verify the exported gem RBI is up to date
+      run: bundle exec rake rbi:check

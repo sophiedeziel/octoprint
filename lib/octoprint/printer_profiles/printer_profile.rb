@@ -15,7 +15,6 @@ module Octoprint
     #   puts profile.model          # => "Generic RepRap Printer"
     #   puts profile.volume.width   # => 200
     class PrinterProfile
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 

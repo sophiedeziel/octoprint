@@ -16,7 +16,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.2/api/timelapse.html#timelapse-configuration
     class Config
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -60,7 +59,7 @@ module Octoprint
       #   Octoprint::Timelapse.get.config.off? # => true
       #
       # @return [Boolean]
-      sig { returns(T::Boolean) }
+      #: -> bool
       def off?
         type == "off"
       end

@@ -8,7 +8,6 @@ module Octoprint
   class Files
     # File information
     class File
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 
@@ -45,7 +44,7 @@ module Octoprint
       # Convert Unix timestamp to Time object
       #
       # @return [Time, nil] The file date as a Time object, or nil if no timestamp
-      sig { returns(T.nilable(Time)) }
+      #: -> Time?
       def date
         return nil unless date_timestamp
 

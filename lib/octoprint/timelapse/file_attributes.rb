@@ -28,17 +28,15 @@ module Octoprint
     #     auto_initialize!
     #   end
     module FileAttributes
-      extend T::Sig
-
       # Declares the shared timelapse attributes on the including class.
       #
       # @param base [Class] The including class
       # @return [void]
-      sig { params(base: Module).void }
+      #: (Module base) -> void
       def self.included(base)
         super
 
-        klass = T.unsafe(base)
+        klass = base #: as untyped
         klass.include AutoInitializable
         klass.include Deserializable
         klass.auto_attr :name, type: String

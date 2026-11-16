@@ -16,7 +16,6 @@ module Octoprint
   #           server.version= #=> "1.7.3"
   #           server.safemode #=> "incomplete_startup"
   class ServerInformation < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -44,7 +43,7 @@ module Octoprint
     #
     # @return [ServerInformation] Server information object
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { returns(ServerInformation) }
+    #: -> ServerInformation
     def self.get
       fetch_resource
     end

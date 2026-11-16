@@ -2,13 +2,14 @@
 # frozen_string_literal: true
 
 module Octoprint
+  # Access control: users, groups, permissions, and login/logout.
+  #
+  # @see https://docs.octoprint.org/en/1.11.8/api/access.html OctoPrint Access control API Documentation
   module Access
     # Provides access to the OctoPrint users API
     #
     # @see https://docs.octoprint.org/en/master/api/access.html#users
     class Users < BaseResource
-      extend T::Sig
-
       resource_path("/api/access/users")
 
       # Retrieve a list of users
@@ -22,7 +23,7 @@ module Octoprint
       #   end
       #
       # @return [Array<User>] An array of User objects
-      sig { returns(T::Array[User]) }
+      #: -> Array[User]
       def self.list
         response = fetch_resource(deserialize: false)
         users_data = response[:users] || response["users"] || []
@@ -48,16 +49,14 @@ module Octoprint
       # @param groups [Array<String>, nil] Groups to assign the user to
       # @param permissions [Array<String>, nil] Additional permissions
       # @return [Array<User>] An array of User objects
-      sig do
-        params(
-          name: String,
-          password: String,
-          active: T::Boolean,
-          admin: T::Boolean,
-          groups: T.nilable(T::Array[String]),
-          permissions: T.nilable(T::Array[String])
-        ).returns(T::Array[User])
-      end
+      #: (
+      #|   name: String,
+      #|   password: String,
+      #|   active: bool,
+      #|   admin: bool,
+      #|   ?groups: Array[String]?,
+      #|   ?permissions: Array[String]?
+      #| ) -> Array[User]
       def self.add(name:, password:, active:, admin:, groups: nil, permissions: nil)
         params = {
           name: name,
@@ -82,7 +81,7 @@ module Octoprint
       #
       # @param username [String] The user's login name
       # @return [User] The requested user
-      sig { params(username: String).returns(User) }
+      #: (username: String) -> User
       def self.get(username:)
         response = fetch_resource(username, deserialize: false)
         User.deserialize(response)
@@ -104,7 +103,7 @@ module Octoprint
       # @param username [String] The user's login name
       # @param params [Hash] The attributes to update
       # @return [Array<User>] The list of users
-      sig { params(username: String, params: T::Hash[Symbol, T.untyped]).returns(T::Array[User]) }
+      #: (username: String, params: Hash[Symbol, untyped]) -> Array[User]
       def self.update(username:, params:)
         path = [@path, username].join("/")
         response = put_with_hash_format(path: path, params: params)
@@ -122,15 +121,13 @@ module Octoprint
       #
       # @param username [String] The user's login name
       # @return [void]
-      sig do
-        params(
-          username: T.nilable(String),
-          path: T.nilable(String),
-          params: T.nilable(T::Hash[Symbol, T.untyped]),
-          headers: T.nilable(T::Hash[Symbol, T.untyped]),
-          options: T.nilable(T::Hash[Symbol, T.untyped])
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   ?username: String?,
+      #|   ?path: String?,
+      #|   ?params: Hash[Symbol, untyped]?,
+      #|   ?headers: Hash[Symbol, untyped]?,
+      #|   ?options: Hash[Symbol, untyped]?
+      #| ) -> untyped
       def self.delete(username: nil, path: nil, params: nil, headers: nil, options: nil)
         if username
           # User deletion case
@@ -144,7 +141,7 @@ module Octoprint
       end
 
       # Delete a resource at the given path
-      sig { params(path: String).void }
+      #: (String path) -> void
       def self.delete_resource(path)
         client.request(
           path,
@@ -168,7 +165,7 @@ module Octoprint
       # @param username [String] The user's login name
       # @param password [String] The new password
       # @return [void]
-      sig { params(username: String, password: String).returns(T.untyped) }
+      #: (username: String, password: String) -> untyped
       def self.change_password(username:, password:)
         path = [@path, username, "password"].join("/")
         post_with_hash_format(path: path, params: { password: password })
@@ -182,7 +179,7 @@ module Octoprint
       #
       # @param username [String] The user's login name
       # @return [Hash] The user's settings
-      sig { params(username: String).returns(T::Hash[Symbol, T.untyped]) }
+      #: (username: String) -> Hash[Symbol, untyped]
       def self.get_settings(username:)
         path = [username, "settings"].join("/")
         fetch_resource(path, deserialize: false)
@@ -199,7 +196,7 @@ module Octoprint
       # @param username [String] The user's login name
       # @param settings [Hash] The settings to update
       # @return [Hash] The updated settings
-      sig { params(username: String, settings: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      #: (username: String, settings: Hash[Symbol, untyped]) -> Hash[Symbol, untyped]
       def self.update_settings(username:, settings:)
         path = [@path, username, "settings"].join("/")
         patch_with_hash_format(path: path, params: settings)
@@ -214,7 +211,7 @@ module Octoprint
       #
       # @param username [String] The user's login name
       # @return [String] The new API key
-      sig { params(username: String).returns(String) }
+      #: (username: String) -> String
       def self.generate_api_key(username:)
         path = [@path, username, "apikey"].join("/")
         response = client.request(path, { http_method: :post })
@@ -230,7 +227,7 @@ module Octoprint
       #
       # @param username [String] The user's login name
       # @return [void]
-      sig { params(username: String).returns(T.untyped) }
+      #: (username: String) -> untyped
       def self.delete_api_key(username:)
         path = [@path, username, "apikey"].join("/")
         delete_resource(path)
@@ -245,7 +242,7 @@ module Octoprint
       #
       # @return [User] The current user object
       # @raise [RuntimeError] when no client is configured
-      sig { returns(User) }
+      #: -> User
       def self.current
         response = client.request("/api/currentuser", http_method: :get)
         User.deserialize(response)
@@ -281,13 +278,11 @@ module Octoprint
       # @raise [Exceptions::AuthenticationError] if the username or password is wrong,
       #   the user is unknown or the account is deactivated
       # @see https://docs.octoprint.org/en/1.11.8/api/general.html#login
-      sig do
-        params(
-          username: T.nilable(String),
-          password: T.nilable(String),
-          remember: T::Boolean
-        ).returns(LoginResponse)
-      end
+      #: (
+      #|   ?username: String?,
+      #|   ?password: String?,
+      #|   ?remember: bool
+      #| ) -> LoginResponse
       def self.login(username: nil, password: nil, remember: false)
         response = client.request("/api/login", http_method: :post,
                                                 body: login_params(username, password, remember))
@@ -309,19 +304,17 @@ module Octoprint
       #
       # @return [Boolean] true when OctoPrint accepts the logout (`200` or `204`)
       # @see https://docs.octoprint.org/en/1.11.8/api/general.html#logout
-      sig { returns(T::Boolean) }
+      #: -> bool
       def self.logout # rubocop:disable Naming/PredicateMethod
         client.request("/api/logout", http_method: :post)
         true
       end
 
-      sig do
-        params(
-          username: T.nilable(String),
-          password: T.nilable(String),
-          remember: T::Boolean
-        ).returns(T::Hash[Symbol, T.untyped])
-      end
+      #: (
+      #|   String? username,
+      #|   String? password,
+      #|   bool remember
+      #| ) -> Hash[Symbol, untyped]
       private_class_method def self.login_params(username, password, remember)
         if username.nil? && password.nil?
           raise ArgumentError, "remember only applies to an active login" if remember
@@ -335,17 +328,17 @@ module Octoprint
         params
       end
 
-      sig { params(path: String, params: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (?path: String, ?params: Hash[Symbol, untyped]) -> untyped
       private_class_method def self.post_with_hash_format(path: @path, params: {})
         T.unsafe(client).request(path, { http_method: :post, params: params })
       end
 
-      sig { params(path: String, params: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (?path: String, ?params: Hash[Symbol, untyped]) -> untyped
       private_class_method def self.put_with_hash_format(path: @path, params: {})
         T.unsafe(client).request(path, { http_method: :put, params: params })
       end
 
-      sig { params(path: String, params: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+      #: (?path: String, ?params: Hash[Symbol, untyped]) -> untyped
       private_class_method def self.patch_with_hash_format(path: @path, params: {})
         T.unsafe(client).request(path, { http_method: :patch, params: params })
       end

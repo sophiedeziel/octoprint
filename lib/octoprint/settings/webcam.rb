@@ -21,7 +21,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/settings.html
     class Webcam
-      extend T::Sig
       include AutoInitializable
 
       # @!attribute [r] enabled
@@ -76,7 +75,7 @@ module Octoprint
       #
       # @param settings [Hash] The settings hash, as returned by {Settings.get}
       # @return [Webcam]
-      sig { params(settings: T::Hash[Symbol, T.untyped]).returns(Webcam) }
+      #: (Hash[Symbol, untyped] settings) -> Webcam
       def self.from_settings(settings)
         legacy = settings[:webcam] || {}
         camera = default_webcam(legacy)
@@ -89,7 +88,7 @@ module Octoprint
       #
       # @param legacy [Hash] The `webcam` section of the settings
       # @return [Hash, nil] The default webcam's settings, or nil when there is no `webcams` list
-      sig { params(legacy: T::Hash[Symbol, T.untyped]).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: (Hash[Symbol, untyped] legacy) -> Hash[Symbol, untyped]?
       def self.default_webcam(legacy)
         webcams = Array(legacy[:webcams])
         webcams.find { |webcam| webcam[:name] == legacy[:default_webcam] } || webcams.first
@@ -103,7 +102,7 @@ module Octoprint
       #
       # @param camera [Hash] A webcam from the `webcams` list
       # @return [Hash] The attributes of the webcam
-      sig { params(camera: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      #: (Hash[Symbol, untyped] camera) -> Hash[Symbol, untyped]
       def self.webcam_attributes(camera)
         compat = camera[:compat] || {}
         extras = camera[:extras] || {}
@@ -121,7 +120,7 @@ module Octoprint
       #
       # @param legacy [Hash] The `webcam` section of the settings
       # @return [Hash] The attributes of the webcam
-      sig { params(legacy: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      #: (Hash[Symbol, untyped] legacy) -> Hash[Symbol, untyped]
       def self.legacy_attributes(legacy)
         {
           stream_url: legacy[:stream_url].presence,

@@ -9,8 +9,6 @@ module Octoprint
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/master/api/files.html
   class Files < BaseResource
-    extend T::Sig
-
     resource_path("/api/files")
     attr_reader :files, :free, :total
 
@@ -27,8 +25,7 @@ module Octoprint
     # @param [Hash] options           Additional parameters
     #
     # @return [Files]
-
-    sig { params(location: Location, options: T::Hash[Symbol, T.untyped]).returns(Files) }
+    #: (?location: Location, ?options: Hash[Symbol, untyped]) -> Files
     def self.list(location: Location::Local, options: {})
       fetch_resource location.serialize, options: options
     end
@@ -40,10 +37,11 @@ module Octoprint
     # @param [Hash] options           Additional parameters
     #
     # @return [Files::File]
-
-    sig do
-      params(filename: String, location: Location, options: T.nilable(T::Hash[Symbol, T.untyped])).returns(Files::File)
-    end
+    #: (
+    #|   filename: String,
+    #|   ?location: Location,
+    #|   ?options: Hash[Symbol, untyped]?
+    #| ) -> Files::File
     def self.get(filename:, location: Location::Local, options: {})
       path = [location.serialize, filename].compact.join("/")
       Files::File.deserialize(fetch_resource(path, deserialize: false, options: options))
@@ -62,17 +60,11 @@ module Octoprint
     #                                     saved along with the file as metadata (metadata key userdata). Ignored when
     #                                     creating a folder.
     # @return [OperationResult]
-
-    sig do
-      params(file_path: String, location: Location,
-             options: {
-               path: T.nilable(String),
-               select: T.nilable(T::Boolean),
-               print: T.nilable(T::Boolean),
-               userdata: T.nilable(String)
-             })
-        .returns(OperationResult)
-    end
+    #: (
+    #|   String file_path,
+    #|   ?location: Location,
+    #|   ?options: {path: String?, select: bool?, print: bool?, userdata: String?}
+    #| ) -> OperationResult
     def self.upload(file_path, location: Location::Local, options: { path: nil, select: nil, print: nil,
                                                                      userdata: nil })
       params = {
@@ -102,15 +94,12 @@ module Octoprint
     #           folder.origin #=> "local"
     #           folder.path #=> "test"
     #           folder.refs #=> {resource: "http://octoprint.local/api/files/local/test"}
-    sig do
-      params(
-        foldername: String,
-        location: Location,
-        path: T.nilable(String),
-        _kargs: T::Hash[Symbol, T.untyped]
-      )
-        .returns(OperationResult)
-    end
+    #: (
+    #|   foldername: String,
+    #|   ?location: Location,
+    #|   ?path: String?,
+    #|   **Hash[Symbol, untyped] _kargs
+    #| ) -> OperationResult
     def self.create_folder(foldername:, location: Location::Local, path: nil, **_kargs)
       params = {
         path: path,
@@ -134,15 +123,12 @@ module Octoprint
     # @option options [Hash] :profile    Slicing profile for slice command
     #
     # @return [T.untyped] Response varies by command (204 No Content, 201 Created, or file data)
-    sig do
-      params(
-        filename: String,
-        command: String,
-        location: Location,
-        options: T::Hash[Symbol, T.untyped]
-      )
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   command: String,
+    #|   ?location: Location,
+    #|   ?options: Hash[Symbol, untyped]
+    #| ) -> untyped
     def self.issue_command(filename:, command:, location: Location::Local, options: {})
       path = [@path, location.serialize, filename].compact.join("/")
       params = { command: command }.merge(options)
@@ -156,10 +142,11 @@ module Octoprint
     # @param [Boolean] print          Whether to start printing immediately after selection
     #
     # @return [T.untyped] 204 No Content on success
-    sig do
-      params(filename: String, location: Location, print: T.nilable(T::Boolean))
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   ?location: Location,
+    #|   ?print: bool?
+    #| ) -> untyped
     def self.select(filename:, location: Location::Local, print: nil)
       options = print.nil? ? {} : { print: print }
       issue_command(filename: filename, command: "select", location: location, options: options)
@@ -171,10 +158,10 @@ module Octoprint
     # @param [Location] location      The location of the file
     #
     # @return [T.untyped] 204 No Content on success
-    sig do
-      params(filename: String, location: Location)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   ?location: Location
+    #| ) -> untyped
     def self.unselect(filename:, location: Location::Local)
       issue_command(filename: filename, command: "unselect", location: location, options: {})
     end
@@ -187,15 +174,12 @@ module Octoprint
     # @param [Hash] profile           Slicing profile settings
     #
     # @return [T.untyped] 202 Accepted with file information
-    sig do
-      params(
-        filename: String,
-        location: Location,
-        print: T.nilable(T::Boolean),
-        profile: T.nilable(T::Hash[Symbol, T.untyped])
-      )
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   ?location: Location,
+    #|   ?print: bool?,
+    #|   ?profile: Hash[Symbol, untyped]?
+    #| ) -> untyped
     def self.slice(filename:, location: Location::Local, print: nil, profile: nil)
       options = {}
       options[:print] = print unless print.nil?
@@ -210,10 +194,11 @@ module Octoprint
     # @param [Location] location      The location of the source file
     #
     # @return [T.untyped] 201 Created with file information
-    sig do
-      params(filename: String, destination: String, location: Location)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   destination: String,
+    #|   ?location: Location
+    #| ) -> untyped
     def self.copy(filename:, destination:, location: Location::Local)
       issue_command(filename: filename, command: "copy", location: location, options: { destination: destination })
     end
@@ -225,10 +210,11 @@ module Octoprint
     # @param [Location] location      The location of the source file
     #
     # @return [T.untyped] 201 Created with file information
-    sig do
-      params(filename: String, destination: String, location: Location)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   destination: String,
+    #|   ?location: Location
+    #| ) -> untyped
     def self.move(filename:, destination:, location: Location::Local)
       issue_command(filename: filename, command: "move", location: location, options: { destination: destination })
     end
@@ -239,10 +225,10 @@ module Octoprint
     # @param [Location] location      The location of the file
     #
     # @return [T.untyped] 204 No Content on success
-    sig do
-      params(filename: String, location: Location)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   filename: String,
+    #|   ?location: Location
+    #| ) -> untyped
     def self.delete_file(filename:, location: Location::Local)
       path = [@path, location.serialize, filename].compact.join("/")
       delete(path: path)

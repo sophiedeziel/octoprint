@@ -1,0 +1,3 @@
+--load .yard/rbs_comments.rb
+--exclude lib/tapioca
+lib/**/*.rb

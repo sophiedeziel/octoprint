@@ -17,7 +17,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.2/api/slicing.html#profile
     class Profile
-      extend T::Sig
       include Deserializable
       include AutoInitializable
 
@@ -57,7 +56,7 @@ module Octoprint
       #   Octoprint::Slicing.get_profile(slicer: "curalegacy", key: "high_quality").default? # => false
       #
       # @return [Boolean] false when {#default} is nil
-      sig { returns(T::Boolean) }
+      #: -> bool
       def default?
         default == true
       end

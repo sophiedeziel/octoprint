@@ -18,8 +18,6 @@ module Octoprint
   #   new_key = Octoprint::Settings.regenerate_api_key
   #   puts "New API key: #{new_key}"
   class Settings < BaseResource
-    extend T::Sig
-
     resource_path("/api/settings")
 
     # Retrieves the current settings from the OctoPrint server.
@@ -39,7 +37,7 @@ module Octoprint
     # @return [Hash] The current settings as a hash
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking SETTINGS_READ permission
-    sig { returns(T::Hash[Symbol, T.untyped]) }
+    #: -> Hash[Symbol, untyped]
     def self.get
       fetch_resource(deserialize: false)
     end
@@ -57,7 +55,7 @@ module Octoprint
     # @return [Settings::Webcam] The webcam settings
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking SETTINGS_READ permission
-    sig { returns(Settings::Webcam) }
+    #: -> Settings::Webcam
     def self.webcam
       Webcam.from_settings(get)
     end
@@ -86,7 +84,7 @@ module Octoprint
     # @return [Hash] The updated settings
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking SETTINGS permission
-    sig { params(settings: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+    #: (Hash[Symbol, untyped] settings) -> Hash[Symbol, untyped]
     def self.save(settings)
       post(params: settings)
     end
@@ -105,7 +103,7 @@ module Octoprint
     # @return [Hash] Hash containing the new API key ({ api_key: "new_key_value" })
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking admin rights
-    sig { returns(T::Hash[Symbol, String]) }
+    #: -> Hash[Symbol, String]
     def self.regenerate_api_key
       post(path: "/api/settings/apikey")
     end
@@ -127,7 +125,7 @@ module Octoprint
     # @return [Hash] Template component identifiers
     # @raise [Octoprint::Exceptions::Error] if the request fails
     # @raise [Octoprint::Exceptions::AuthenticationError] if lacking admin rights
-    sig { returns(T::Hash[Symbol, T.untyped]) }
+    #: -> Hash[Symbol, untyped]
     def self.fetch_templates
       fetch_resource("templates", deserialize: false)
     end

@@ -19,8 +19,6 @@ module Octoprint
   # @attr [Numeric, nil] timeout       Seconds to wait for a read or a write. nil: adapter default (60s)
   # @attr [Client] client
   class Client
-    extend T::Sig
-
     # Default number of seconds to wait for the connection to open
     DEFAULT_OPEN_TIMEOUT = 2
     # Default number of seconds to wait for a read or a write
@@ -33,14 +31,12 @@ module Octoprint
     # @param open_timeout [Numeric, nil]   Seconds to wait for the connection to open. nil falls back to `timeout`
     # @param timeout [Numeric, nil]        Seconds to wait for a read or a write. nil: adapter default (60s)
     # @raise [Exceptions::MissingCredentialsError] if host or api_key is missing
-    sig do
-      params(
-        host: T.nilable(T.any(String, URI::Generic)),
-        api_key: T.nilable(String),
-        open_timeout: T.nilable(Numeric),
-        timeout: T.nilable(Numeric)
-      ).void
-    end
+    #: (
+    #|   host: (String | URI::Generic)?,
+    #|   api_key: String?,
+    #|   ?open_timeout: Numeric?,
+    #|   ?timeout: Numeric?
+    #| ) -> void
     def initialize(host:, api_key:, open_timeout: DEFAULT_OPEN_TIMEOUT, timeout: DEFAULT_TIMEOUT)
       raise Exceptions::MissingCredentialsError if host.nil? || api_key.nil?
 

@@ -35,7 +35,6 @@ module Octoprint
   #
   # Octoprint's API doc: https://docs.octoprint.org/en/1.11.2/api/printerprofiles.html
   class PrinterProfiles < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -60,7 +59,7 @@ module Octoprint
     # Fetches the list of available printer profiles
     #
     # @return [PrinterProfiles]
-    sig { returns(PrinterProfiles) }
+    #: -> PrinterProfiles
     def self.list
       fetch_resource
     end
@@ -70,10 +69,9 @@ module Octoprint
     # @param [String] identifier    The identifier of the printer profile to retrieve
     #
     # @return [PrinterProfile]
-    sig do
-      params(identifier: String)
-        .returns(PrinterProfile)
-    end
+    #: (
+    #|   identifier: String
+    #| ) -> PrinterProfile
     def self.get(identifier:)
       profile_data = fetch_resource(identifier, deserialize: false)
       PrinterProfile.deserialize(profile_data)
@@ -85,10 +83,10 @@ module Octoprint
     # @param [String] based_on      Optional. The identifier of the profile to base the new profile on
     #
     # @return [PrinterProfile]
-    sig do
-      params(profile: T::Hash[Symbol, T.untyped], based_on: T.nilable(String))
-        .returns(PrinterProfile)
-    end
+    #: (
+    #|   profile: Hash[Symbol, untyped],
+    #|   ?based_on: String?
+    #| ) -> PrinterProfile
     def self.create(profile:, based_on: nil)
       params = { profile: profile }
       params[:basedOn] = based_on if based_on
@@ -105,10 +103,10 @@ module Octoprint
     # @param [Hash] profile         The profile data to update
     #
     # @return [PrinterProfile]
-    sig do
-      params(identifier: String, profile: T::Hash[Symbol, T.untyped])
-        .returns(PrinterProfile)
-    end
+    #: (
+    #|   identifier: String,
+    #|   profile: Hash[Symbol, untyped]
+    #| ) -> PrinterProfile
     def self.update(identifier:, profile:)
       path = [@path, identifier].compact.join("/")
       result = patch(path: path, params: { profile: profile })
@@ -122,10 +120,9 @@ module Octoprint
     # @param [String] identifier    The identifier of the printer profile to delete
     #
     # @return [T.untyped] 204 No Content on success
-    sig do
-      params(identifier: String)
-        .returns(T.untyped)
-    end
+    #: (
+    #|   identifier: String
+    #| ) -> untyped
     def self.delete_profile(identifier:)
       path = [@path, identifier].compact.join("/")
       delete(path: path)
@@ -141,15 +138,12 @@ module Octoprint
       # @param [Hash] headers     headers to the request
       # @param [Hash] options     options
       # @return [Object]
-      sig do
-        params(
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        )
-          .returns(T.untyped)
-      end
+      #: (
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def patch(path: @path, params: {}, headers: {}, options: {})
         client.request(
           path,

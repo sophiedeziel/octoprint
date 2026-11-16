@@ -11,7 +11,6 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/master/api/job.html
   class Job < BaseResource
-    extend T::Sig
     include AutoInitializable
     include Deserializable
 
@@ -53,7 +52,7 @@ module Octoprint
     #
     # @return [Job] Current job information
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { returns(Job) }
+    #: -> Job
     def self.get
       fetch_resource
     end
@@ -72,7 +71,7 @@ module Octoprint
     #
     # @example Pause with a specific action
     #   Octoprint::Job.issue_command(command: "pause", options: { action: "pause" })
-    sig { params(command: String, options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+    #: (command: String, ?options: Hash[Symbol, untyped]) -> untyped
     def self.issue_command(command:, options: {})
       params = { command: command }.merge(options)
       post(params: params)
@@ -85,7 +84,7 @@ module Octoprint
     #
     # @example
     #   Octoprint::Job.start
-    sig { returns(T.untyped) }
+    #: -> untyped
     def self.start
       issue_command(command: "start")
     end
@@ -97,7 +96,7 @@ module Octoprint
     #
     # @example
     #   Octoprint::Job.cancel
-    sig { returns(T.untyped) }
+    #: -> untyped
     def self.cancel
       issue_command(command: "cancel")
     end
@@ -109,7 +108,7 @@ module Octoprint
     #
     # @example
     #   Octoprint::Job.restart
-    sig { returns(T.untyped) }
+    #: -> untyped
     def self.restart
       issue_command(command: "restart")
     end
@@ -121,7 +120,7 @@ module Octoprint
     #
     # @example
     #   Octoprint::Job.pause
-    sig { returns(T.untyped) }
+    #: -> untyped
     def self.pause
       issue_command(command: "pause", options: { action: "pause" })
     end
@@ -133,7 +132,7 @@ module Octoprint
     #
     # @example
     #   Octoprint::Job.resume
-    sig { returns(T.untyped) }
+    #: -> untyped
     def self.resume
       issue_command(command: "pause", options: { action: "resume" })
     end

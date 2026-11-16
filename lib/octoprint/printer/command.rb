@@ -22,8 +22,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/printer.html#send-an-arbitrary-command-to-the-printer
     class Command < BaseResource
-      extend T::Sig
-
       resource_path("/api/printer/command")
 
       # Sends an arbitrary command request. Exactly one of +command+, +commands+ or +script+ must be given.
@@ -41,15 +39,13 @@ module Octoprint
       # @return [Boolean] true on success (204 No Content)
       # @raise [ArgumentError] if not exactly one of +command+, +commands+ or +script+ is given,
       #   or if +context+ is given without +script+
-      sig do
-        params(
-          command: T.nilable(String),
-          commands: T.nilable(T::Array[String]),
-          script: T.nilable(String),
-          parameters: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]),
-          context: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   ?command: String?,
+      #|   ?commands: Array[String]?,
+      #|   ?script: String?,
+      #|   ?parameters: Hash[(Symbol | String), untyped]?,
+      #|   ?context: Hash[(Symbol | String), untyped]?
+      #| ) -> untyped
       def self.issue(command: nil, commands: nil, script: nil, parameters: nil, context: nil)
         unless [command, commands, script].compact.size == 1
           raise ArgumentError, "Exactly one of command, commands or script must be provided"
@@ -72,7 +68,7 @@ module Octoprint
       #   Octoprint::Printer::Command.send_command("M106 S%(speed)s", parameters: { speed: 255 })
       #
       # @return [Boolean] true on success (204 No Content)
-      sig { params(command: String, parameters: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])).returns(T.untyped) }
+      #: (String command, ?parameters: Hash[(Symbol | String), untyped]?) -> untyped
       def self.send_command(command, parameters: nil)
         issue(command: command, parameters: parameters)
       end
@@ -86,12 +82,10 @@ module Octoprint
       #   Octoprint::Printer::Command.send_commands(["M18", "M106 S0"])
       #
       # @return [Boolean] true on success (204 No Content)
-      sig do
-        params(
-          commands: T::Array[String],
-          parameters: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   Array[String] commands,
+      #|   ?parameters: Hash[(Symbol | String), untyped]?
+      #| ) -> untyped
       def self.send_commands(commands, parameters: nil)
         issue(commands: commands, parameters: parameters)
       end
@@ -106,13 +100,11 @@ module Octoprint
       #   Octoprint::Printer::Command.run_script("afterPrintCancelled")
       #
       # @return [Boolean] true on success (204 No Content)
-      sig do
-        params(
-          script: String,
-          parameters: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]),
-          context: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   String script,
+      #|   ?parameters: Hash[(Symbol | String), untyped]?,
+      #|   ?context: Hash[(Symbol | String), untyped]?
+      #| ) -> untyped
       def self.run_script(script, parameters: nil, context: nil)
         issue(script: script, parameters: parameters, context: context)
       end
@@ -127,7 +119,7 @@ module Octoprint
       #
       # @return [Array<Printer::CustomControl>] The custom controls
       # @see https://docs.octoprint.org/en/master/features/custom_controls.html Custom controls
-      sig { returns(T::Array[CustomControl]) }
+      #: -> Array[CustomControl]
       def self.custom_controls
         response = fetch_resource("custom", deserialize: false)
         Array(response[:controls]).map { |control| CustomControl.deserialize(control) }

@@ -17,7 +17,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/1.11.2/api/timelapse.html#unrendered-timelapse
     class Unrendered
-      extend T::Sig
       include AutoInitializable
       include Deserializable
       include FileAttributes

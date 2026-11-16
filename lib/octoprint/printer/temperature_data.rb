@@ -13,7 +13,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#temperature-data
     class TemperatureData
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -43,7 +42,7 @@ module Octoprint
       # @api private
       # @param data [Hash] A temperature state or history data point hash
       # @return [Hash] The modified data hash
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+      #: (Hash[Symbol, untyped] data) -> Hash[Symbol, untyped]
       def self.extract_tools(data)
         tool_keys = data.keys.select { |key| key.to_s.match?(TOOL_KEY) }
         data[:tools] = tool_keys.to_h { |key| [key, deserialize(data.delete(key))] }

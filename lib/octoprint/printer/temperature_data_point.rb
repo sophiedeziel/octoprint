@@ -14,7 +14,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/datamodel.html#historic-temperature-data-point
     class TemperatureDataPoint
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 
@@ -55,7 +54,7 @@ module Octoprint
       #
       # @param index [Integer] The tool's index, starting at 0
       # @return [Printer::TemperatureData, nil] The tool's temperature data, nil if there is no such tool
-      sig { params(index: Integer).returns(T.nilable(TemperatureData)) }
+      #: (?Integer index) -> TemperatureData?
       def tool(index = 0)
         tools&.[](:"tool#{index}")
       end
@@ -63,7 +62,7 @@ module Octoprint
       # The data point's timestamp as a Time object.
       #
       # @return [Time, nil] The time of the data point
-      sig { returns(T.nilable(Time)) }
+      #: -> Time?
       def recorded_at
         return nil unless time
 

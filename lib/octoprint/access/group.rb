@@ -19,7 +19,6 @@ module Octoprint
     #     toggleable: false
     #   )
     class Group
-      extend T::Sig
       include AutoInitializable
       include Deserializable
 

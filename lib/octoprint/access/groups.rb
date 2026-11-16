@@ -7,8 +7,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/access.html#groups
     class Groups < BaseResource
-      extend T::Sig
-
       resource_path("/api/access/groups")
 
       # Retrieve a list of groups
@@ -22,7 +20,7 @@ module Octoprint
       #   end
       #
       # @return [Array<Group>] An array of Group objects
-      sig { returns(T::Array[Group]) }
+      #: -> Array[Group]
       def self.list
         response = fetch_resource(deserialize: false)
         groups_data = response[:groups] || response["groups"] || []
@@ -50,16 +48,14 @@ module Octoprint
       # @param subgroups [Array<String>] Subgroups to include
       # @param default [Boolean] Whether this is a default group
       # @return [Array<Group>] The created groups
-      sig do
-        params(
-          key: String,
-          name: String,
-          description: String,
-          permissions: T::Array[String],
-          subgroups: T::Array[String],
-          default: T::Boolean
-        ).returns(T::Array[Group])
-      end
+      #: (
+      #|   key: String,
+      #|   name: String,
+      #|   description: String,
+      #|   permissions: Array[String],
+      #|   subgroups: Array[String],
+      #|   default: bool
+      #| ) -> Array[Group]
       def self.add(key:, name:, description:, permissions:, subgroups:, default:)
         response = client.request(
           @path,
@@ -88,7 +84,7 @@ module Octoprint
       #
       # @param key [String] The group's identifier
       # @return [Group] The requested group
-      sig { params(key: String).returns(Group) }
+      #: (key: String) -> Group
       def self.get(key:)
         response = fetch_resource(key, deserialize: false)
         Group.deserialize(response)
@@ -110,7 +106,7 @@ module Octoprint
       # @param key [String] The group's identifier
       # @param params [Hash] The attributes to update
       # @return [Array<Group>] The created groups
-      sig { params(key: String, params: T::Hash[Symbol, T.untyped]).returns(T::Array[Group]) }
+      #: (key: String, params: Hash[Symbol, untyped]) -> Array[Group]
       def self.update(key:, params:)
         path = [@path, key].join("/")
         response = client.request(
@@ -134,15 +130,13 @@ module Octoprint
       #
       # @param key [String] The group's identifier
       # @return [void]
-      sig do
-        params(
-          key: T.nilable(String),
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        ).returns(T.untyped)
-      end
+      #: (
+      #|   ?key: String?,
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def self.delete(key: nil, path: @path, params: {}, headers: {}, options: {})
         if key
           # Group deletion case - ignore path parameter and construct our own
@@ -156,7 +150,7 @@ module Octoprint
       end
 
       # Delete a resource at the given path
-      sig { params(path: String).void }
+      #: (String path) -> void
       def self.delete_resource(path)
         client.request(
           path,

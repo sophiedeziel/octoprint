@@ -7,8 +7,6 @@ module Octoprint
     #
     # @see https://docs.octoprint.org/en/master/api/access.html#retrieve-a-list-of-permissions
     class Permissions < BaseResource
-      extend T::Sig
-
       resource_path("/api/access/permissions")
 
       # Retrieve a list of permissions
@@ -20,7 +18,7 @@ module Octoprint
       #   end
       #
       # @return [Array<Permission>] An array of Permission objects
-      sig { returns(T::Array[Permission]) }
+      #: -> Array[Permission]
       def self.list
         response = fetch_resource(deserialize: false)
         permissions_data = response[:permissions] || response["permissions"] || []

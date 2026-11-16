@@ -36,7 +36,6 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/master/api/printer.html OctoPrint Printer API Documentation
   class Printer < BaseResource
-    extend T::Sig
     extend HistoryQuery
     include AutoInitializable
     include Deserializable
@@ -89,13 +88,11 @@ module Octoprint
     # @return [Printer] The current printer state
     # @raise [ArgumentError] if +exclude+ contains an unknown field
     # @raise [Octoprint::Exceptions::ConflictError] if the printer is not operational
-    sig do
-      params(
-        history: T::Boolean,
-        limit: T.nilable(Integer),
-        exclude: T::Array[T.any(String, Symbol)]
-      ).returns(Printer)
-    end
+    #: (
+    #|   ?history: bool,
+    #|   ?limit: Integer?,
+    #|   ?exclude: Array[(String | Symbol)]
+    #| ) -> Printer
     def self.get(history: false, limit: nil, exclude: [])
       options = history_query(history: history, limit: limit)
 
@@ -121,7 +118,7 @@ module Octoprint
     #
     # @return [Printer::ErrorInformation] The last error information
     # @raise [Octoprint::Exceptions::AuthenticationError] if the user lacks the +STATUS+ permission
-    sig { returns(ErrorInformation) }
+    #: -> ErrorInformation
     def self.last_error
       ErrorInformation.get
     end

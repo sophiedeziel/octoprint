@@ -5,8 +5,6 @@ module Octoprint
   # Base class for all API resources.
   class BaseResource
     class << self
-      extend T::Sig
-
       # Defines the path for the resource's endpoint
       #
       # @param [String] path      The API's endpoint path
@@ -32,15 +30,12 @@ module Octoprint
       # @param [Hash] params      parameters to the request
       # @param [Hash] options     options
       # @return [Object]
-      sig do
-        params(
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        )
-          .returns(T.untyped)
-      end
+      #: (
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def post(path: @path, params: {}, headers: {}, options: {})
         client.request(
           path,
@@ -58,15 +53,12 @@ module Octoprint
       # @param [Hash] headers     headers to the request
       # @param [Hash] options     options
       # @return [Object]
-      sig do
-        params(
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        )
-          .returns(T.untyped)
-      end
+      #: (
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def put(path: @path, params: {}, headers: {}, options: {})
         client.request(
           path,
@@ -84,15 +76,12 @@ module Octoprint
       # @param [Hash] headers     headers to the request
       # @param [Hash] options     options
       # @return [Object]
-      sig do
-        params(
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        )
-          .returns(T.untyped)
-      end
+      #: (
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def patch(path: @path, params: {}, headers: {}, options: {})
         client.request(
           path,
@@ -110,15 +99,12 @@ module Octoprint
       # @param [Hash] headers     headers to the request
       # @param [Hash] options     options
       # @return [Object]
-      sig do
-        params(
-          path: String,
-          params: T::Hash[Symbol, T.untyped],
-          headers: T::Hash[Symbol, T.untyped],
-          options: T::Hash[Symbol, T.untyped]
-        )
-          .returns(T.untyped)
-      end
+      #: (
+      #|   ?path: String,
+      #|   ?params: Hash[Symbol, untyped],
+      #|   ?headers: Hash[Symbol, untyped],
+      #|   ?options: Hash[Symbol, untyped]
+      #| ) -> untyped
       def delete(path: @path, params: {}, headers: {}, options: {})
         client.request(
           path,
@@ -139,9 +125,7 @@ module Octoprint
 
       private
 
-      sig do
-        returns(Client)
-      end
+      #: -> Client
       def client
         client = Octoprint.client
         raise "No client configured" unless client

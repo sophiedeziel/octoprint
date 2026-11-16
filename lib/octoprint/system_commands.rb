@@ -7,7 +7,6 @@ module Octoprint
   #
   # @see https://docs.octoprint.org/en/master/api/system.html OctoPrint System API Documentation
   class SystemCommands < BaseResource
-    extend T::Sig
     include Deserializable
     include AutoInitializable
 
@@ -53,7 +52,7 @@ module Octoprint
     #
     # @return [SystemCommands] A SystemCommands object containing arrays of core and custom commands
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { returns(SystemCommands) }
+    #: -> SystemCommands
     def self.list
       fetch_resource
     end
@@ -78,7 +77,7 @@ module Octoprint
     # @param source [String] The source to retrieve commands for (e.g., "core", "custom")
     # @return [Array<Command>] Array of Command objects for the specified source
     # @raise [Octoprint::Exceptions::Error] if the request fails
-    sig { params(source: String).returns(T::Array[Command]) }
+    #: (String source) -> Array[Command]
     def self.list_by_source(source)
       response = fetch_resource(source, deserialize: false)
       response.map { |command_data| Command.deserialize(command_data) }
@@ -102,7 +101,7 @@ module Octoprint
     # @param action [String] The action/identifier of the command to execute
     # @return [Boolean] true if the command was executed successfully
     # @raise [Octoprint::Exceptions::Error] if the request fails or command is not found
-    sig { params(source: String, action: String).returns(T::Boolean) }
+    #: (String source, String action) -> bool
     def self.execute(source, action) # rubocop:disable Naming/PredicateMethod
       post(path: "/api/system/commands/#{source}/#{action}")
       true
