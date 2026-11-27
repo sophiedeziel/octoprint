@@ -56,7 +56,7 @@ jobs:
     # Runs `bundle exec rake release`. The tag already exists, so Bundler
     # skips its git push and only builds and pushes the gem.
     - name: Publish to rubygems.org
-      uses: rubygems/release-gem@5c53f5308233b7c0f47411f0471b3faae6fa57b2 # v1.4.2
+      uses: rubygems/release-gem@2654a0fe0dc39725c07fe84d7fe863a084f2424e # v1.5.0
 
     # The CHANGELOG is the source of truth: it replaces the notes typed in the
     # GitHub UI.
